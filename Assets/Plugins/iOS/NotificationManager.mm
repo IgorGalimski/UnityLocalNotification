@@ -34,6 +34,8 @@ extern "C"
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center requestAuthorizationWithOptions:authorizationOptions completionHandler:^(BOOL granted, NSError * _Nullable error)
             {
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+
                 struct AuthorizationRequestResult* result = (struct AuthorizationRequestResult*)malloc(sizeof(*result));
                 result->granted = granted;
                 result->error = [error domain];

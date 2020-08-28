@@ -88,6 +88,7 @@ namespace UnityLocalNotifications
             try
             {
                 RemoveReceivedNotificationsInternal();
+                ClearBadgeInternal();
             }
             catch (Exception exception)
             {
