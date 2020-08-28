@@ -22,6 +22,10 @@ namespace UnityLocalNotification
             proj.AddFrameworkToProject(target, "UserNotifications.framework", true);
             
             proj.AddCapability(target, PBXCapabilityType.PushNotifications);
+            
+            var capabilities = new ProjectCapabilityManager(PBXProject.GetPBXProjectPath(path), "app.entitlements", "Unity-iPhone");
+            capabilities.AddPushNotifications(true);
+            capabilities.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
 
             File.WriteAllText (projPath, proj.WriteToString ());
         }
