@@ -11,6 +11,7 @@
 @interface NotificationCenterDelegate : NSObject<UNUserNotificationCenterDelegate>
 
 + (instancetype)sharedInstance;
+- (void) parseDeviceToken:(NSData*)data;
 
 @end
 
@@ -36,6 +37,22 @@
         sharedInstance = [[NotificationCenterDelegate alloc] init];
     });
     return sharedInstance;
+}
+
+- (void)parseDeviceToken:(NSData*) data
+{
+        NSUInteger len = data.length;
+        if (len == 0) 
+        {
+            return;
+        }
+        const unsigned char *buffer = data.bytes;
+        NSMutableString *str  = [NSMutableString stringWithCapacity:(len * 2)];
+        for (int i = 0; i < len; ++i) 
+        {
+            [str appendFormat:@"%02x", buffer[i]];
+        }
+        //self.deviceToken = [str copy];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
