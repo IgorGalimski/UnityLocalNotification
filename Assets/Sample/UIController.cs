@@ -15,19 +15,29 @@ namespace UnityLocalNotifications
         [SerializeField] 
         private Button _scheduleNotification;
 
+        [SerializeField] 
+        private Button _removeScheduledNotifications;
+
+        [SerializeField] 
+        private Button _removeDeliveredNotifications;
+
         public void Start()
         {
-            _requestAuthorization.onClick.AddListener(OnAuthorizationRequest);
+            _requestAuthorization.onClick.AddListener(OnAuthorizationRequestHandler);
             _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
+            _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
+            _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
         }
 
         public void OnDestroy()
         {
-            _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequest);
+            _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
+            _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
+            _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
         }
 
-        private void OnAuthorizationRequest()
+        private void OnAuthorizationRequestHandler()
         {
             LocalNotificationController.AuthorizationRequestResultEvent += AuthorizationRequestResultHandler;
             
@@ -42,6 +52,16 @@ namespace UnityLocalNotifications
                 Body = "Body",
                 Seconds = 3
             });
+        }
+
+        private void OnRemoveScheduledNotifications()
+        {
+            LocalNotificationController.RemoveScheduledNotifications();
+        }
+
+        private void OnRemoveDeliveredNotifications()
+        {
+            LocalNotificationController.RemoveDeliveredNotifications();
         }
 
         private void AuthorizationRequestResultHandler(AuthorizationRequestResult authorizationRequestResult)

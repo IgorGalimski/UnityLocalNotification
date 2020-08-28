@@ -23,6 +23,12 @@ namespace UnityLocalNotifications
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
+        
+        [DllImport("__Internal")]
+        private static extern void RemoveScheduledNotificationsInternal();
+        
+        [DllImport("__Internal")]
+        private static extern void RemoveReceivedNotificationsInternal();
 
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
@@ -62,6 +68,30 @@ namespace UnityLocalNotifications
             catch (Exception exception)
             {
                 Debug.LogError("ScheduleLocalNotification error: " + exception.Message);
+            }
+        }
+
+        public static void RemoveScheduledNotifications()
+        {
+            try
+            {
+                RemoveScheduledNotificationsInternal();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("RemoveScheduledNotifications error: " + exception.Message);
+            }
+        }
+
+        public static void RemoveDeliveredNotifications()
+        {
+            try
+            {
+                RemoveReceivedNotificationsInternal();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("RemoveDeliveredNotifications error: " + exception.Message);
             }
         }
 

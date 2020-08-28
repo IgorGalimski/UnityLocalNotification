@@ -89,4 +89,16 @@ extern "C"
            }
         }];
     }
+
+    void RemoveScheduledNotificationsInternal()
+    {
+        UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+        [center removeAllPendingNotificationRequests];
+    }
+    
+    void RemoveReceivedNotificationsInternal()
+    {
+        UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+        [center removeAllDeliveredNotifications];
+    }
 }
