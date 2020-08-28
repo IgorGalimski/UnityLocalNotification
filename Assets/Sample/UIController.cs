@@ -12,14 +12,19 @@ namespace UnityLocalNotifications
         [SerializeField] 
         private Button _requestAuthorization;
 
+        [SerializeField] 
+        private Button _scheduleNotification;
+
         public void Start()
         {
             _requestAuthorization.onClick.AddListener(OnAuthorizationRequest);
+            _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
         }
 
         public void OnDestroy()
         {
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequest);
+            _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
         }
 
         private void OnAuthorizationRequest()
@@ -27,6 +32,16 @@ namespace UnityLocalNotifications
             LocalNotificationController.AuthorizationRequestResultEvent += AuthorizationRequestResultHandler;
             
             LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound);
+        }
+
+        private void ScheduleLocalNotificationHandler()
+        {
+            LocalNotificationController.ScheduleLocalNotification(new LocalNotification
+            {
+                Title = "Test title",
+                Body = "Body",
+                Seconds = 3
+            });
         }
 
         private void AuthorizationRequestResultHandler(AuthorizationRequestResult authorizationRequestResult)

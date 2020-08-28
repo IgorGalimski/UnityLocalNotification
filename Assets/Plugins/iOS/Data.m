@@ -12,3 +12,10 @@ typedef struct AuthorizationRequestResult
     bool granted;
     NSString* error;
 } AuthorizationRequestResult;
+
+typedef struct LocalNotification
+{
+    NSString* Title;
+    NSString* Body;
+    NSInteger* Seconds;
+} LocalNotification;

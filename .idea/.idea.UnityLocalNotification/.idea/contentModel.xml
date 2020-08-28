@@ -19,6 +19,7 @@
             <e p="Editor.asmdef" t="Include" />
             <e p="OnPostprocessBuild.cs" t="Include" />
           </e>
+          <e p="LocalNotification.cs" t="Include" />
           <e p="LocalNotificationController.cs" t="Include" />
         </e>
       </e>
