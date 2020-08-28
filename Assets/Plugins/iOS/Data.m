@@ -15,7 +15,7 @@ typedef struct AuthorizationRequestResult
 
 typedef struct LocalNotification
 {
-    NSString* Title;
-    NSString* Body;
-    NSInteger* Seconds;
+    char* Title;
+    char* Body;
+    int Seconds;
 } LocalNotification;

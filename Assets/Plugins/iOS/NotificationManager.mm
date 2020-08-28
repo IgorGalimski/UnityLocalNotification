@@ -45,7 +45,9 @@ extern "C"
 
     void ScheduleLocalNotificationInternal(LocalNotification* localNotification)
     {
-        NSTimeInterval seconds = 5;
+        NSString *title = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Title] arguments:nil];
+        NSString *body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
+        NSTimeInterval seconds = localNotification->Seconds;
         
         NSDate *now = [NSDate date];
         now = [now dateByAddingTimeInterval:seconds];
@@ -56,8 +58,8 @@ extern "C"
         NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond|NSCalendarUnitTimeZone fromDate:now];
 
         UNMutableNotificationContent *objNotificationContent = [[UNMutableNotificationContent alloc] init];
-        objNotificationContent.title = localNotification->Title;
-        objNotificationContent.body = localNotification->Body;
+        objNotificationContent.title = title;
+        objNotificationContent.body = body;
         objNotificationContent.sound = [UNNotificationSound defaultSound];
         objNotificationContent.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
