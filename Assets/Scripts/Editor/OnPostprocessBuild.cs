@@ -20,6 +20,8 @@ namespace UnityLocalNotification
             var target = proj.TargetGuidByName ("Unity-iPhone");
 
             proj.AddFrameworkToProject(target, "UserNotifications.framework", true);
+            
+            proj.AddCapability(target, PBXCapabilityType.PushNotifications);
 
             File.WriteAllText (projPath, proj.WriteToString ());
         }
