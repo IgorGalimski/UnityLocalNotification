@@ -8,6 +8,9 @@ namespace UnityLocalNotifications
     {
         [SerializeField] 
         private Text _requestStatus;
+
+        [SerializeField] 
+        private Text _deviceToken;
         
         [SerializeField] 
         private Button _requestAuthorization;
@@ -23,6 +26,10 @@ namespace UnityLocalNotifications
 
         public void Start()
         {
+            LocalNotificationController.SetCallbacks();
+
+            LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;
+            
             _requestAuthorization.onClick.AddListener(OnAuthorizationRequestHandler);
             _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
@@ -31,10 +38,17 @@ namespace UnityLocalNotifications
 
         public void OnDestroy()
         {
+            LocalNotificationController.DeviceTokenReceived -= DeviceTokenReceived;
+            
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
+        }
+
+        private void DeviceTokenReceived(string deviceToken)
+        {
+            _deviceToken.text = deviceToken;
         }
 
         private void OnAuthorizationRequestHandler()

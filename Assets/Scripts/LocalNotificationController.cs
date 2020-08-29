@@ -19,7 +19,7 @@ namespace UnityLocalNotifications
 
         [DllImport("__Internal")]
         private static extern void SetCallbacksInternal(LocalNotificationAddedDelegate localNotificationSuccessAddedDelegate,
-            LocalNotificationAddedDelegate localNotificationFailAddedDelegate);
+            LocalNotificationAddedDelegate localNotificationFailAddedDelegate, DeviceTokenReceivedDelegate deviceTokenReceivedDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -34,14 +34,18 @@ namespace UnityLocalNotifications
 
         private delegate void LocalNotificationAddedDelegate(LocalNotification localNotification);
 
+        private delegate void DeviceTokenReceivedDelegate(string deviceToken);
+
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
 
         public static event Action<LocalNotification> LocalNotificationAddedSuccessEvent = notification => { };
         public static event Action<LocalNotification> LocalNotificationAddedFailEventEvent = notification => { };
 
+        public static event Action<String> DeviceTokenReceived = deviceToken => { }; 
+
         public static void SetCallbacks()
         {
-            SetCallbacksInternal(LocalNotificationAddedSuccessCallback, LocalNotificationAddedFailCallback);
+            SetCallbacksInternal(LocalNotificationAddedSuccessCallback, LocalNotificationAddedFailCallback, DeviceTokenReceivedCallback);
         }
         
         public static void RequestAuthorization(AuthorizationOption authorizationOption)
@@ -113,6 +117,12 @@ namespace UnityLocalNotifications
         {
             AuthorizationRequestResultEvent(authorizationRequestResult);
         }
+        
+        [MonoPInvokeCallback(typeof(DeviceTokenReceivedDelegate))]
+        private static void DeviceTokenReceivedCallback(string deviceToken)
+        {
+            DeviceTokenReceived(deviceToken);
+        }        
     }
 }
 
