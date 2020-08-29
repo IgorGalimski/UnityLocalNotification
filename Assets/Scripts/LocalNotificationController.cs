@@ -25,6 +25,9 @@ namespace UnityLocalNotifications
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
         
         [DllImport("__Internal")]
+        private static extern IntPtr GetLastNotificationInternal();
+        
+        [DllImport("__Internal")]
         private static extern void RemoveScheduledNotificationsInternal();
         
         [DllImport("__Internal")]
@@ -73,6 +76,28 @@ namespace UnityLocalNotifications
             {
                 Debug.LogError("ScheduleLocalNotification error: " + exception.Message);
             }
+        }
+
+        public static LocalNotification? GetLastNotification()
+        {
+            try
+            {
+                LocalNotification? localNotification;
+                IntPtr ptr = GetLastNotificationInternal();
+
+                if (ptr != IntPtr.Zero)
+                {
+                    localNotification = Marshal.PtrToStructure<LocalNotification>(ptr);
+                    //_FreeUnmanagediOSNotificationData(ptr);
+                    return localNotification.Value;
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("GetLastNotification error: " + exception.Message);
+            }
+            
+            return null;
         }
 
         public static void RemoveScheduledNotifications()

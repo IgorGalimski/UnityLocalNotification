@@ -44,6 +44,8 @@
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)(void))completionHandler;
 {
+    _lastReceivedNotification = response.notification;
+    
     completionHandler();
 }
 

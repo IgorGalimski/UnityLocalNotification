@@ -7,6 +7,9 @@ namespace UnityLocalNotifications
     public class UIController : MonoBehaviour
     {
         [SerializeField] 
+        private Text _isOpenedByNotification;
+        
+        [SerializeField] 
         private Text _requestStatus;
 
         [SerializeField] 
@@ -26,6 +29,8 @@ namespace UnityLocalNotifications
 
         public void Start()
         {
+            _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
+            
             LocalNotificationController.SetCallbacks();
 
             LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;

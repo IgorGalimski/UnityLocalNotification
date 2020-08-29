@@ -8,6 +8,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import "Data.m"
 #import "LocalNotificationAppDelegate.h"
+#import "NotificationCenterDelegate.h"
 
 extern "C"
 {
@@ -24,7 +25,7 @@ extern "C"
         _localNotificationSuccessCallback = localNotificationSuccessCallback;
         _localNotificationFailCallback = localNotificationFailCallback;
         
-        [[LocalNotificationAppDelegate sharedInstance] setDeviceTokenCallback:deviceTokenReceived];
+        //[[LocalNotificationAppDelegate sharedInstance] setDeviceTokenCallback:deviceTokenReceived];
     }
 
     void ClearBadgeInternal()
@@ -93,6 +94,32 @@ extern "C"
                }
            }
         }];
+    }
+
+    LocalNotification* GetLastNotificationInternal()
+    {
+        UNNotification* notification = [NotificationCenterDelegate sharedInstance].lastReceivedNotification;
+        if(notification == nil)
+        {
+            return nil;
+        }
+        UNNotificationContent* content = notification.request.content;
+        
+        struct LocalNotification* localNotification = (struct LocalNotification*)malloc(sizeof(*localNotification));
+        
+        if (content.title != nil && content.title.length > 0)
+        {
+            localNotification->Title = (char*) [content.title  UTF8String];
+        }
+        
+        if (content.body != nil && content.body.length > 0)
+        {
+            localNotification->Body = (char*) [content.body UTF8String];
+        }
+    
+        //TODO parse date
+        
+        return localNotification;
     }
 
     void RemoveScheduledNotificationsInternal()

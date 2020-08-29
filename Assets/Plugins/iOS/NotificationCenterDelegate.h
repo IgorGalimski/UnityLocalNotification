@@ -10,6 +10,8 @@
 
 @interface NotificationCenterDelegate : NSObject<UNUserNotificationCenterDelegate>
 
+@property (nonatomic) UNNotification* lastReceivedNotification;
+
 + (instancetype)sharedInstance;
 
 @end
