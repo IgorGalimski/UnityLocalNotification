@@ -19,13 +19,13 @@ extern "C"
     ScheduleLocalNotificationSuccess _localNotificationSuccessCallback;
     ScheduleLocalNotificationFail _localNotificationFailCallback;
 
-    void SetCallbacksInternal(ScheduleLocalNotificationSuccess localNotificationSuccessCallback, ScheduleLocalNotificationFail localNotificationFailCallback,
-                              DeviceTokenReceived deviceTokenReceived)
+    void SetCallbacksInternal(ScheduleLocalNotificationSuccess localNotificationSuccessCallback, ScheduleLocalNotificationFail localNotificationFailCallback)
+                              //DeviceTokenReceived deviceTokenCallback)
     {
         _localNotificationSuccessCallback = localNotificationSuccessCallback;
         _localNotificationFailCallback = localNotificationFailCallback;
         
-        //[[LocalNotificationAppDelegate sharedInstance] setDeviceTokenCallback:deviceTokenReceived];
+        //[[NotificationCenterDelegate sharedInstance] setDeviceTokenCallback:deviceTokenCallback];
     }
 
     void ClearBadgeInternal()
@@ -94,6 +94,14 @@ extern "C"
                }
            }
         }];
+    }
+
+    NSString* GetDeviceTokenInternal()
+    {
+        //[LocalNotificationAppDelegate shar]
+        
+        return @"123";
+        //return [DeviceTokenController sharedInstance].deviceToken;
     }
 
     LocalNotification* GetLastNotificationInternal()

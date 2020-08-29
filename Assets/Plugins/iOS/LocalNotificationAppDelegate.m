@@ -8,21 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "LocalNotificationAppDelegate.h"
 
-IMPL_APP_CONTROLLER_SUBCLASS(LocalNotificationAppDelegate)
-
 @implementation LocalNotificationAppDelegate
-
-DeviceTokenReceived _callback;
-
-+ (instancetype)sharedInstance;
-{
-    return self;
-}
-
--(void)setDeviceTokenCallback:(DeviceTokenReceived)callback
-{
-    _callback = callback;
-}
 
 - (void)application:(UIApplication *)application
 didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -38,12 +24,10 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
     {
         [str appendFormat:@"%02x", buffer[i]];
     }
-    NSString* deviceTokenString = [str copy];
     
-    if(_callback != nil)
-    {
-        _callback(deviceTokenString);
-    }
+    _deviceToken = [str copy];
 }
 
 @end
+
+IMPL_APP_CONTROLLER_SUBCLASS(LocalNotificationAppDelegate)
