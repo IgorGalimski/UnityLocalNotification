@@ -1,20 +1,13 @@
 //
 //  NotificationCenterDelegate.m
-//  Unity-iPhone
+//  UnityLocalNotifications
 //
 //  Created by Igor Galimski on 8/28/20.
 //
 
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
-
-@interface NotificationCenterDelegate : NSObject<UNUserNotificationCenterDelegate>
-
-+ (instancetype)sharedInstance;
-- (void) parseDeviceToken:(NSData*)data;
-
-@end
-
+#import "NotificationCenterDelegate.h"
 
 @implementation NotificationCenterDelegate
 
@@ -37,22 +30,6 @@
         sharedInstance = [[NotificationCenterDelegate alloc] init];
     });
     return sharedInstance;
-}
-
-- (void)parseDeviceToken:(NSData*) data
-{
-        NSUInteger len = data.length;
-        if (len == 0) 
-        {
-            return;
-        }
-        const unsigned char *buffer = data.bytes;
-        NSMutableString *str  = [NSMutableString stringWithCapacity:(len * 2)];
-        for (int i = 0; i < len; ++i) 
-        {
-            [str appendFormat:@"%02x", buffer[i]];
-        }
-        //self.deviceToken = [str copy];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center

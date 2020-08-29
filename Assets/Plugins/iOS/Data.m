@@ -1,6 +1,6 @@
 //
 //  Data.m
-//  Unity-iPhone
+//  UnityLocalNotifications
 //
 //  Created by Igor Galimski on 8/27/20.
 //

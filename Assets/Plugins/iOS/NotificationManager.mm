@@ -6,8 +6,8 @@
 //
 
 #import <UserNotifications/UserNotifications.h>
-
 #import "Data.m"
+#import "LocalNotificationAppDelegate.h"
 
 extern "C"
 {
@@ -18,10 +18,13 @@ extern "C"
     ScheduleLocalNotificationSuccess _localNotificationSuccessCallback;
     ScheduleLocalNotificationFail _localNotificationFailCallback;
 
-    void SetCallbacksInternal(ScheduleLocalNotificationSuccess localNotificationSuccessCallback, ScheduleLocalNotificationFail localNotificationFailCallback)
+    void SetCallbacksInternal(ScheduleLocalNotificationSuccess localNotificationSuccessCallback, ScheduleLocalNotificationFail localNotificationFailCallback,
+                              DeviceTokenReceived deviceTokenReceived)
     {
         _localNotificationSuccessCallback = localNotificationSuccessCallback;
         _localNotificationFailCallback = localNotificationFailCallback;
+        
+        [[LocalNotificationAppDelegate sharedInstance] setDeviceTokenCallback:deviceTokenReceived];
     }
 
     void ClearBadgeInternal()
