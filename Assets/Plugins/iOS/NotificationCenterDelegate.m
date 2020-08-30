@@ -30,6 +30,14 @@ UNNotificationReceived _callback;
 
     dispatch_once(&onceToken, ^{
         sharedInstance = [[NotificationCenterDelegate alloc] init];
+        
+        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+        [nc addObserverForName: UIApplicationDidEnterBackgroundNotification
+         object: nil
+         queue: [NSOperationQueue mainQueue]
+         usingBlock:^(NSNotification *notification) {
+             [NotificationCenterDelegate sharedInstance].lastOpenedNotification = NULL;
+         }];
     });
     return sharedInstance;
 }
