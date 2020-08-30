@@ -18,8 +18,8 @@ namespace UnityLocalNotifications
         private static extern void ClearBadgeInternal();
 
         [DllImport("__Internal")]
-        private static extern void SetCallbacksInternal(LocalNotificationAddedDelegate localNotificationSuccessAddedDelegate,
-            LocalNotificationAddedDelegate localNotificationFailAddedDelegate, DeviceTokenReceivedDelegate deviceTokenReceivedDelegate);
+        private static extern void SetCallbacksInternal(LocalNotificationDelegate localNotificationSuccessAddedDelegate,
+            LocalNotificationDelegate localNotificationFailAddedDelegate, LocalNotificationDelegate notificationReceivedDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -35,7 +35,7 @@ namespace UnityLocalNotifications
 
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
-        private delegate void LocalNotificationAddedDelegate(LocalNotification localNotification);
+        private delegate void LocalNotificationDelegate(LocalNotification localNotification);
 
         private delegate void DeviceTokenReceivedDelegate(string deviceToken);
 
@@ -43,12 +43,11 @@ namespace UnityLocalNotifications
 
         public static event Action<LocalNotification> LocalNotificationAddedSuccessEvent = notification => { };
         public static event Action<LocalNotification> LocalNotificationAddedFailEventEvent = notification => { };
-
-        public static event Action<String> DeviceTokenReceived = deviceToken => { }; 
+        public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
 
         public static void SetCallbacks()
         {
-            SetCallbacksInternal(LocalNotificationAddedSuccessCallback, LocalNotificationAddedFailCallback, DeviceTokenReceivedCallback);
+            SetCallbacksInternal(LocalNotificationAddedSuccessCallback, LocalNotificationAddedFailCallback, NotificationReceivedCallback);
         }
         
         public static void RequestAuthorization(AuthorizationOption authorizationOption)
@@ -125,13 +124,13 @@ namespace UnityLocalNotifications
             }
         }
 
-        [MonoPInvokeCallback(typeof(AuthorizationStatusCallbackDelegate))]
+        [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
         private static void LocalNotificationAddedSuccessCallback(LocalNotification localNotification)
         {
             LocalNotificationAddedSuccessEvent(localNotification);
         }
 
-        [MonoPInvokeCallback(typeof(AuthorizationStatusCallbackDelegate))]
+        [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
         private static void LocalNotificationAddedFailCallback(LocalNotification localNotification)
         {
             LocalNotificationAddedFailEventEvent(localNotification);
@@ -143,10 +142,10 @@ namespace UnityLocalNotifications
             AuthorizationRequestResultEvent(authorizationRequestResult);
         }
         
-        [MonoPInvokeCallback(typeof(DeviceTokenReceivedDelegate))]
-        private static void DeviceTokenReceivedCallback(string deviceToken)
+        [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
+        private static void NotificationReceivedCallback(LocalNotification localNotification)
         {
-            DeviceTokenReceived(deviceToken);
+            NotificationReceivedEvent(localNotification);
         }        
     }
 }

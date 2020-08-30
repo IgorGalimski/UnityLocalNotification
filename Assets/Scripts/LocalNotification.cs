@@ -12,5 +12,10 @@ namespace UnityLocalNotifications
         public string Data;
 
         public int Seconds;
+
+        public override string ToString()
+        {
+            return $"Title: {Title} Body: {Body} Data: {Data}";
+        }
     }
 }

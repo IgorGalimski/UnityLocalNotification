@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 118122396}
   - component: {fileID: 118122395}
   m_Layer: 5
-  m_Name: DeviceToken
+  m_Name: NotificationReceived
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,7 +146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 315}
+  m_AnchoredPosition: {x: 0, y: 373}
   m_SizeDelta: {x: 750, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &118122395
@@ -460,7 +460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isOpenedByNotification: {fileID: 2104436523}
   _requestStatus: {fileID: 897639533}
-  _deviceToken: {fileID: 118122395}
+  _localNotificationReceived: {fileID: 118122395}
   _requestAuthorization: {fileID: 733985541}
   _scheduleNotification: {fileID: 1548868966}
   _removeScheduledNotifications: {fileID: 1088081563}

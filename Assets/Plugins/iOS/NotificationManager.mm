@@ -12,16 +12,18 @@
 extern "C"
 {
     typedef void (*AuthorizationStatusCallback)(AuthorizationRequestResult* result);
-    typedef void (*ScheduleLocalNotificationSuccess)(LocalNotification* localNotification);
-    typedef void (*ScheduleLocalNotificationFail)(LocalNotification* localNotification);
+    typedef void (*NotificationReceived)(LocalNotification* localNotification);
 
-    ScheduleLocalNotificationSuccess _localNotificationSuccessCallback;
-    ScheduleLocalNotificationFail _localNotificationFailCallback;
+    NotificationReceived _notificationReceived;
 
-    void SetCallbacksInternal(ScheduleLocalNotificationSuccess localNotificationSuccessCallback, ScheduleLocalNotificationFail localNotificationFailCallback)
+    void SetCallbacksInternal(NotificationReceived notificationReceived)
     {
-        _localNotificationSuccessCallback = localNotificationSuccessCallback;
-        _localNotificationFailCallback = localNotificationFailCallback;
+        _notificationReceived = notificationReceived;
+       
+        [[NotificationCenterDelegate sharedInstance] SetNotificationReceivedCallback:^(LocalNotification* localNotication)
+        {
+            _notificationReceived(localNotication);
+        }];
     }
 
     void ClearBadgeInternal()
@@ -41,86 +43,17 @@ extern "C"
                 result->error = [error domain];
             
                 callback(result);
-            
             }];
     }
 
     void ScheduleLocalNotificationInternal(LocalNotification* localNotification)
     {
-        NSString *title = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Title] arguments:nil];
-        NSString *body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
-        NSTimeInterval seconds = localNotification->Seconds;
-        
-        NSDate *now = [NSDate date];
-        now = [now dateByAddingTimeInterval:seconds];
-
-        NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        [calendar setTimeZone:[NSTimeZone localTimeZone]];
-        
-        NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond|NSCalendarUnitTimeZone fromDate:now];
-
-        NSDictionary *userInfo = @{
-            @"data": @(localNotification->Data),
-        };
-
-        UNMutableNotificationContent *objNotificationContent = [[UNMutableNotificationContent alloc] init];
-        objNotificationContent.title = title;
-        objNotificationContent.body = body;
-        objNotificationContent.userInfo = userInfo;
-        objNotificationContent.sound = [UNNotificationSound defaultSound];
-        objNotificationContent.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
-
-        UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:NO];
-        
-        NSUUID *uuid = [NSUUID UUID];
-
-        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[uuid UUIDString]
-                                                                             content:objNotificationContent trigger:trigger];
-        
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error)
-        {
-           if (!error)
-           {
-               if(_localNotificationSuccessCallback != nil)
-               {
-                   _localNotificationSuccessCallback(localNotification);
-               }
-           }
-           else
-           {
-               if(_localNotificationFailCallback != nil)
-               {
-                   _localNotificationFailCallback(localNotification);
-               }
-           }
-        }];
+        [[NotificationCenterDelegate sharedInstance] ScheduleLocalNotification:localNotification];
     }
 
     LocalNotification* GetLastNotificationInternal()
     {
-        UNNotification* notification = [NotificationCenterDelegate sharedInstance].lastReceivedNotification;
-        if(notification == nil)
-        {
-            return nil;
-        }
-        UNNotificationContent* content = notification.request.content;
-        
-        struct LocalNotification* localNotification = (struct LocalNotification*)malloc(sizeof(*localNotification));
-        
-        if (content.title != nil && content.title.length > 0)
-        {
-            localNotification->Title = (char*) [content.title  UTF8String];
-        }
-        
-        if (content.body != nil && content.body.length > 0)
-        {
-            localNotification->Body = (char*) [content.body UTF8String];
-        }
-        
-        localNotification->Data = (char*)[[[content.userInfo objectForKey: @"data"]description] UTF8String];;
-        
-        return localNotification;
+        return [NotificationCenterDelegate sharedInstance].lastOpenedNotification;
     }
 
     void RemoveScheduledNotificationsInternal()
