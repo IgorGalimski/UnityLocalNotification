@@ -18,8 +18,7 @@ namespace UnityLocalNotifications
         private static extern void ClearBadgeInternal();
 
         [DllImport("__Internal")]
-        private static extern void SetCallbacksInternal(LocalNotificationDelegate localNotificationSuccessAddedDelegate,
-            LocalNotificationDelegate localNotificationFailAddedDelegate, LocalNotificationDelegate notificationReceivedDelegate);
+        private static extern void SetCallbacksInternal(LocalNotificationDelegate notificationReceivedDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -40,14 +39,11 @@ namespace UnityLocalNotifications
         private delegate void DeviceTokenReceivedDelegate(string deviceToken);
 
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
-
-        public static event Action<LocalNotification> LocalNotificationAddedSuccessEvent = notification => { };
-        public static event Action<LocalNotification> LocalNotificationAddedFailEventEvent = notification => { };
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
 
         public static void SetCallbacks()
         {
-            SetCallbacksInternal(LocalNotificationAddedSuccessCallback, LocalNotificationAddedFailCallback, NotificationReceivedCallback);
+            SetCallbacksInternal(NotificationReceivedCallback);
         }
         
         public static void RequestAuthorization(AuthorizationOption authorizationOption)
@@ -124,18 +120,6 @@ namespace UnityLocalNotifications
             }
         }
 
-        [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
-        private static void LocalNotificationAddedSuccessCallback(LocalNotification localNotification)
-        {
-            LocalNotificationAddedSuccessEvent(localNotification);
-        }
-
-        [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
-        private static void LocalNotificationAddedFailCallback(LocalNotification localNotification)
-        {
-            LocalNotificationAddedFailEventEvent(localNotification);
-        }
-        
         [MonoPInvokeCallback(typeof(AuthorizationStatusCallbackDelegate))]
         private static void AuthorizationRequestResultCallback(AuthorizationRequestResult authorizationRequestResult)
         {
