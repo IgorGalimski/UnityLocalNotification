@@ -9,6 +9,8 @@ namespace UnityLocalNotifications
 
         public string Body;
 
+        public string Data;
+
         public int Seconds;
     }
 }

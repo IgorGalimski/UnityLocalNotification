@@ -7,7 +7,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import "Data.m"
-#import "LocalNotificationAppDelegate.h"
 #import "NotificationCenterDelegate.h"
 
 extern "C"
@@ -60,9 +59,14 @@ extern "C"
         
         NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond|NSCalendarUnitTimeZone fromDate:now];
 
+        NSDictionary *userInfo = @{
+            @"data": @(localNotification->Data),
+        };
+
         UNMutableNotificationContent *objNotificationContent = [[UNMutableNotificationContent alloc] init];
         objNotificationContent.title = title;
         objNotificationContent.body = body;
+        objNotificationContent.userInfo = userInfo;
         objNotificationContent.sound = [UNNotificationSound defaultSound];
         objNotificationContent.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
@@ -113,8 +117,8 @@ extern "C"
         {
             localNotification->Body = (char*) [content.body UTF8String];
         }
-    
-        //TODO parse date
+        
+        localNotification->Data = (char*)[[[content.userInfo objectForKey: @"data"]description] UTF8String];;
         
         return localNotification;
     }

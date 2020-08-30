@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityLocalNotifications.Authorization;
 
@@ -60,6 +61,7 @@ namespace UnityLocalNotifications
             {
                 Title = "Test title",
                 Body = "Body",
+                Data = "Test data",
                 Seconds = 3
             });
         }
