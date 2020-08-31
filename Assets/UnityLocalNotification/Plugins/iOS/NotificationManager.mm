@@ -40,7 +40,7 @@ extern "C"
 
                 struct AuthorizationRequestResult* result = (struct AuthorizationRequestResult*)malloc(sizeof(*result));
                 result->granted = granted;
-                result->error = [error domain];
+                result->error = (char*)[[error localizedDescription]cStringUsingEncoding: NSUTF8StringEncoding];
             
                 callback(result);
             }];
