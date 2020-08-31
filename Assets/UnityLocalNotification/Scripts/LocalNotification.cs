@@ -1,3 +1,5 @@
+#if UNITY_IOS || UNITY_EDITOR
+
 using System.Runtime.InteropServices;
 
 namespace UnityLocalNotifications
@@ -25,3 +27,5 @@ namespace UnityLocalNotifications
         }
     }
 }
+
+#endif

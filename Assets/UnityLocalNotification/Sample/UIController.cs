@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_IOS || UNITY_EDITOR
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityLocalNotifications.Authorization;
 
-namespace UnityLocalNotifications
+namespace UnityLocalNotifications.Sample
 {
     public class UIController : MonoBehaviour
     {
@@ -27,7 +28,7 @@ namespace UnityLocalNotifications
 
         [SerializeField] 
         private Button _removeDeliveredNotifications;
-
+        
         public void Start()
         {
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
@@ -64,7 +65,7 @@ namespace UnityLocalNotifications
             LocalNotificationController.ScheduleLocalNotification(new LocalNotification
             {
                 Title = "Test title",
-                Body = "Body",
+                Body = "Test body",
                 Data = "Test data",
                 Seconds = 3
             });
@@ -93,3 +94,5 @@ namespace UnityLocalNotifications
         }
     }   
 }
+
+#endif

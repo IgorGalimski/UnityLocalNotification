@@ -1,0 +1,14 @@
+{
+    "name": "UnityLocalNotification.Sample",
+    "references": [
+        "UnityLocalNotification"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

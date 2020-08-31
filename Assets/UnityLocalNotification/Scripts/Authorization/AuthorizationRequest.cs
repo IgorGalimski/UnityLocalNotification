@@ -1,3 +1,5 @@
+#if UNITY_IOS || UNITY_EDITOR
+
 using System.Runtime.InteropServices;
 
 namespace UnityLocalNotifications.Authorization
@@ -10,3 +12,5 @@ namespace UnityLocalNotifications.Authorization
         public string Error;
     }
 }
+
+#endif

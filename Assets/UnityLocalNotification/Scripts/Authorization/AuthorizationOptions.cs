@@ -1,3 +1,5 @@
+#if UNITY_IOS || UNITY_EDITOR
+
 using System;
 
 namespace UnityLocalNotifications.Authorization
@@ -11,3 +13,5 @@ namespace UnityLocalNotifications.Authorization
         CarPlay = 1 << 3,
     }
 }
+
+#endif
