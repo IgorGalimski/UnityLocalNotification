@@ -95,6 +95,18 @@ namespace UnityLocalNotifications
             return null;
         }
 
+        public static void ClearBadge()
+        {
+            try
+            {
+                ClearBadgeInternal();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("ClearBadge error: " + exception.Message);
+            }
+        }
+
         public static void RemoveScheduledNotifications()
         {
             try
@@ -112,7 +124,6 @@ namespace UnityLocalNotifications
             try
             {
                 RemoveReceivedNotificationsInternal();
-                ClearBadgeInternal();
             }
             catch (Exception exception)
             {
