@@ -10,7 +10,7 @@
 typedef struct AuthorizationRequestResult
 {
     bool granted;
-    NSString* error;
+    char* error;
 } AuthorizationRequestResult;
 
 typedef struct LocalNotification

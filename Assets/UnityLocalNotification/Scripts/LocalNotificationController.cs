@@ -36,8 +36,6 @@ namespace UnityLocalNotifications
 
         private delegate void LocalNotificationDelegate(LocalNotification localNotification);
 
-        private delegate void DeviceTokenReceivedDelegate(string deviceToken);
-
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
 
@@ -66,6 +64,8 @@ namespace UnityLocalNotifications
                 Marshal.StructureToPtr(localNotification, ptr, false);
                 
                 ScheduleLocalNotificationInternal(ptr);
+
+                FreePtr(ptr);
             }
             catch (Exception exception)
             {
@@ -83,7 +83,7 @@ namespace UnityLocalNotifications
                 if (ptr != IntPtr.Zero)
                 {
                     localNotification = Marshal.PtrToStructure<LocalNotification>(ptr);
-                    //_FreeUnmanagediOSNotificationData(ptr);
+                    FreePtr(ptr);
                     return localNotification.Value;
                 }
             }
@@ -141,7 +141,19 @@ namespace UnityLocalNotifications
         private static void NotificationReceivedCallback(LocalNotification localNotification)
         {
             NotificationReceivedEvent(localNotification);
-        }        
+        }
+
+        private static void FreePtr(IntPtr intPtr)
+        {
+            try
+            {
+                Marshal.FreeHGlobal(intPtr);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("FreePtr error: " + exception.Message);
+            }
+        }
     }
 }
 
