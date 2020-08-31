@@ -49,8 +49,6 @@ UNNotificationReceived _callback;
 
 -(void)ScheduleLocalNotification:(LocalNotification*)localNotification
 {
-    NSString *title = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Title] arguments:nil];
-    NSString *body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
     NSTimeInterval seconds = localNotification->Seconds;
     
     NSDate *now = [NSDate date];
@@ -61,14 +59,42 @@ UNNotificationReceived _callback;
     
     NSDateComponents *components = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond|NSCalendarUnitTimeZone fromDate:now];
 
-    NSDictionary *userInfo = @{
-        @"data": @(localNotification->Data),
-    };
-
     UNMutableNotificationContent *objNotificationContent = [[UNMutableNotificationContent alloc] init];
-    objNotificationContent.title = title;
-    objNotificationContent.body = body;
-    objNotificationContent.userInfo = userInfo;
+    
+    if(localNotification->Title != nil)
+    {
+        objNotificationContent.title =  [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Title] arguments:nil];
+    }
+    
+    if(localNotification->Subtitle != nil)
+    {
+        objNotificationContent.subtitle = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Subtitle] arguments:nil];
+    }
+    
+    if(localNotification->Body != nil)
+    {
+        objNotificationContent.body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
+    }
+   
+    if(localNotification->Data != nil)
+    {
+        NSDictionary *userInfo = @{
+            @"data": @(localNotification->Data),
+        };
+        
+        objNotificationContent.userInfo = userInfo;
+    }
+    
+    if(localNotification->CategoryIdentifier != nil)
+    {
+        objNotificationContent.categoryIdentifier = [NSString stringWithUTF8String: localNotification->CategoryIdentifier];
+    }
+    
+    if(localNotification->ThreadIdentifier != nil)
+    {
+        objNotificationContent.threadIdentifier = [NSString stringWithUTF8String: localNotification->ThreadIdentifier];
+    }
+    
     objNotificationContent.sound = [UNNotificationSound defaultSound];
     objNotificationContent.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
@@ -92,15 +118,57 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if (content.title != nil && content.title.length > 0)
     {
-        localNotification->Title = (char*) [content.title  UTF8String];
+        localNotification->Title = (char*) [content.title UTF8String];
+    }
+    else
+    {
+        localNotification->Title = " ";
+    }
+    
+    if (content.subtitle != nil && content.subtitle.length > 0)
+    {
+        localNotification->Subtitle = (char*) [content.subtitle UTF8String];
+    }
+    else
+    {
+        localNotification->Subtitle = " ";
     }
     
     if (content.body != nil && content.body.length > 0)
     {
         localNotification->Body = (char*) [content.body UTF8String];
     }
+    else
+    {
+        localNotification->Body = " ";
+    }
     
-    localNotification->Data = (char*)[[[content.userInfo objectForKey: @"data"]description] UTF8String];
+    if (content.categoryIdentifier != nil && content.categoryIdentifier.length > 0)
+    {
+        localNotification->CategoryIdentifier = (char*) [content.categoryIdentifier UTF8String];
+    }
+    else
+    {
+        localNotification->CategoryIdentifier = " ";
+    }
+
+    if (content.threadIdentifier != nil && content.threadIdentifier.length > 0)
+    {
+        localNotification->ThreadIdentifier = (char*) [content.threadIdentifier UTF8String];
+    }
+    else
+    {
+        localNotification->ThreadIdentifier = " ";
+    }
+    
+    if(content.userInfo != nil && content.userInfo > 0)
+    {
+        localNotification->Data = (char*)[[[content.userInfo objectForKey: @"data"]description] UTF8String];
+    }
+    else
+    {
+        localNotification->Data = " ";
+    }
     
     return localNotification;
 }

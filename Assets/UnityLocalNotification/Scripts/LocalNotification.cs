@@ -6,10 +6,16 @@ namespace UnityLocalNotifications
     public struct LocalNotification
     {
         public string Title;
+        
+        public string Subtitle;
 
         public string Body;
 
         public string Data;
+
+        public string CategoryIdentifier;
+
+        public string ThreadIdentifier;
 
         public int Seconds;
 
