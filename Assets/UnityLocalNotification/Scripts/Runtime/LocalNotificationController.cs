@@ -13,22 +13,25 @@ namespace UnityLocalNotifications
         [DllImport("__Internal")]
         private static extern void RequestAuthorizationInternal(int options,
             AuthorizationStatusCallbackDelegate authorizationStatusCallbackDelegate);
-        
+
+        [DllImport("__Internal")]
+        private static extern string GetDeviceTokenInternal();
+
         [DllImport("__Internal")]
         private static extern void ClearBadgeInternal();
 
         [DllImport("__Internal")]
-        private static extern void SetCallbacksInternal(LocalNotificationDelegate notificationReceivedDelegate);
+        private static extern void SetCallbacksInternal(LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
-        
+
         [DllImport("__Internal")]
         private static extern IntPtr GetLastNotificationInternal();
-        
+
         [DllImport("__Internal")]
         private static extern void RemoveScheduledNotificationsInternal();
-        
+
         [DllImport("__Internal")]
         private static extern void RemoveReceivedNotificationsInternal();
 
@@ -36,12 +39,17 @@ namespace UnityLocalNotifications
 
         private delegate void LocalNotificationDelegate(LocalNotification localNotification);
 
+        private delegate void DeviceTokenDelegate(string localNotification);
+
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
+
+        public static event Action<string> DeviceTokenReceived = deviceToken => { };
+        
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
 
         public static void SetCallbacks()
         {
-            SetCallbacksInternal(NotificationReceivedCallback);
+            SetCallbacksInternal(NotificationReceivedCallback, DeviceTokenReceivedCallback);
         }
         
         public static void RequestAuthorization(AuthorizationOption authorizationOption)
@@ -142,6 +150,12 @@ namespace UnityLocalNotifications
         {
             NotificationReceivedEvent(localNotification);
         }
+        
+        [MonoPInvokeCallback(typeof(DeviceTokenDelegate))]
+        private static void DeviceTokenReceivedCallback(string deviceToken)
+        {
+            DeviceTokenReceived(deviceToken);
+        }        
 
         private static void FreePtr(IntPtr intPtr)
         {

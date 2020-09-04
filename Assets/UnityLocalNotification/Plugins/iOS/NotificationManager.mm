@@ -8,21 +8,33 @@
 #import <UserNotifications/UserNotifications.h>
 #import "Data.m"
 #import "NotificationCenterDelegate.h"
+#import "DeviceTokenHandler.h"
 
 extern "C"
 {
     typedef void (*AuthorizationStatusCallback)(AuthorizationRequestResult* result);
     typedef void (*NotificationReceived)(LocalNotification* localNotification);
+    typedef void (*DeviceTokenReceived)(char* deviceToken);
 
     NotificationReceived _notificationReceived;
+    DeviceTokenReceived _deviceTokenReceived;
 
-    void SetCallbacksInternal(NotificationReceived notificationReceived)
+    void SetCallbacksInternal(NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
     {
         _notificationReceived = notificationReceived;
+        _deviceTokenReceived = deviceTokenReceived;
        
         [[NotificationCenterDelegate sharedInstance] SetNotificationReceivedCallback:^(LocalNotification* localNotication)
         {
             _notificationReceived(localNotication);
+        }];
+        
+        [[DeviceTokenHandler sharedInstance] SetHandleDeviceTokenReceivedCallback:^()
+        {
+            if(_deviceTokenReceived != nil)
+            {
+                _deviceTokenReceived([DeviceTokenHandler sharedInstance].deviceToken);
+            }
         }];
     }
 
@@ -46,6 +58,11 @@ extern "C"
             
                 callback(result);
             }];
+    }
+
+    char* GetDeviceTokenInternal()
+    {
+        return [DeviceTokenHandler sharedInstance].deviceToken;
     }
 
     void ScheduleLocalNotificationInternal(LocalNotification* localNotification)

@@ -5,6 +5,7 @@
     <e p="$PROJECT_DIR$/../Library/Caches/Rider2019.3/resharper-host/local/Transient/ReSharperHost/v193/SolutionCaches/_UnityLocalNotification.1252993994.00" t="ExcludeRecursive" />
     <e p="$APPLICATION_CONFIG_DIR$/scratches" t="IncludeRecursive" />
     <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="UnityLocalNotification" t="Include">
           <e p="Sample" t="Include">
@@ -12,21 +13,21 @@
             <e p="UnityLocalNotification.Sample.asmdef" t="Include" />
           </e>
           <e p="Scripts" t="Include">
-            <e p="Authorization" t="Include">
-              <e p="AuthorizationOptions.cs" t="Include" />
-              <e p="AuthorizationRequest.cs" t="Include" />
-            </e>
             <e p="Editor" t="Include">
-              <e p="Editor.asmdef" t="Include" />
               <e p="OnPostprocessBuild.cs" t="Include" />
             </e>
-            <e p="LocalNotification.cs" t="Include" />
-            <e p="LocalNotificationController.cs" t="Include" />
+            <e p="Runtime" t="Include">
+              <e p="Authorization" t="Include">
+                <e p="AuthorizationOptions.cs" t="Include" />
+                <e p="AuthorizationRequest.cs" t="Include" />
+              </e>
+              <e p="LocalNotification.cs" t="Include" />
+              <e p="LocalNotificationController.cs" t="Include" />
+              <e p="UnityLocalNotification.asmdef" t="Include" />
+            </e>
           </e>
-          <e p="UnityLocalNotification.asmdef" t="Include" />
         </e>
       </e>
-      <e p="Editor.csproj" t="IncludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="Packages" t="ExcludeRecursive" />
       <e p="Temp/bin" t="ExcludeRecursive" />
