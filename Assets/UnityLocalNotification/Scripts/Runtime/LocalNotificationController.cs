@@ -63,6 +63,20 @@ namespace UnityLocalNotifications
                 Debug.LogError("RequestAuthorization error: " + exception.Message);
             }
         }
+        
+        public static string GetDeviceToken()
+        {
+            try
+            {
+                return GetDeviceTokenInternal();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("GetDeviceToken error: " + exception.Message);
+            }
+
+            return null;
+        }
 
         public static void ScheduleLocalNotification(LocalNotification localNotification)
         {
