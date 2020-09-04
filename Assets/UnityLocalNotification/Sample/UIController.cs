@@ -9,25 +9,25 @@ namespace UnityLocalNotifications.Sample
     public class UIController : MonoBehaviour
     {
         [SerializeField] 
-        private Text _isOpenedByNotification;
+        private Text _isOpenedByNotification = default;
         
         [SerializeField] 
-        private Text _requestStatus;
+        private Text _requestStatus = default;
 
         [SerializeField] 
-        private Text _localNotificationReceived;
+        private Text _localNotificationReceived = default;
         
         [SerializeField] 
-        private Button _requestAuthorization;
+        private Button _requestAuthorization = default;
 
         [SerializeField] 
-        private Button _scheduleNotification;
+        private Button _scheduleNotification = default;
 
         [SerializeField] 
-        private Button _removeScheduledNotifications;
+        private Button _removeScheduledNotifications = default;
 
         [SerializeField] 
-        private Button _removeDeliveredNotifications;
+        private Button _removeDeliveredNotifications = default;
         
         public void Start()
         {
