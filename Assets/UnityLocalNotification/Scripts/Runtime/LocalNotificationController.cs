@@ -21,7 +21,7 @@ namespace UnityLocalNotifications
         private static extern void ClearBadgeInternal();
 
         [DllImport("__Internal")]
-        private static extern void SetCallbacksInternal(LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
+        private static extern void InitializeInternal(int notificationOptions, LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -47,9 +47,16 @@ namespace UnityLocalNotifications
         
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
 
-        public static void SetCallbacks()
+        public static void Initialize(NotificationPresentationOptions notificationOptions)
         {
-            SetCallbacksInternal(NotificationReceivedCallback, DeviceTokenReceivedCallback);
+            try
+            {
+                InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("Initialize error: " + exception.Message);
+            }
         }
         
         public static void RequestAuthorization(AuthorizationOption authorizationOption)

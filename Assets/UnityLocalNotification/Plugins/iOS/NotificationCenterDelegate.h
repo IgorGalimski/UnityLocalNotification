@@ -15,6 +15,7 @@ typedef void (^UNNotificationReceived)();
 @interface NotificationCenterDelegate : NSObject<UNUserNotificationCenterDelegate>
 
 @property (nonatomic) LocalNotification* lastOpenedNotification;
+@property (nonatomic) NSInteger notificationOptions;
 
 + (instancetype)sharedInstance;
 

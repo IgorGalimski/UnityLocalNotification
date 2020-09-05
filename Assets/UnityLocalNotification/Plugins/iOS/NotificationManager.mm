@@ -19,7 +19,7 @@ extern "C"
     NotificationReceived _notificationReceived;
     DeviceTokenReceived _deviceTokenReceived;
 
-    void SetCallbacksInternal(NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
+    void InitializeInternal(NSInteger notificationOptions, NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
     {
         _notificationReceived = notificationReceived;
         _deviceTokenReceived = deviceTokenReceived;
@@ -28,6 +28,7 @@ extern "C"
         {
             _notificationReceived(localNotication);
         }];
+        [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
         
         [[DeviceTokenHandler sharedInstance] SetHandleDeviceTokenReceivedCallback:^()
         {

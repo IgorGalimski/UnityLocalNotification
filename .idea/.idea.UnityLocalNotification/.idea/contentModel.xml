@@ -23,6 +23,7 @@
               </e>
               <e p="LocalNotification.cs" t="Include" />
               <e p="LocalNotificationController.cs" t="Include" />
+              <e p="NotificationPresentationOptions.cs" t="Include" />
               <e p="UnityLocalNotification.asmdef" t="Include" />
             </e>
           </e>

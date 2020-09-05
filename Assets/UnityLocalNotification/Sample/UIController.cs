@@ -36,7 +36,7 @@ namespace UnityLocalNotifications.Sample
         {
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
             
-            LocalNotificationController.SetCallbacks();
+            LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
 
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
             LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;

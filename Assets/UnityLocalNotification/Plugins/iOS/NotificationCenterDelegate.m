@@ -177,7 +177,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-    completionHandler(UNNotificationPresentationOptionAlert);
+    completionHandler((UNNotificationPresentationOptions)_notificationOptions);
 
     if(_callback != nil)
     {
@@ -191,7 +191,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)(void))completionHandler;
 {
     _lastOpenedNotification = ToLocalNotification(response.notification);
-    
+
     completionHandler();
 }
 
