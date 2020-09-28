@@ -26,7 +26,10 @@ extern "C"
        
         [[NotificationCenterDelegate sharedInstance] SetNotificationReceivedCallback:^(LocalNotification* localNotication)
         {
-            _notificationReceived(localNotication);
+            if(_notificationReceived != nil)
+            {
+                _notificationReceived(localNotication);
+            }
         }];
         [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
         
