@@ -15,7 +15,7 @@ namespace UnityLocalNotifications.Sample
         private Text _requestStatus = default;
 
         [SerializeField] 
-        private Text _deviceToken;
+        private Text _deviceToken = default;
 
         [SerializeField] 
         private Text _localNotificationReceived = default;
