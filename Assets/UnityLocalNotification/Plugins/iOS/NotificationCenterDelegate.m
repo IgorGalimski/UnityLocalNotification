@@ -163,7 +163,10 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if(content.userInfo != nil && content.userInfo > 0)
     {
-        localNotification->Data = (char*)[[[content.userInfo objectForKey: @"data"]description] UTF8String];
+        NSError* error;
+        NSData* data = [NSJSONSerialization dataWithJSONObject: content.userInfo options: NSJSONWritingPrettyPrinted error: &error];
+        
+        localNotification->Data = (char*)[data bytes];
     }
     else
     {

@@ -718,6 +718,7 @@ GameObject:
   m_Component:
   - component: {fileID: 770493069}
   - component: {fileID: 770493070}
+  - component: {fileID: 770493071}
   m_Layer: 5
   m_Name: Container
   m_TagString: Untagged
@@ -775,6 +776,26 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
+--- !u!114 &770493071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 770493068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08a6df61d459b469ea0fce08e5e2e84c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isOpenedByNotification: {fileID: 2104436523}
+  _requestStatus: {fileID: 897639533}
+  _deviceToken: {fileID: 499771489}
+  _localNotificationReceived: {fileID: 118122395}
+  _requestAuthorization: {fileID: 733985541}
+  _scheduleNotification: {fileID: 1548868966}
+  _removeScheduledNotifications: {fileID: 1088081563}
+  _removeDeliveredNotifications: {fileID: 836544632}
 --- !u!1 &836544630
 GameObject:
   m_ObjectHideFlags: 0
