@@ -11,8 +11,6 @@
 
 @implementation NotificationCenterDelegate
 
-UNNotificationReceived _callback;
-
 + (void)load
 {
     static dispatch_once_t onceToken;
@@ -40,11 +38,6 @@ UNNotificationReceived _callback;
          }];
     });
     return sharedInstance;
-}
-
-- (void) SetNotificationReceivedCallback:(UNNotificationReceived)callback
-{
-    _callback = callback;
 }
 
 -(void)ScheduleLocalNotification:(LocalNotification*)localNotification
@@ -182,9 +175,10 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
 {
     completionHandler((UNNotificationPresentationOptions)_notificationOptions);
 
-    if(_callback != nil)
+    if(_notificationReceived != nil)
     {
-        _callback(ToLocalNotification(notification));
+        _lastReceivedNotification = ToLocalNotification(notification);
+        _notificationReceived(_lastReceivedNotification);
     }
 }
 

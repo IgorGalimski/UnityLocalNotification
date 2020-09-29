@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (*AuthorizationStatusCallback)(struct AuthorizationRequestResult* result);
+typedef void (*NotificationReceived)(struct LocalNotification* localNotification);
+typedef void (*DeviceTokenReceived)(char* deviceToken);
+
 typedef struct AuthorizationRequestResult
 {
     bool granted;

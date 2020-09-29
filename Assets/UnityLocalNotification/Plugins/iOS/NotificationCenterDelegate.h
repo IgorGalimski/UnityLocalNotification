@@ -10,16 +10,15 @@
 #ifndef NotificationCenterDelegate_h
 #define NotificationCenterDelegate_h
 
-typedef void (^UNNotificationReceived)();
-
 @interface NotificationCenterDelegate : NSObject<UNUserNotificationCenterDelegate>
 
 @property (nonatomic) LocalNotification* lastOpenedNotification;
+@property (nonatomic) LocalNotification* lastReceivedNotification;
 @property (nonatomic) NSInteger notificationOptions;
+@property (nonatomic) NotificationReceived notificationReceived;
 
 + (instancetype)sharedInstance;
 
--(void) SetNotificationReceivedCallback:(void(^)(LocalNotification*))callback;
 -(void) ScheduleLocalNotification:(LocalNotification*) LocalNotification;
 
 @end

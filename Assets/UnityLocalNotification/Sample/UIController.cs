@@ -60,6 +60,8 @@ namespace UnityLocalNotifications.Sample
 
         private void OnAuthorizationRequestHandler()
         {
+            _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
+            
             LocalNotificationController.AuthorizationRequestResultEvent += AuthorizationRequestResultHandler;
             
             LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound);

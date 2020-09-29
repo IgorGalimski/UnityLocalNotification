@@ -12,34 +12,12 @@
 
 extern "C"
 {
-    typedef void (*AuthorizationStatusCallback)(AuthorizationRequestResult* result);
-    typedef void (*NotificationReceived)(LocalNotification* localNotification);
-    typedef void (*DeviceTokenReceived)(char* deviceToken);
-
-    NotificationReceived _notificationReceived;
-    DeviceTokenReceived _deviceTokenReceived;
-
     void InitializeInternal(NSInteger notificationOptions, NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
     {
-        _notificationReceived = notificationReceived;
-        _deviceTokenReceived = deviceTokenReceived;
-       
-        [[NotificationCenterDelegate sharedInstance] SetNotificationReceivedCallback:^(LocalNotification* localNotication)
-        {
-            if(_notificationReceived != nil)
-            {
-                _notificationReceived(localNotication);
-            }
-        }];
+        [NotificationCenterDelegate sharedInstance].notificationReceived = notificationReceived;
         [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
         
-        [[DeviceTokenHandler sharedInstance] SetHandleDeviceTokenReceivedCallback:^()
-        {
-            if(_deviceTokenReceived != nil)
-            {
-                _deviceTokenReceived([DeviceTokenHandler sharedInstance].deviceToken);
-            }
-        }];
+        [DeviceTokenHandler sharedInstance].deviceTokenReceived = deviceTokenReceived;
     }
 
     void ClearBadgeInternal()

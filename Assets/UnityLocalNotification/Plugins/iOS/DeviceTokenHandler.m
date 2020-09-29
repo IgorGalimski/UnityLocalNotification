@@ -41,15 +41,10 @@ DeviceToken _callback;
     
     _deviceToken = (char*)[deviceTokenString cStringUsingEncoding:NSUTF8StringEncoding];
     
-    if(_callback != nil)
+    if(_deviceTokenReceived != nil)
     {
-        _callback();
+        _deviceTokenReceived(_deviceToken);
     }
-}
-
--(void) SetHandleDeviceTokenReceivedCallback:(void(^)())callback
-{
-    _callback = callback;
 }
 
 @end
