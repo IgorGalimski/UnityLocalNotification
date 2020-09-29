@@ -11,6 +11,8 @@
 
 @implementation NotificationCenterDelegate
 
+NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
+
 + (void)load
 {
     static dispatch_once_t onceToken;
@@ -42,7 +44,7 @@
 
 -(void)ScheduleLocalNotification:(LocalNotification*)localNotification
 {
-    NSTimeInterval seconds = localNotification->Seconds;
+    NSTimeInterval seconds = localNotification->FireInSeconds;
     
     NSDate *now = [NSDate date];
     now = [now dateByAddingTimeInterval:seconds];
@@ -71,8 +73,10 @@
    
     if(localNotification->Data != nil)
     {
-        NSDictionary *userInfo = @{
+        NSDictionary *userInfo =
+        @{
             @"data": @(localNotification->Data),
+            FIRE_IN_SECONDS_KEY: @(seconds),
         };
         
         objNotificationContent.userInfo = userInfo;
@@ -108,6 +112,11 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
 {
     UNNotificationContent* content = notification.request.content;
     struct LocalNotification* localNotification = (struct LocalNotification*)malloc(sizeof(*localNotification));
+    
+    NSDate *now = [NSDate date];
+    NSTimeInterval seconds = [now timeIntervalSinceNow];
+    
+    localNotification->FiredSeconds = seconds;
     
     if (content.title != nil && content.title.length > 0)
     {
@@ -160,6 +169,12 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
         NSData* data = [NSJSONSerialization dataWithJSONObject: content.userInfo options: NSJSONWritingPrettyPrinted error: &error];
         
         localNotification->Data = strdup([data bytes]);
+
+        if ([[content.userInfo allKeys] containsObject:FIRE_IN_SECONDS_KEY])
+        {
+            int fireInSeconds = [content.userInfo[FIRE_IN_SECONDS_KEY] intValue];
+            localNotification->FireInSeconds = fireInSeconds;
+        }
     }
     else
     {

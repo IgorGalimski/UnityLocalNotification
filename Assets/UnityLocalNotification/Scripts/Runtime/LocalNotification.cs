@@ -1,5 +1,6 @@
 #if UNITY_IOS || UNITY_EDITOR
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace UnityLocalNotifications
@@ -19,11 +20,18 @@ namespace UnityLocalNotifications
 
         public string ThreadIdentifier;
 
-        public int Seconds;
+        public int FireInSeconds;
+
+        public int FiredSeconds;
 
         public override string ToString()
         {
-            return $"Title: {Title} Body: {Body} Data: {Data}";
+            var fireIn = TimeSpan.FromSeconds(FireInSeconds);
+            
+            var firedTimeSpan = TimeSpan.FromSeconds(FiredSeconds);
+            var fireDateTime = DateTime.Now.Add(firedTimeSpan);
+            
+            return $"Title: {Title} \n Body: {Body} \n FireIn: {fireIn} \n FiredSeconds: {fireDateTime.ToLongTimeString()} \n Data: {Data}";
         }
     }
 }

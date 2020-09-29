@@ -25,5 +25,6 @@ typedef struct LocalNotification
     char* Data;
     char* CategoryIdentifier;
     char* ThreadIdentifier;
-    int Seconds;
+    int FireInSeconds;
+    int FiredSeconds;
 } LocalNotification;
