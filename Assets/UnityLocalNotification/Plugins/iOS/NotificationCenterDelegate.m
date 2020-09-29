@@ -118,7 +118,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if (content.title != nil && content.title.length > 0)
     {
-        localNotification->Title = (char*) [content.title UTF8String];
+        localNotification->Title = strdup([content.title UTF8String]);
     }
     else
     {
@@ -127,7 +127,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if (content.subtitle != nil && content.subtitle.length > 0)
     {
-        localNotification->Subtitle = (char*) [content.subtitle UTF8String];
+        localNotification->Subtitle = strdup([content.subtitle UTF8String]);
     }
     else
     {
@@ -136,7 +136,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if (content.body != nil && content.body.length > 0)
     {
-        localNotification->Body = (char*) [content.body UTF8String];
+        localNotification->Body = strdup([content.body UTF8String]);
     }
     else
     {
@@ -145,7 +145,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if (content.categoryIdentifier != nil && content.categoryIdentifier.length > 0)
     {
-        localNotification->CategoryIdentifier = (char*) [content.categoryIdentifier UTF8String];
+        localNotification->CategoryIdentifier = strdup([content.categoryIdentifier UTF8String]);
     }
     else
     {
@@ -154,7 +154,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
 
     if (content.threadIdentifier != nil && content.threadIdentifier.length > 0)
     {
-        localNotification->ThreadIdentifier = (char*) [content.threadIdentifier UTF8String];
+        localNotification->ThreadIdentifier = strdup([content.threadIdentifier UTF8String]);
     }
     else
     {
@@ -166,7 +166,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
         NSError* error;
         NSData* data = [NSJSONSerialization dataWithJSONObject: content.userInfo options: NSJSONWritingPrettyPrinted error: &error];
         
-        localNotification->Data = (char*)[data bytes];
+        localNotification->Data = strdup([data bytes]);
     }
     else
     {
