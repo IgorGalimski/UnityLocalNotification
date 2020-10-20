@@ -165,8 +165,45 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     
     if(content.userInfo != nil && content.userInfo > 0)
     {
+        NSMutableDictionary *extraDictionary = [NSMutableDictionary dictionaryWithDictionary:content.userInfo];
+        
+        if([[extraDictionary allKeys] containsObject:@"ab"])
+        {
+            [extraDictionary removeObjectForKey:@"ab"];
+        }
+        
+        if([[extraDictionary allKeys] containsObject:@"aps"])
+        {
+            NSDictionary *apsDictionary = [extraDictionary valueForKey:@"aps"];
+            
+            if([[apsDictionary allKeys] containsObject:@"alert"])
+            {
+                NSDictionary *alertDictionary = [apsDictionary valueForKey:@"alert"];
+                
+                if([[alertDictionary allKeys] containsObject:@"title"])
+                {
+                    NSString* title = [alertDictionary valueForKey:@"title"];
+                    if(title != nil && title.length > 0)
+                    {
+                        localNotification->Title = strdup([title UTF8String]);
+                    }
+                }
+                
+                if([[alertDictionary allKeys] containsObject:@"body"])
+                {
+                    NSString* body = [alertDictionary valueForKey:@"body"];
+                    if(body != nil && body.length > 0)
+                    {
+                        localNotification->Body = strdup([body UTF8String]);
+                    }
+                }
+            }
+            
+            [extraDictionary removeObjectForKey:@"aps"];
+        }
+        
         NSError* error;
-        NSData* data = [NSJSONSerialization dataWithJSONObject: content.userInfo options: NSJSONWritingPrettyPrinted error: &error];
+        NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options: NSJSONWritingPrettyPrinted error: &error];
         
         localNotification->Data = strdup([data bytes]);
 
