@@ -35,13 +35,22 @@ namespace UnityLocalNotifications.Sample
         public void Start()
         {
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
-            
+
+#if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
-
+#endif
+            
+#if UNITY_ANDROID
+            LocalNotificationController.Intialize();
+#endif
+            
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
+            
+ #if UNITY_IOS
             LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;
-
+            
             _requestAuthorization.onClick.AddListener(OnAuthorizationRequestHandler);
+#endif
             _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
@@ -50,14 +59,17 @@ namespace UnityLocalNotifications.Sample
         public void OnDestroy()
         {
             LocalNotificationController.NotificationReceivedEvent -= NotificationReceivedHandler;
+#if UNITY_IOS
             LocalNotificationController.DeviceTokenReceived -= DeviceTokenReceived;
             
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
+#endif
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
         }
 
+#if UNITY_IOS
         private void OnAuthorizationRequestHandler()
         {
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
@@ -66,6 +78,7 @@ namespace UnityLocalNotifications.Sample
             
             LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound);
         }
+#endif
 
         private void ScheduleLocalNotificationHandler()
         {
@@ -87,13 +100,15 @@ namespace UnityLocalNotifications.Sample
         {
             LocalNotificationController.RemoveDeliveredNotifications();
         }
-
+        
+#if UNITY_IOS
         private void AuthorizationRequestResultHandler(AuthorizationRequestResult authorizationRequestResult)
-        {
+        { 
             LocalNotificationController.AuthorizationRequestResultEvent -= AuthorizationRequestResultHandler;
 
             _requestStatus.text += authorizationRequestResult.Granted;
         }
+#endif
 
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
