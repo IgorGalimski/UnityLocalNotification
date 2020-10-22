@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
+using UnityLocalNotifications.Android;
 using UnityLocalNotifications.Authorization;
 
 namespace UnityLocalNotifications
@@ -74,7 +75,12 @@ namespace UnityLocalNotifications
             var context = activity.Call<AndroidJavaObject>("getApplicationContext");
             
             _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
-            _notificationManager.CallStatic("Initialize", context, activity);
+            _notificationManager.CallStatic("InitializeInternal", context, activity);
+        }
+
+        public static void CreateNotificationChannel(NotificationChannel notificationChannel)
+        {
+            _notificationManager.CallStatic("CreateChannelInernal", notificationChannel);
         }
 #endif
 
@@ -116,6 +122,11 @@ namespace UnityLocalNotifications
                 
                 ScheduleLocalNotificationInternal(ptr);
 #endif
+#if UNITY_ANDROID
+
+                _notificationManager.CallStatic("");
+#endif
+
             }
             catch (Exception exception)
             {

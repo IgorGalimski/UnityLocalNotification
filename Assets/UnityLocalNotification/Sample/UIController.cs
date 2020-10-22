@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityLocalNotifications.Android;
 using UnityLocalNotifications.Authorization;
 
 namespace UnityLocalNotifications.Sample
@@ -40,6 +41,15 @@ namespace UnityLocalNotifications.Sample
             
 #if UNITY_ANDROID
             LocalNotificationController.Initialize();
+
+            var notificationChannel = new NotificationChannel();
+            notificationChannel.Id = "id";
+            notificationChannel.Name = "notification_channel";
+            notificationChannel.Description = "desc";
+            notificationChannel.Importance = 5;
+            notificationChannel.ShowBadge = true;
+            
+            LocalNotificationController.CreateNotificationChannel(notificationChannel);
 #endif
             
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;

@@ -21,13 +21,13 @@ public class NotificationManager
     private static android.app.NotificationManager _systemNotificationManager;
     private static String _notificationChannelId;
 
-    public static void Initialize(Context context, Class mainActivity)
+    public static void InitializeInternal(Context context, Class mainActivity)
     {
         _context = context;
         _mainActivity = mainActivity;
     }
 
-    public static void CreateChannel(com.igorgalimski.unitylocalnotification.NotificationChannel notificationChannel)
+    public static void CreateChannelInernal(com.igorgalimski.unitylocalnotification.NotificationChannel notificationChannel)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
