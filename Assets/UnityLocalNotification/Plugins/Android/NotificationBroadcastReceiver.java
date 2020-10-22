@@ -1,4 +1,4 @@
-package com.example.notification.ui.login;
+package com.igorgalimski.unitylocalnotification;
 
 import android.app.Notification;
 import android.app.NotificationManager;

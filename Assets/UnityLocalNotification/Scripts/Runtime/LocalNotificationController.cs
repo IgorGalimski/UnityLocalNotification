@@ -46,6 +46,10 @@ namespace UnityLocalNotifications
 
 #endif
         
+#if UNITY_ANDROID
+        private static AndroidJavaClass _notificationManager;
+#endif
+        
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
         
 #if UNITY_IOS
@@ -63,8 +67,14 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-        public static void Intialize()
+        public static void Initialize()
         {
+            var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+            var context = activity.Call<AndroidJavaObject>("getApplicationContext");
+            
+            _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
+            _notificationManager.CallStatic("Initialize", context, activity);
         }
 #endif
 

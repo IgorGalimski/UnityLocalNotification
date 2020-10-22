@@ -1,4 +1,4 @@
-package com.example.notification.ui.login;
+package com.igorgalimski.unitylocalnotification;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -11,7 +11,7 @@ import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.notification.R;
+import com.igorgalimski.unitylocalnotification.R;
 
 public class NotificationManager
 {
@@ -27,7 +27,7 @@ public class NotificationManager
         _mainActivity = mainActivity;
     }
 
-    public static void CreateChannel(com.example.notification.ui.login.NotificationChannel notificationChannel)
+    public static void CreateChannel(com.igorgalimski.unitylocalnotification.NotificationChannel notificationChannel)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
@@ -45,12 +45,14 @@ public class NotificationManager
 
     public static void ScheduleLocalNotificationInternal(LocalNotification localNotification)
     {
+        int icon = _context.getApplicationInfo().icon;
+        
         NotificationCompat.Builder builder = new NotificationCompat.Builder(_context, _notificationChannelId)
                 .setContentTitle(localNotification.Title)
                 .setContentText(localNotification.Body)
-                .setSmallIcon(R.drawable.ic_launcher_foreground);
+                .setSmallIcon(icon);
 
-        Intent intent = new Intent(_context, LoginActivity.class);
+        Intent intent = new Intent(_context, _mainActivity);
         PendingIntent activity = PendingIntent.getActivity(_context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(activity);
 

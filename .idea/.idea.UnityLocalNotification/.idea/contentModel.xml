@@ -14,6 +14,7 @@
           </e>
           <e p="Scripts" t="Include">
             <e p="Editor" t="Include">
+              <e p="GradlePostBuildProcessor.cs" t="Include" />
               <e p="OnPostprocessBuild.cs" t="Include" />
             </e>
             <e p="Runtime" t="Include">

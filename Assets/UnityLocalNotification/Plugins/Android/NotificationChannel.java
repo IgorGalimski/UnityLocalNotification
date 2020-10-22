@@ -1,4 +1,4 @@
-package com.example.notification.ui.login;
+package com.igorgalimski.unitylocalnotification;
 
 public class NotificationChannel
 {

@@ -1,6 +1,4 @@
-﻿#if UNITY_IOS || UNITY_EDITOR
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityLocalNotifications.Authorization;
 
@@ -41,7 +39,7 @@ namespace UnityLocalNotifications.Sample
 #endif
             
 #if UNITY_ANDROID
-            LocalNotificationController.Intialize();
+            LocalNotificationController.Initialize();
 #endif
             
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
@@ -121,5 +119,3 @@ namespace UnityLocalNotifications.Sample
         }
     }   
 }
-
-#endif
