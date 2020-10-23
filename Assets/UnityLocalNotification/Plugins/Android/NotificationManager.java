@@ -6,14 +6,18 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
 
+import java.util.HashSet;
+
 public class NotificationManager
 {
+    private static final String NOTIFICATION_IDS_SHARED_PREFS = "INTENTS";
     private static Context _context;
     private static Class _mainActivity;
 
@@ -22,6 +26,9 @@ public class NotificationManager
     private static String _notificationChannelId;
     private static INotificationReceivedCallback _notificationReceivedCallback;
 
+    private static SharedPreferences _prefs;
+    private static SharedPreferences.Editor _prefsEditor;
+
     public static void InitializeInternal(Context context, Class mainActivity, INotificationReceivedCallback notificationReceivedCallback)
     {
         _context = context;
@@ -29,6 +36,9 @@ public class NotificationManager
         _notificationReceivedCallback = notificationReceivedCallback;
         _alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
         _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        _prefs = context.getSharedPreferences(NOTIFICATION_IDS_SHARED_PREFS, Context.MODE_PRIVATE);
+        _prefsEditor = _prefs.edit();
     }
 
     public static void CreateChannelInternal(INotificationChannel notificationChannel)
@@ -71,17 +81,58 @@ public class NotificationManager
 
         notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
+        int id = (int) futureInMillis;
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds();
         _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+
+        AddPendingNotificationId(id);
     }
 
     public static void RemoveScheduledNotificationsInternal()
     {
-        Intent updateServiceIntent = new Intent(_context, NotificationBroadcastReceiver.class);
-        PendingIntent pendingUpdateIntent = PendingIntent.getService(_context, 0, updateServiceIntent, 0);
-        _alarmManager.cancel(pendingUpdateIntent);
+        for (String id : GetPendingIntents())
+        {
+            //try
+            Intent intent = new Intent(_context, NotificationBroadcastReceiver.class);
+            PendingIntent broadcast = PendingIntent.getBroadcast(_context, Integer.valueOf(id), intent, PendingIntent.FLAG_NO_CREATE);
+
+            if (broadcast != null)
+            {
+                _alarmManager.cancel(broadcast);
+                broadcast.cancel();
+            }
+        }
+
+        UpdatePendingIntents(new HashSet<>());
+    }
+
+    private static HashSet<String> GetPendingIntents()
+    {
+        return new HashSet<>(_prefs.getStringSet(NOTIFICATION_IDS_SHARED_PREFS, new HashSet<String>()));
+    }
+
+    private static void AddPendingNotificationId(int id)
+    {
+        HashSet<String> pendingIntents = GetPendingIntents();
+        pendingIntents.add(String.valueOf(id));
+
+        UpdatePendingIntents(pendingIntents);
+    }
+
+    private static void RemotePendingIntentId(int id)
+    {
+        HashSet<String> pendingIntents = GetPendingIntents();
+        pendingIntents.remove(String.valueOf(id));
+
+        UpdatePendingIntents(pendingIntents);
+    }
+
+    private static void UpdatePendingIntents(HashSet<String> set)
+    {
+        _prefsEditor.putStringSet(NOTIFICATION_IDS_SHARED_PREFS, set);
+        _prefsEditor.apply();
     }
 
     public static void RemoveReceivedNotificationsInternal()
