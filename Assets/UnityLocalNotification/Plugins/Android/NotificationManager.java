@@ -18,6 +18,7 @@ public class NotificationManager
     private static Class _mainActivity;
 
     private static android.app.NotificationManager _systemNotificationManager;
+    private static AlarmManager _alarmManager;
     private static String _notificationChannelId;
     private static INotificationReceivedCallback _notificationReceivedCallback;
 
@@ -26,14 +27,14 @@ public class NotificationManager
         _context = context;
         _mainActivity = mainActivity;
         _notificationReceivedCallback = notificationReceivedCallback;
+        _alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
+        _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     public static void CreateChannelInternal(INotificationChannel notificationChannel)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
-
             _notificationChannelId = notificationChannel.GetId();
 
             NotificationChannel mChannel = new NotificationChannel(_notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
@@ -73,13 +74,14 @@ public class NotificationManager
         PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds();
-        AlarmManager alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
     public static void RemoveScheduledNotificationsInternal()
     {
-        //AlarmManager alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
+        Intent updateServiceIntent = new Intent(_context, NotificationBroadcastReceiver.class);
+        PendingIntent pendingUpdateIntent = PendingIntent.getService(_context, 0, updateServiceIntent, 0);
+        _alarmManager.cancel(pendingUpdateIntent);
     }
 
     public static void RemoveReceivedNotificationsInternal()

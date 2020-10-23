@@ -209,6 +209,9 @@ namespace UnityLocalNotifications
                 RemoveScheduledNotificationsInternal();
 #endif
                 
+#if UNITY_ANDROID
+                _notificationManager.CallStatic("RemoveScheduledNotificationsInternal");
+#endif
             }
             catch (Exception exception)
             {
