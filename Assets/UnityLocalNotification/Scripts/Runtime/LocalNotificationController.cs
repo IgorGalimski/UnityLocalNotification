@@ -85,8 +85,7 @@ namespace UnityLocalNotifications
                 var context = activity.Call<AndroidJavaObject>("getApplicationContext");
                 
                 var notificationReceivedCallback = new NotificationReceivedCallback();
-                NotificationReceivedCallback.NotificationReceived +=
-                    notification => NotificationReceivedEvent?.Invoke(notification);
+                NotificationReceivedCallback.NotificationReceived += OnNotificationReceived;
 
                 _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
                 _notificationManager.CallStatic("InitializeInternal", context, activityClass, notificationReceivedCallback);
@@ -236,6 +235,23 @@ namespace UnityLocalNotifications
                 Debug.LogError("RemoveDeliveredNotifications error: " + exception.Message);
             }
         }
+        
+#if UNITY_ANDROID
+        private static void OnNotificationReceived()
+        {
+            var notification = _notificationManager.GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            var title = notification.Call<string>("GetTitle");
+            var body = notification.Call<string>("GetBody");
+            var data = notification.Call<string>("GetData");
+            
+            var localNotification = new LocalNotification();
+            localNotification.Title = title;
+            localNotification.Body = body;
+            localNotification.Data = data;
+            
+            NotificationReceivedEvent?.Invoke(localNotification);
+        }
+#endif
         
 #if UNITY_IOS
         [MonoPInvokeCallback(typeof(AuthorizationStatusCallbackDelegate))]

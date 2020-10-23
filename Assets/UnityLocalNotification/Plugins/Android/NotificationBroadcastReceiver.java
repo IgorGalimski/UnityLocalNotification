@@ -28,6 +28,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
         String data = localNotificationBundle.getString(DATA);
         ILocalNotification localNotification = new LocalNotification(title, body, data, 0);
 
-        com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived();
+        com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
     }
 }

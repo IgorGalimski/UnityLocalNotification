@@ -28,6 +28,8 @@ public class NotificationManager
 
     private static SharedPreferences _prefs;
     private static SharedPreferences.Editor _prefsEditor;
+    
+    public static ILocalNotification LastReceivedNotification;
 
     public static void InitializeInternal(Context context, Class mainActivity, INotificationReceivedCallback notificationReceivedCallback)
     {
@@ -140,8 +142,10 @@ public class NotificationManager
         _systemNotificationManager.cancelAll();
     }
 
-    public static void NotifyNotificationReceived()
+    public static void NotifyNotificationReceived(ILocalNotification localNotification)
     {
+        LastReceivedNotification = localNotification;
+        
         _notificationReceivedCallback.OnNotificationReceived();
     }
 }
