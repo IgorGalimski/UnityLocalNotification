@@ -82,6 +82,7 @@ public class NotificationManager
         notificationIntent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, bundle);
 
         notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
         int id = (int) futureInMillis;
