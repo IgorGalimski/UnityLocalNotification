@@ -13,7 +13,7 @@ namespace UnityLocalNotifications.Android
 
         public int FireInSeconds;
         
-        public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.LocalNotification")
+        public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotification")
         {
         }
 

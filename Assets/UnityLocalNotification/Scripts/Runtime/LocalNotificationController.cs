@@ -83,9 +83,12 @@ namespace UnityLocalNotifications
                 var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
                 var activityClass = activity.Call<AndroidJavaObject>("getClass");
                 var context = activity.Call<AndroidJavaObject>("getApplicationContext");
+                
+                var notificationReceivedCallback = new NotificationReceivedCallback();
+                NotificationReceivedCallback.NotificationReceived += NotificationReceivedEvent;
 
                 _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
-                _notificationManager.CallStatic("InitializeInternal", context, activityClass);
+                _notificationManager.CallStatic("InitializeInternal", context, activityClass, notificationReceivedCallback);
             }
             catch (Exception e)
             {

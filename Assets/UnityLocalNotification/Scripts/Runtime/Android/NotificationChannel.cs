@@ -11,7 +11,7 @@ namespace UnityLocalNotifications.Android
         public Boolean ShowBadge;
         public int Importance;
         
-        public NotificationChannel() : base("com.igorgalimski.unitylocalnotification.NotificationChannel")
+        public NotificationChannel() : base("com.igorgalimski.unitylocalnotification.INotificationChannel")
         {
         }
 

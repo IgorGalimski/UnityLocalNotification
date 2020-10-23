@@ -1,12 +1,41 @@
 package com.igorgalimski.unitylocalnotification;
 
-public interface LocalNotification
+public class LocalNotification implements ILocalNotification
 {
-    String GetTitle();
+    private String _title;
+    private String _body;
+    private String _data;
+    private int _fireInSeconds;
 
-    String GetBody();
+    public LocalNotification(String title, String body, String data, int fireInSeconds)
+    {
+        _title = title;
+        _body = body;
+        _data = data;
+        _fireInSeconds = fireInSeconds;
+    }
 
-    String GetData();
+    @Override
+    public String GetTitle()
+    {
+        return _title;
+    }
 
-    int GetFireInSeconds();
+    @Override
+    public String GetBody()
+    {
+        return _body;
+    }
+
+    @Override
+    public String GetData()
+    {
+        return _data;
+    }
+
+    @Override
+    public int GetFireInSeconds()
+    {
+        return _fireInSeconds;
+    }
 }

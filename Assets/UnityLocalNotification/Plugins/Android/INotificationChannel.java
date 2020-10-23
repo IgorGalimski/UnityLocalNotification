@@ -1,6 +1,6 @@
 package com.igorgalimski.unitylocalnotification;
 
-public interface NotificationChannel
+public interface INotificationChannel
 {
     String GetId();
     String GetName();
