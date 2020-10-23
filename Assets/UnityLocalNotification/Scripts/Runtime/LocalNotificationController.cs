@@ -2,8 +2,14 @@ using System;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
-using UnityLocalNotifications.Android;
+
+#if UNITY_ANDROID
+using UnityLocalNotifications.Android;    
+#endif
+
+#if UNITY_IOS
 using UnityLocalNotifications.Authorization;
+#endif
 
 namespace UnityLocalNotifications
 {
@@ -123,8 +129,7 @@ namespace UnityLocalNotifications
                 ScheduleLocalNotificationInternal(ptr);
 #endif
 #if UNITY_ANDROID
-
-                _notificationManager.CallStatic("");
+                _notificationManager.CallStatic("ScheduleLocalNotificationInternal", localNotification);
 #endif
 
             }

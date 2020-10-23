@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+
+#if UNITY_ANDROID
 using UnityLocalNotifications.Android;
+#endif
+
+#if UNITY_IOS
 using UnityLocalNotifications.Authorization;
+#endif
 
 namespace UnityLocalNotifications.Sample
 {
@@ -33,6 +39,8 @@ namespace UnityLocalNotifications.Sample
         
         public void Start()
         {
+            _deviceToken.text += "START";
+            
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
 
 #if UNITY_IOS
@@ -40,6 +48,9 @@ namespace UnityLocalNotifications.Sample
 #endif
             
 #if UNITY_ANDROID
+
+            _deviceToken.text += "START";
+            
             LocalNotificationController.Initialize();
 
             var notificationChannel = new NotificationChannel();
