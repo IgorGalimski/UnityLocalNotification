@@ -223,6 +223,9 @@ namespace UnityLocalNotifications
 #if UNITY_IOS
                 RemoveReceivedNotificationsInternal();
 #endif
+#if UNITY_ANDROID
+                _notificationManager.CallStatic("RemoveReceivedNotificationsInternal");
+#endif
             }
             catch (Exception exception)
             {

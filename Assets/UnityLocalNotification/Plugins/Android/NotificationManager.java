@@ -77,6 +77,16 @@ public class NotificationManager
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
+    public static void RemoveScheduledNotificationsInternal()
+    {
+        //AlarmManager alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
+    }
+
+    public static void RemoveReceivedNotificationsInternal()
+    {
+        _systemNotificationManager.cancelAll();
+    }
+
     public static void NotifyNotificationReceived(ILocalNotification localNotification)
     {
         _notificationReceivedCallback.OnNotificationReceived(localNotification);
