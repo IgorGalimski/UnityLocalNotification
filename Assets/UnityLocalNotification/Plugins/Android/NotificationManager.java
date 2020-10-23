@@ -140,8 +140,8 @@ public class NotificationManager
         _systemNotificationManager.cancelAll();
     }
 
-    public static void NotifyNotificationReceived(ILocalNotification localNotification)
+    public static void NotifyNotificationReceived()
     {
-        _notificationReceivedCallback.OnNotificationReceived(localNotification);
+        _notificationReceivedCallback.OnNotificationReceived();
     }
 }

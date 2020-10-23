@@ -11,16 +11,16 @@ namespace UnityLocalNotifications.Android
         {
         }
         
-        public void OnNotificationReceived(AndroidNotification androidNotification)
+        public void OnNotificationReceived()
         {
-            var localNotification = new LocalNotification
-            {
-                Title = androidNotification.Title, 
-                Body = androidNotification.Body
+            var notification = new LocalNotification
+            {/*
+                 Title = localNotification.Call<string>("GetTitle"),
+                 Body = localNotification.Call<string>("GetBody"),
+                 Data = localNotification.CallStatic<string>("GetData")*/
             };
-            androidNotification.Data = androidNotification.Data;
-            
-            NotificationReceived?.Invoke(localNotification);
+
+            NotificationReceived?.Invoke(notification);
         }
     }
 }
