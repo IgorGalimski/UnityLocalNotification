@@ -1,10 +1,10 @@
 package com.igorgalimski.unitylocalnotification;
 
-public class NotificationChannel
+public interface NotificationChannel
 {
-    public String Id;
-    public String Name;
-    public String Description;
-    public Boolean ShowBadge;
-    public int Importance;
+    String GetId();
+    String GetName();
+    String GetDescription();
+    Boolean GetShowBadge();
+    int GetImportance();
 }

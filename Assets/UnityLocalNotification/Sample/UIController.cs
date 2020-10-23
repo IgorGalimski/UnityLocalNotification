@@ -127,16 +127,16 @@ namespace UnityLocalNotifications.Sample
 
             _requestStatus.text += authorizationRequestResult.Granted;
         }
+        
+        private void DeviceTokenReceived(string deviceToken)
+        {
+            _deviceToken.text += deviceToken;
+        }
 #endif
 
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
             _localNotificationReceived.text = localNotification.ToString();
-        }
-
-        private void DeviceTokenReceived(string deviceToken)
-        {
-            _deviceToken.text += deviceToken;
         }
     }   
 }

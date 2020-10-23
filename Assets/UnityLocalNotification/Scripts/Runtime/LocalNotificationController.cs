@@ -4,6 +4,7 @@ using AOT;
 using UnityEngine;
 
 #if UNITY_ANDROID
+using UnityEngine.UI;
 using UnityLocalNotifications.Android;    
 #endif
 
@@ -76,17 +77,30 @@ namespace UnityLocalNotifications
 #if UNITY_ANDROID
         public static void Initialize()
         {
-            var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            var context = activity.Call<AndroidJavaObject>("getApplicationContext");
-            
-            _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
-            _notificationManager.CallStatic("InitializeInternal", context, activity);
+            try
+            {
+                var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+                var activityClass = activity.Call<AndroidJavaObject>("getClass");
+                var context = activity.Call<AndroidJavaObject>("getApplicationContext");
+
+                _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
+                _notificationManager.CallStatic("InitializeInternal", context, activityClass);
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public static void CreateNotificationChannel(NotificationChannel notificationChannel)
         {
-            _notificationManager.CallStatic("CreateChannelInernal", notificationChannel);
+            try
+            {
+                _notificationManager.CallStatic("CreateChannelInternal", notificationChannel);
+            }
+            catch (Exception e)
+            {
+            }
         }
 #endif
 
@@ -129,7 +143,15 @@ namespace UnityLocalNotifications
                 ScheduleLocalNotificationInternal(ptr);
 #endif
 #if UNITY_ANDROID
-                _notificationManager.CallStatic("ScheduleLocalNotificationInternal", localNotification);
+                var androidNotification = new AndroidNotification
+                {
+                    Title = localNotification.Title,
+                    Body = localNotification.Body,
+                    Data = localNotification.Data,
+                    FireInSeconds = localNotification.FireInSeconds
+                };
+
+                _notificationManager.CallStatic("ScheduleLocalNotificationInternal", androidNotification);
 #endif
 
             }

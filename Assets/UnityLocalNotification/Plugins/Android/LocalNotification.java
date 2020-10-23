@@ -1,12 +1,12 @@
 package com.igorgalimski.unitylocalnotification;
 
-public class LocalNotification
+public interface LocalNotification
 {
-    public String Title;
+    String GetTitle();
 
-    public String Body;
+    String GetBody();
 
-    public String Data;
+    String GetData();
 
-    public int FireInSeconds;
+    int GetFireInSeconds();
 }

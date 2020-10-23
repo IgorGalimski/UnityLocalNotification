@@ -11,8 +11,6 @@ import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
 
-import com.igorgalimski.unitylocalnotification.R;
-
 public class NotificationManager
 {
     private static Context _context;
@@ -27,17 +25,17 @@ public class NotificationManager
         _mainActivity = mainActivity;
     }
 
-    public static void CreateChannelInernal(com.igorgalimski.unitylocalnotification.NotificationChannel notificationChannel)
+    public static void CreateChannelInternal(com.igorgalimski.unitylocalnotification.NotificationChannel notificationChannel)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
             _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            _notificationChannelId = notificationChannel.Id;
+            _notificationChannelId = notificationChannel.GetId();
 
-            NotificationChannel mChannel = new NotificationChannel(_notificationChannelId, notificationChannel.Name, notificationChannel.Importance);
-            mChannel.setDescription(notificationChannel.Description);
-            mChannel.setShowBadge(notificationChannel.ShowBadge);
+            NotificationChannel mChannel = new NotificationChannel(_notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
+            mChannel.setDescription(notificationChannel.GetDescription());
+            mChannel.setShowBadge(notificationChannel.GetShowBadge());
 
             _systemNotificationManager.createNotificationChannel(mChannel);
         }
@@ -48,8 +46,8 @@ public class NotificationManager
         int icon = _context.getApplicationInfo().icon;
         
         NotificationCompat.Builder builder = new NotificationCompat.Builder(_context, _notificationChannelId)
-                .setContentTitle(localNotification.Title)
-                .setContentText(localNotification.Body)
+                .setContentTitle(localNotification.GetTitle())
+                .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
         Intent intent = new Intent(_context, _mainActivity);
@@ -62,7 +60,7 @@ public class NotificationManager
         notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.FireInSeconds;
+        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds();
         AlarmManager alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
