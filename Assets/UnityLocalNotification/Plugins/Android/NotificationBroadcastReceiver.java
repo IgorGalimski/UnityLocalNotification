@@ -21,12 +21,8 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         notificationManager.notify(0, notification);
-
-        Bundle localNotificationBundle = intent.getBundleExtra(LOCAL_NOTIFICATION);
-        String title = localNotificationBundle.getString(TITLE);
-        String body = localNotificationBundle.getString(BODY);
-        String data = localNotificationBundle.getString(DATA);
-        ILocalNotification localNotification = new LocalNotification(title, body, data, 0);
+        
+        ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
 
         com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
     }

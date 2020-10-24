@@ -39,8 +39,6 @@ namespace UnityLocalNotifications.Sample
         
         public void Start()
         {
-            _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
-
 #if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
 #endif
@@ -57,6 +55,8 @@ namespace UnityLocalNotifications.Sample
             
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
 #endif
+            
+            _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
             
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
             

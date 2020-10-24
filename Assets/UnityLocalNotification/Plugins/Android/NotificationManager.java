@@ -1,5 +1,6 @@
 package com.igorgalimski.unitylocalnotification;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
+
+import com.unity3d.player.UnityPlayer;
 
 import java.util.HashSet;
 
@@ -110,6 +113,14 @@ public class NotificationManager
 
         UpdatePendingIntents(new HashSet<>());
     }
+    
+    public static ILocalNotification GetOpenedNotificationInternal()
+    {
+        Activity unityPlayerActivity = UnityPlayer.currentActivity;
+        Intent activityIntent = unityPlayerActivity.getIntent();
+        
+        return GetLocalNotification(activityIntent);
+    }
 
     private static HashSet<String> GetPendingIntents()
     {
@@ -141,6 +152,23 @@ public class NotificationManager
     public static void RemoveReceivedNotificationsInternal()
     {
         _systemNotificationManager.cancelAll();
+    }
+    
+    public static ILocalNotification GetLocalNotification(Intent intent)
+    {
+        Bundle localNotificationBundle = intent.getBundleExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION);
+        
+        if(localNotificationBundle == null)
+        {
+            return null;
+        }
+        
+        String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
+        String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
+        String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
+        ILocalNotification localNotification = new LocalNotification(title, body, data, 0);
+        
+        return localNotification;
     }
 
     public static void NotifyNotificationReceived(ILocalNotification localNotification)

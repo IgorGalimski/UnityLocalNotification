@@ -178,6 +178,11 @@ namespace UnityLocalNotifications
                     return localNotification.Value;
                 }
 #endif
+                
+#if UNITY_ANDROID
+                var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
+                return ParseFromAndroidJavaObject(notificationIntent);
+#endif
             }
             catch (Exception exception)
             {
@@ -240,6 +245,17 @@ namespace UnityLocalNotifications
         private static void OnNotificationReceived()
         {
             var notification = _notificationManager.GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            
+            NotificationReceivedEvent?.Invoke((LocalNotification)ParseFromAndroidJavaObject(notification));
+        }
+
+        private static LocalNotification? ParseFromAndroidJavaObject(AndroidJavaObject notification)
+        {
+            if (notification == null)
+            {
+                return null;
+            }
+            
             var title = notification.Call<string>("GetTitle");
             var body = notification.Call<string>("GetBody");
             var data = notification.Call<string>("GetData");
@@ -248,8 +264,8 @@ namespace UnityLocalNotifications
             localNotification.Title = title;
             localNotification.Body = body;
             localNotification.Data = data;
-            
-            NotificationReceivedEvent?.Invoke(localNotification);
+
+            return localNotification;
         }
 #endif
         
