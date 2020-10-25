@@ -34,10 +34,20 @@ public class NotificationManager
     
     public static ILocalNotification LastReceivedNotification;
 
-    public static void InitializeInternal(Context context, Class mainActivity, INotificationReceivedCallback notificationReceivedCallback)
+    public static void InitializeInternal(Context context, String mainActivity, INotificationReceivedCallback notificationReceivedCallback)
     {
         _context = context;
-        _mainActivity = mainActivity;
+        
+        try
+        {
+            _mainActivity = Class.forName(mainActivity);
+        } 
+        catch (ClassNotFoundException ignored)
+        {
+            UnityPlayerActivity unityPlayerActivity = (UnityPlayerActivity)UnityPlayer.currentActivity;
+            _mainActivity = unityPlayerActivity.getClass();
+        }
+
         _notificationReceivedCallback = notificationReceivedCallback;
         _alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
         _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -183,6 +193,9 @@ public class NotificationManager
     {
         LastReceivedNotification = localNotification;
         
-        _notificationReceivedCallback.OnNotificationReceived();
+        if(_notificationReceivedCallback != null)
+        {
+            _notificationReceivedCallback.OnNotificationReceived();
+        }
     }
 }
