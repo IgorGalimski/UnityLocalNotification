@@ -9,7 +9,7 @@ namespace UnityLocalNotifications.Android
         public String Name;
         public String Description;
         public Boolean ShowBadge;
-        public int Importance;
+        public Importance Importance;
         
         public NotificationChannel() : base("com.igorgalimski.unitylocalnotification.INotificationChannel")
         {
@@ -19,6 +19,6 @@ namespace UnityLocalNotifications.Android
         public String GetName() => Name;
         public String GetDescription() => Description;
         public Boolean GetShowBadge() => ShowBadge;
-        public int GetImportance() => Importance;
+        public int GetImportance() => (int)Importance;
     }
 }

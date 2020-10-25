@@ -20,6 +20,7 @@
             <e p="Runtime" t="Include">
               <e p="Android" t="Include">
                 <e p="AndroidNotification.cs" t="Include" />
+                <e p="Importance.cs" t="Include" />
                 <e p="NotificationChannel.cs" t="Include" />
                 <e p="NotificationReceivedCallback.cs" t="Include" />
               </e>
