@@ -63,13 +63,16 @@ public class NotificationManager
     public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
     {
         int icon = _context.getApplicationInfo().icon;
-        
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(_context, _notificationChannelId)
                 .setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
+        Bundle notificationBundle = GetNotificationBundle(localNotification);
+
         Intent intent = new Intent(_context, _mainActivity);
+        intent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
         PendingIntent activity = PendingIntent.getActivity(_context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(activity);
 
@@ -77,12 +80,7 @@ public class NotificationManager
 
         Intent notificationIntent = new Intent(_context, NotificationBroadcastReceiver.class);
 
-        Bundle bundle = new Bundle();
-        bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
-        bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
-        bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());
-
-        notificationIntent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, bundle);
+        notificationIntent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
 
         notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -94,6 +92,16 @@ public class NotificationManager
         _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
         AddPendingNotificationId(id);
+    }
+
+    private static Bundle GetNotificationBundle(ILocalNotification localNotification)
+    {
+        Bundle bundle = new Bundle();
+        bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
+        bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
+        bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());
+
+        return bundle;
     }
 
     public static void RemoveScheduledNotificationsInternal()
