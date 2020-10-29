@@ -93,7 +93,6 @@ NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
     }
     
     objNotificationContent.sound = [UNNotificationSound defaultSound];
-    objNotificationContent.badge = @([[UIApplication sharedApplication] applicationIconBadgeNumber] + 1);
 
     UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:NO];
     
@@ -105,6 +104,45 @@ NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error)
     {
+        UpdateBugdeCounter();
+    }];
+}
+
+void UpdateBugdeCounter()
+{
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+        dispatch_async(dispatch_get_main_queue(), ^
+        {
+            [center removeAllPendingNotificationRequests];
+
+            NSArray *sortedArray = [requests sortedArrayUsingComparator:^NSComparisonResult(UNNotificationRequest *obj1, UNNotificationRequest *obj2) {
+        
+                NSDictionary *userInfo1 = obj1.content.userInfo;
+                NSDictionary *userInfo2 = obj2.content.userInfo;
+                
+                int seconds1 = [userInfo1[FIRE_IN_SECONDS_KEY] intValue];
+                int seconds2 = [userInfo2[FIRE_IN_SECONDS_KEY] intValue];
+                
+                return seconds1 > seconds2;
+            }];
+            
+            long badgeNbr = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+            
+            for (UNNotificationRequest *request in sortedArray)
+            {
+                UNMutableNotificationContent *content = request.content.mutableCopy;
+                content.badge = [NSNumber numberWithLong:badgeNbr++];
+
+                UNNotificationRequest *newRequest = [UNNotificationRequest requestWithIdentifier:[request identifier]
+                                                                                     content:content
+                                                                                         trigger:[request trigger]];
+                
+                [center addNotificationRequest:newRequest withCompletionHandler:^(NSError * _Nullable error)
+                {
+                }];
+            }
+        });
     }];
 }
 
