@@ -70,17 +70,16 @@ NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
     {
         objNotificationContent.body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
     }
+
+    NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] init];
+    [userInfo setObject: @(seconds) forKey:FIRE_IN_SECONDS_KEY];
    
     if(localNotification->Data != nil)
     {
-        NSDictionary *userInfo =
-        @{
-            @"data": @(localNotification->Data),
-            FIRE_IN_SECONDS_KEY: @(seconds),
-        };
-        
-        objNotificationContent.userInfo = userInfo;
+        [userInfo setObject:@(localNotification->Data) forKey:@"data"];
     }
+    
+    objNotificationContent.userInfo = userInfo;
     
     if(localNotification->CategoryIdentifier != nil)
     {
