@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 #if UNITY_ANDROID
@@ -13,6 +14,11 @@ namespace UnityLocalNotifications.Sample
 {
     public class UIController : MonoBehaviour
     {
+        private const string NOTIFICATION_ENABLED_TEXT = "Notifications enabled: {0}";
+        
+        [SerializeField] 
+        private Text _areNotificatonsEnabled;
+        
         [SerializeField] 
         private Text _isOpenedByNotification = default;
         
@@ -41,6 +47,9 @@ namespace UnityLocalNotifications.Sample
         {
 #if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
+            LocalNotificationController.RequestNotificationEnabledStatus();
+
+            LocalNotificationController.NotificationEnabledStatusReceived += OnNotificationStatusEnabledHandler;
 #endif
             
 #if UNITY_ANDROID
@@ -76,6 +85,8 @@ namespace UnityLocalNotifications.Sample
         {
             LocalNotificationController.NotificationReceivedEvent -= NotificationReceivedHandler;
 #if UNITY_IOS
+            LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
+            
             LocalNotificationController.DeviceTokenReceived -= DeviceTokenReceived;
             
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
@@ -86,6 +97,14 @@ namespace UnityLocalNotifications.Sample
         }
 
 #if UNITY_IOS
+
+        private void OnNotificationStatusEnabledHandler(bool notificationEnabled)
+        {
+            LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
+            
+            _areNotificatonsEnabled.text = string.Format(NOTIFICATION_ENABLED_TEXT, notificationEnabled.ToString());
+        }
+        
         private void OnAuthorizationRequestHandler()
         {
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);

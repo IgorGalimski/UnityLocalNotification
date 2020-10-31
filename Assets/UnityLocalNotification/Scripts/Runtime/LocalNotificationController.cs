@@ -28,7 +28,8 @@ namespace UnityLocalNotifications
         private static extern void ClearBadgeInternal();
 
         [DllImport("__Internal")]
-        private static extern void InitializeInternal(int notificationOptions, LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
+        private static extern void InitializeInternal(int notificationOptions,
+            LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -42,15 +43,25 @@ namespace UnityLocalNotifications
         [DllImport("__Internal")]
         private static extern void RemoveReceivedNotificationsInternal();
 
+        [DllImport("__Internal")]
+        private static extern bool AreNotificationEnabledInternal();
+
+        [DllImport("__Internal")]
+        private static extern void RequestNotificationEnabledStatusInternal(RequestNotificationsEnabledStatusDelegate notificationsEnabledStatusDelegate);
+
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
         private delegate void LocalNotificationDelegate(LocalNotification localNotification);
 
         private delegate void DeviceTokenDelegate(string localNotification);
 
+        private delegate void RequestNotificationsEnabledStatusDelegate(bool enabled);
+
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
 
         public static event Action<string> DeviceTokenReceived = deviceToken => { };
+
+        public static event Action<bool> NotificationEnabledStatusReceived = enabled => { };
 
 #endif
         
@@ -70,6 +81,18 @@ namespace UnityLocalNotifications
             catch (Exception exception)
             {
                 Debug.LogError("Initialize error: " + exception.Message);
+            }
+        }
+
+        public static void RequestNotificationEnabledStatus()
+        {
+            try
+            {
+                RequestNotificationEnabledStatusInternal(DeviceTokenReceivedCallback);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("RequestNotificationEnabledStatus error: " + exception.Message);
             }
         }
 #endif
@@ -240,6 +263,25 @@ namespace UnityLocalNotifications
                 Debug.LogError("RemoveDeliveredNotifications error: " + exception.Message);
             }
         }
+
+        public static bool AreNotificationsEnabled()
+        {
+            try
+            {
+#if UNITY_IOS
+                return AreNotificationEnabledInternal();
+#endif
+#if UNITY_ANDROID
+                _notificationManager.CallStatic("");
+#endif
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("RemoveDeliveredNotifications error: " + exception.Message);
+            }
+
+            return false;
+        }
         
 #if UNITY_ANDROID
         private static void OnNotificationReceived()
@@ -286,6 +328,12 @@ namespace UnityLocalNotifications
         private static void DeviceTokenReceivedCallback(string deviceToken)
         {
             DeviceTokenReceived(deviceToken);
+        }
+        
+        [MonoPInvokeCallback(typeof(RequestNotificationsEnabledStatusDelegate))]
+        private static void DeviceTokenReceivedCallback(bool enabled)
+        {
+            NotificationEnabledStatusReceived(enabled);
         }
 #endif
     }

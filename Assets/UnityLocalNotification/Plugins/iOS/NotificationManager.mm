@@ -12,12 +12,34 @@
 
 extern "C"
 {
+    typedef void (*RequestNotificationsEnabledStatusDelegate)(bool enabled);
+
+    bool notificationsEnabled = false;
+
     void InitializeInternal(NSInteger notificationOptions, NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
     {
         [NotificationCenterDelegate sharedInstance].notificationReceived = notificationReceived;
         [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
         
         [DeviceTokenHandler sharedInstance].deviceTokenReceived = deviceTokenReceived;
+    }
+
+    void RequestNotificationEnabledStatusInternal(RequestNotificationsEnabledStatusDelegate notificationsEnabledStatusDelegate)
+    {
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings)
+         {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                bool notificationsEnabled = settings.alertSetting == UNNotificationSettingEnabled;
+                
+                notificationsEnabledStatusDelegate(notificationsEnabled);
+            });
+         }];
+    }
+
+    bool AreNotificationEnabledInternal()
+    {
+        return notificationsEnabled;
     }
 
     void ClearBadgeInternal()
@@ -32,13 +54,13 @@ extern "C"
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[UIApplication sharedApplication] registerForRemoteNotifications];
-                });
 
                 struct AuthorizationRequestResult* result = (struct AuthorizationRequestResult*)malloc(sizeof(*result));
                 result->granted = granted;
                 result->error = (char*)[[error localizedDescription]cStringUsingEncoding: NSUTF8StringEncoding];
             
                 callback(result);
+                });
             }];
     }
 
