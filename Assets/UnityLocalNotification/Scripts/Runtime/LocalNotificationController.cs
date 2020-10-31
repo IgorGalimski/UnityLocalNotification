@@ -272,7 +272,7 @@ namespace UnityLocalNotifications
                 return AreNotificationEnabledInternal();
 #endif
 #if UNITY_ANDROID
-                _notificationManager.CallStatic("");
+                return _notificationManager.CallStatic<bool>("AreNotificationEnabledInternal");
 #endif
             }
             catch (Exception exception)

@@ -55,6 +55,8 @@ namespace UnityLocalNotifications.Sample
 #if UNITY_ANDROID
             LocalNotificationController.Initialize();
 
+            UpdateNotificationStatus();
+
             var notificationChannel = new NotificationChannel();
             notificationChannel.Id = "id";
             notificationChannel.Name = "notification_channel";
@@ -112,6 +114,13 @@ namespace UnityLocalNotifications.Sample
             LocalNotificationController.AuthorizationRequestResultEvent += AuthorizationRequestResultHandler;
             
             LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound);
+        }
+#endif
+        
+#if UNITY_ANDROID
+        private void UpdateNotificationStatus()
+        {
+            _areNotificatonsEnabled.text = string.Format(NOTIFICATION_ENABLED_TEXT, LocalNotificationController.AreNotificationsEnabled().ToString());
         }
 #endif
 

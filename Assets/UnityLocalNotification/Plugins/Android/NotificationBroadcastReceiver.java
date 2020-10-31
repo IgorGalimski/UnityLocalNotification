@@ -17,6 +17,11 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
     public void onReceive(Context context, Intent intent)
     {
+        if(!com.igorgalimski.unitylocalnotification.NotificationManager.AreNotificationEnabledInternal())
+        {
+            return;
+        }
+        
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Notification notification = intent.getParcelableExtra(NOTIFICATION);

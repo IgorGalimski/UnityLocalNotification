@@ -200,4 +200,14 @@ public class NotificationManager
             _notificationReceivedCallback.OnNotificationReceived();
         }
     }
+    
+    public static boolean AreNotificationEnabledInternal()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) 
+        {
+            return _systemNotificationManager.areNotificationsEnabled();
+        }
+        
+        return false;
+    }
 }
