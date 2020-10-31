@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace UnityLocalNotifications.Android
 {
@@ -10,15 +11,32 @@ namespace UnityLocalNotifications.Android
         public String Description;
         public Boolean ShowBadge;
         public Importance Importance;
+        public bool Vibration;
+        public bool Lights;
         
         public NotificationChannel() : base("com.igorgalimski.unitylocalnotification.INotificationChannel")
         {
         }
 
-        public String GetId() => Id;
-        public String GetName() => Name;
-        public String GetDescription() => Description;
-        public Boolean GetShowBadge() => ShowBadge;
+        [Preserve]
+        public string GetId() => Id;
+        
+        [Preserve]
+        public string GetName() => Name;
+        
+        [Preserve]
+        public string GetDescription() => Description;
+        
+        [Preserve]
+        public bool GetShowBadge() => ShowBadge;
+        
+        [Preserve]
         public int GetImportance() => (int)Importance;
+
+        [Preserve]
+        public bool GetVibration() => Vibration;
+
+        [Preserve]
+        public bool GetLight() => Lights;
     }
 }

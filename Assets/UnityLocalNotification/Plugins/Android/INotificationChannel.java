@@ -7,4 +7,6 @@ public interface INotificationChannel
     String GetDescription();
     Boolean GetShowBadge();
     int GetImportance();
+    Boolean GetVibration();
+    Boolean GetLight();
 }

@@ -52,6 +52,8 @@ namespace UnityLocalNotifications.Sample
             notificationChannel.Description = "desc";
             notificationChannel.Importance = Importance.High;
             notificationChannel.ShowBadge = true;
+            notificationChannel.Lights = true;
+            notificationChannel.Vibration = true;
             
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
 #endif

@@ -62,11 +62,13 @@ public class NotificationManager
         {
             _notificationChannelId = notificationChannel.GetId();
 
-            NotificationChannel mChannel = new NotificationChannel(_notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
-            mChannel.setDescription(notificationChannel.GetDescription());
-            mChannel.setShowBadge(notificationChannel.GetShowBadge());
+            NotificationChannel channel = new NotificationChannel(_notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
+            channel.setDescription(notificationChannel.GetDescription());
+            channel.setShowBadge(notificationChannel.GetShowBadge());
+            channel.enableLights(notificationChannel.GetLight());
+            channel.enableVibration(notificationChannel.GetVibration());
 
-            _systemNotificationManager.createNotificationChannel(mChannel);
+            _systemNotificationManager.createNotificationChannel(channel);
         }
     }
 
