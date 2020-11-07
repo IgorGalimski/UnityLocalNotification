@@ -132,7 +132,7 @@ public class NotificationManager
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
-        int id = (int) futureInMillis;
+        int id = localNotification.GetID() == null ? (int) futureInMillis : localNotification.GetID().hashCode();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
@@ -216,11 +216,12 @@ public class NotificationManager
         {
             return null;
         }
-        
+
+        String id = localNotificationBundle.getString(NotificationBroadcastReceiver.ID);
         String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
         String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
         String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
-        ILocalNotification localNotification = new LocalNotification(title, body, data, 0);
+        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0);
         
         return localNotification;
     }

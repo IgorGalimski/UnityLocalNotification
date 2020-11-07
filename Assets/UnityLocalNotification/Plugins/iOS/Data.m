@@ -19,6 +19,7 @@ typedef struct AuthorizationRequestResult
 
 typedef struct LocalNotification
 {
+    char* ID;
     char* Title;
     char* Subtitle;
     char* Body;

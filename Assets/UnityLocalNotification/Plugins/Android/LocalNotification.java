@@ -5,24 +5,33 @@ import org.json.JSONObject;
 
 public class LocalNotification implements ILocalNotification
 {
+    private static final String ID_KEY = "id";
     private static final String TITLE_KEY = "title";
     private static final String BODY_KEY = "body";
     private static final String DATA_KEY = "data";
     private static final String SECONDS_KEY = "seconds";
 
+    private String _id;
     private String _title;
     private String _body;
     private String _data;
     private int _fireInSeconds;
 
-    public LocalNotification(String title, String body, String data, int fireInSeconds)
+    public LocalNotification(String id, String title, String body, String data, int fireInSeconds)
     {
+        _id = id;
         _title = title;
         _body = body;
         _data = data;
         _fireInSeconds = fireInSeconds;
     }
 
+    @Override
+    public String GetID()
+    {
+        return _id;
+    }
+    
     @Override
     public String GetTitle()
     {
@@ -53,6 +62,7 @@ public class LocalNotification implements ILocalNotification
         JSONObject jsonObject = new JSONObject();
         try
         {
+            jsonObject.put(ID_KEY, _id);
             jsonObject.put(TITLE_KEY, _title);
             jsonObject.put(BODY_KEY, _body);
             jsonObject.put(DATA_KEY, _data);
@@ -71,17 +81,19 @@ public class LocalNotification implements ILocalNotification
             return null;
         }
 
+        String id = null;
         String title = null;
         String body = null;
         String data = null;
         int seconds = 0;
         try
         {
-            if(!jsonObject.has(TITLE_KEY))
+            if(!jsonObject.has(ID_KEY))
             {
                 return null;
             }
 
+            id = jsonObject.getString(ID_KEY);
             title = jsonObject.getString(TITLE_KEY);
             body = jsonObject.getString(BODY_KEY);
             data = jsonObject.getString(DATA_KEY);
@@ -92,7 +104,7 @@ public class LocalNotification implements ILocalNotification
             e.printStackTrace();
         }
 
-        LocalNotification localNotification = new LocalNotification(title, body, data, seconds);
+        LocalNotification localNotification = new LocalNotification(id, title, body, data, seconds);
         return localNotification;
     }
 }

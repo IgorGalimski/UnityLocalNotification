@@ -5,6 +5,8 @@ namespace UnityLocalNotifications.Android
 {
     public class AndroidNotification : AndroidJavaProxy
     {
+        public String ID;
+        
         public String Title;
 
         public String Body;
@@ -16,6 +18,8 @@ namespace UnityLocalNotifications.Android
         public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotification")
         {
         }
+
+        public String GetID() => ID;
 
         public String GetTitle() => Title;
 

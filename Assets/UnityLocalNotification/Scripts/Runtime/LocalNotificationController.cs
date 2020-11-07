@@ -163,6 +163,8 @@ namespace UnityLocalNotifications
         {
             try
             {
+                localNotification.ID = localNotification.ID ?? Guid.NewGuid().ToString();
+                
 #if UNITY_IOS
                 var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(localNotification));
                 Marshal.StructureToPtr(localNotification, ptr, false);

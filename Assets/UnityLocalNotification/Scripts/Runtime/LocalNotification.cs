@@ -6,6 +6,8 @@ namespace UnityLocalNotifications
     [StructLayout(LayoutKind.Sequential)]
     public struct LocalNotification
     {
+        public string ID;
+        
         public string Title;
         
         public string Subtitle;

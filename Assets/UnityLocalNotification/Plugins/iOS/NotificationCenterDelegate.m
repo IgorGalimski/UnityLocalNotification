@@ -94,10 +94,20 @@ NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
     objNotificationContent.sound = [UNNotificationSound defaultSound];
 
     UNCalendarNotificationTrigger *trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:NO];
-    
-    NSUUID *uuid = [NSUUID UUID];
 
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[uuid UUIDString]
+    NSString* notificationId;
+
+    if(localNotification->ID != nil)
+    {
+        notificationId = [NSString stringWithUTF8String:localNotification->ID];
+    }
+    else
+    {
+        NSUUID *uuid = [NSUUID UUID];
+        notificationId = [uuid UUIDString];
+    }
+
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId
                                                                          content:objNotificationContent trigger:trigger];
     
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
