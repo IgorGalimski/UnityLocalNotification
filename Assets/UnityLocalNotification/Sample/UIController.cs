@@ -18,6 +18,9 @@ namespace UnityLocalNotifications.Sample
         
         [SerializeField] 
         private Text _areNotificatonsEnabled;
+
+        [SerializeField] 
+        private Text _receivedNotifications;
         
         [SerializeField] 
         private Text _isOpenedByNotification = default;
@@ -67,6 +70,8 @@ namespace UnityLocalNotifications.Sample
             notificationChannel.Vibration = true;
             
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
+
+            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
 #endif
             
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;

@@ -16,11 +16,17 @@ import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class NotificationManager
 {
     private static final String NOTIFICATION_IDS_SHARED_PREFS = "INTENTS";
+    private static final String RECEIVED_NOTIFICATION_IDS_SHARED_PREFS = "RECEIVED_INTENTS";
     private static Context _context;
     private static Class _mainActivity;
 
@@ -28,6 +34,9 @@ public class NotificationManager
     private static AlarmManager _alarmManager;
     private static String _notificationChannelId;
     private static INotificationReceivedCallback _notificationReceivedCallback;
+    private static List<ILocalNotification> _receivedNotifications;
+
+    private static JSONArray _receivedNotificationsArray;
 
     private static SharedPreferences _prefs;
     private static SharedPreferences.Editor _prefsEditor;
@@ -54,6 +63,31 @@ public class NotificationManager
 
         _prefs = context.getSharedPreferences(NOTIFICATION_IDS_SHARED_PREFS, Context.MODE_PRIVATE);
         _prefsEditor = _prefs.edit();
+
+        //method
+        try
+        {
+            _receivedNotificationsArray = new JSONArray();
+
+            _receivedNotifications = new ArrayList<>();
+            String receivedNotificationsList = _prefs.getString(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS, "[{}]");
+
+            JSONArray jsonArray = new JSONArray(receivedNotificationsList);
+            for (int i=0; i < jsonArray.length(); i++)
+            {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                ILocalNotification localNotification = LocalNotification.FromJSONObject(jsonObject);
+
+                if(localNotification != null)
+                {
+                    _receivedNotifications.add(localNotification);
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+
+        }
     }
 
     public static void CreateChannelInternal(INotificationChannel notificationChannel)
@@ -199,6 +233,27 @@ public class NotificationManager
         {
             _notificationReceivedCallback.OnNotificationReceived();
         }
+
+        _receivedNotificationsArray.put(localNotification.GetAsObject());
+        _receivedNotifications.add(localNotification);
+
+        String notificationArrayString = _receivedNotificationsArray.toString();
+
+        _prefsEditor.putString(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS, notificationArrayString);
+        _prefsEditor.apply();
+    }
+
+    public static List<ILocalNotification> GetReceivedNotificationsListInternal()
+    {
+        return _receivedNotifications;
+    }
+
+    public static void ClearReceivedNotificationsListInternal()
+    {
+         _receivedNotifications.clear();
+
+        _prefsEditor.remove(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS);
+        _prefsEditor.apply();
     }
     
     public static boolean AreNotificationEnabledInternal()

@@ -1,5 +1,7 @@
 package com.igorgalimski.unitylocalnotification;
 
+import org.json.JSONObject;
+
 public interface ILocalNotification
 {
     String GetTitle();
@@ -9,4 +11,6 @@ public interface ILocalNotification
     String GetData();
 
     int GetFireInSeconds();
+
+    JSONObject GetAsObject();
 }

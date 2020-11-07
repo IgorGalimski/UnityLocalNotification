@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
@@ -204,7 +205,7 @@ namespace UnityLocalNotifications
                 
 #if UNITY_ANDROID
                 var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
-                return ParseFromAndroidJavaObject(notificationIntent);
+                return ParseNotificationFromAndroidJavaObject(notificationIntent);
 #endif
             }
             catch (Exception exception)
@@ -213,6 +214,45 @@ namespace UnityLocalNotifications
             }
             
             return null;
+        }
+
+        public static List<LocalNotification> GetReceivedNotifications()
+        {
+            try
+            {
+#if UNITY_IOS
+
+#endif
+                
+#if UNITY_ANDROID
+                var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
+                return ParseNotificationsFromAndroidJavaObject(notificationIntent);
+#endif
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("GetReceivedNotifications error: " + exception.Message);
+            }
+            
+            return null;
+        }
+        
+        public static void ClearReceivedNotifications()
+        {
+            try
+            {
+#if UNITY_IOS
+
+#endif
+                
+#if UNITY_ANDROID
+                _notificationManager.CallStatic("ClearReceivedNotificationsListInternal");
+#endif
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("ClearReceivedNotifications error: " + exception.Message);
+            }
         }
 
         public static void ClearBadge()
@@ -288,10 +328,10 @@ namespace UnityLocalNotifications
         {
             var notification = _notificationManager.GetStatic<AndroidJavaObject>("LastReceivedNotification");
             
-            NotificationReceivedEvent?.Invoke((LocalNotification)ParseFromAndroidJavaObject(notification));
+            NotificationReceivedEvent?.Invoke((LocalNotification)ParseNotificationFromAndroidJavaObject(notification));
         }
 
-        private static LocalNotification? ParseFromAndroidJavaObject(AndroidJavaObject notification)
+        private static LocalNotification? ParseNotificationFromAndroidJavaObject(AndroidJavaObject notification)
         {
             if (notification == null)
             {
@@ -308,6 +348,27 @@ namespace UnityLocalNotifications
             localNotification.Data = data;
 
             return localNotification;
+        }
+
+        private static List<LocalNotification> ParseNotificationsFromAndroidJavaObject(AndroidJavaObject notificationsJavaObject)
+        {
+            var notifications = new List<LocalNotification>();
+
+            var count = notificationsJavaObject.Call<int>("size");
+            
+            for (int i = 0; i < count; i++)
+            {
+                var notification = notificationsJavaObject.Call<AndroidJavaObject>("get", i);
+
+                var localNotification = ParseNotificationFromAndroidJavaObject(notification);
+
+                if (localNotification.HasValue)
+                {
+                    notifications.Add(localNotification.Value);
+                }
+            }
+
+            return notifications;
         }
 #endif
         
