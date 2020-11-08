@@ -50,6 +50,7 @@ namespace UnityLocalNotifications.Sample
         {
 #if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
+            LocalNotificationController.UpdatePreviousPendingNotifications();
             LocalNotificationController.RequestNotificationEnabledStatus();
 
             LocalNotificationController.NotificationEnabledStatusReceived += OnNotificationStatusEnabledHandler;
@@ -71,8 +72,9 @@ namespace UnityLocalNotifications.Sample
             
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
 
-            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
+            
 #endif
+            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
             
             _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
             
@@ -101,6 +103,20 @@ namespace UnityLocalNotifications.Sample
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
+        }
+
+        public void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                LocalNotificationController.UpdatePreviousPendingNotifications();
+            }
+            else
+            {
+                LocalNotificationController.SavePendingNotifications();
+                
+                LocalNotificationController.ClearReceivedNotifications();
+            }
         }
 
 #if UNITY_IOS

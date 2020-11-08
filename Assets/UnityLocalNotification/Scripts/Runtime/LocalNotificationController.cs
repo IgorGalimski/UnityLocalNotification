@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
-
+using UnityLocalNotifications.iOS;
 #if UNITY_ANDROID
 using UnityEngine.UI;
 using UnityLocalNotifications.Android;    
@@ -18,6 +19,11 @@ namespace UnityLocalNotifications
     public static class LocalNotificationController
     {
 #if UNITY_IOS
+
+        private const string PENDING_NOTIFICATIONS_KEY = nameof(PENDING_NOTIFICATIONS_KEY);
+
+        private static LocalNotificationCollection _previousPendingNotifications;
+        
         [DllImport("__Internal")]
         private static extern void RequestAuthorizationInternal(int options,
             AuthorizationStatusCallbackDelegate authorizationStatusCallbackDelegate);
@@ -49,6 +55,12 @@ namespace UnityLocalNotifications
 
         [DllImport("__Internal")]
         private static extern void RequestNotificationEnabledStatusInternal(RequestNotificationsEnabledStatusDelegate notificationsEnabledStatusDelegate);
+
+        [DllImport("__Internal")]
+        private static extern int GetPendingNotificationsCountInternal();
+
+        [DllImport("__Internal")]
+        private static extern IntPtr GetPendingNotificationInternal(int index);
 
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
@@ -94,6 +106,43 @@ namespace UnityLocalNotifications
             catch (Exception exception)
             {
                 Debug.LogError("RequestNotificationEnabledStatus error: " + exception.Message);
+            }
+        }
+
+        public static void UpdatePreviousPendingNotifications()
+        {
+            try
+            {
+                var previousPendingNotificationsString = PlayerPrefs.GetString(PENDING_NOTIFICATIONS_KEY);
+                if (!string.IsNullOrEmpty(previousPendingNotificationsString))
+                {
+                    _previousPendingNotifications = JsonUtility.FromJson<LocalNotificationCollection>(previousPendingNotificationsString);
+                }
+                else
+                {
+                    _previousPendingNotifications = new LocalNotificationCollection();
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("ParsePreviousPendingNotifications error: " + exception.Message);
+            }
+        }
+
+        public static void SavePendingNotifications()
+        {
+            try
+            {
+                var pendingNotifications = GetPendingNotifications();
+
+                var pendingNotificationsString = JsonUtility.ToJson(pendingNotifications);
+                
+                PlayerPrefs.SetString(PENDING_NOTIFICATIONS_KEY, pendingNotificationsString);
+                PlayerPrefs.Save();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("SavePendingNotifications error: " + exception.Message);
             }
         }
 #endif
@@ -223,11 +272,17 @@ namespace UnityLocalNotifications
             try
             {
 #if UNITY_IOS
+                var deliveredNotifications = new List<LocalNotification>();
 
+                deliveredNotifications =
+                    _previousPendingNotifications.LocalNotifications().Except(GetPendingNotifications(), new LocalNotificationEqualityComparer()).ToList();
+
+                return deliveredNotifications;
 #endif
-                
+
 #if UNITY_ANDROID
-                var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
+                var notificationIntent =
+ _notificationManager.CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
                 return ParseNotificationsFromAndroidJavaObject(notificationIntent);
 #endif
             }
@@ -237,6 +292,26 @@ namespace UnityLocalNotifications
             }
             
             return null;
+        }
+
+        private static List<LocalNotification> GetPendingNotifications()
+        {
+            var size = GetPendingNotificationsCountInternal();
+            var pendingNotifications = new List<LocalNotification>();
+                
+            for (var i = 0; i < size; i++)
+            {
+                LocalNotification data;
+                var ptr = GetPendingNotificationInternal(i);
+
+                if (ptr != IntPtr.Zero)
+                {
+                    data = (LocalNotification)Marshal.PtrToStructure(ptr, typeof(LocalNotification));
+                    pendingNotifications.Add(data);
+                }
+            }
+
+            return pendingNotifications;
         }
         
         public static void ClearReceivedNotifications()

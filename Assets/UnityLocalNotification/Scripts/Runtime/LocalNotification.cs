@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace UnityLocalNotifications
 {
     [StructLayout(LayoutKind.Sequential)]
+    [Serializable]
     public struct LocalNotification
     {
         public string ID;
@@ -32,6 +33,11 @@ namespace UnityLocalNotifications
             var fireDateTime = DateTime.Now.Add(firedTimeSpan);
             
             return $"Title: {Title} \n Body: {Body} \n FireIn: {fireIn} \n FiredSeconds: {fireDateTime.ToLongTimeString()} \n Data: {Data}";
+        }
+
+        public override int GetHashCode()
+        {
+            return ID != null ? ID.GetHashCode() : 0;
         }
     }
 }

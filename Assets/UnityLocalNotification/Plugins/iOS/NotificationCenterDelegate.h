@@ -20,6 +20,8 @@
 + (instancetype)sharedInstance;
 
 -(void) ScheduleLocalNotification:(LocalNotification*) LocalNotification;
+-(int) GetPendingNotificationsCount;
+-(LocalNotification*) GetPendingNotificationAtIndex:(int) index;
 
 @end
 

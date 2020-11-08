@@ -28,6 +28,9 @@
                 <e p="AuthorizationOptions.cs" t="Include" />
                 <e p="AuthorizationRequest.cs" t="Include" />
               </e>
+              <e p="iOS" t="Include">
+                <e p="LocalNotificationCollection.cs" t="Include" />
+              </e>
               <e p="LocalNotification.cs" t="Include" />
               <e p="LocalNotificationController.cs" t="Include" />
               <e p="NotificationPresentationOptions.cs" t="Include" />

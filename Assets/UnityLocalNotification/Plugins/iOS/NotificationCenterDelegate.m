@@ -13,6 +13,8 @@
 
 NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
 
+NSArray<UNNotificationRequest*>* pendingRequests;
+
 + (void)load
 {
     static dispatch_once_t onceToken;
@@ -114,6 +116,8 @@ NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error)
     {
         UpdateBugdeCounter();
+        
+        [self UpdateScheduledNotificationList];
     }];
 }
 
@@ -155,9 +159,17 @@ void UpdateBugdeCounter()
     }];
 }
 
-LocalNotification* ToLocalNotification(UNNotification* notification)
+-(void)UpdateScheduledNotificationList
 {
-    UNNotificationContent* content = notification.request.content;
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+        pendingRequests = requests;
+    }];
+}
+
+LocalNotification* ToLocalNotification(UNNotificationRequest* request)
+{
+    UNNotificationContent* content = request.content;
     struct LocalNotification* localNotification = (struct LocalNotification*)malloc(sizeof(*localNotification));
     
     NSDate *now = [NSDate date];
@@ -268,6 +280,26 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
     return localNotification;
 }
 
+-(int) GetPendingNotificationsCount
+{
+    if(pendingRequests == nil)
+    {
+        return 0;
+    }
+    
+    return pendingRequests.count;
+}
+
+-(LocalNotification*) GetPendingNotificationAtIndex:(int) index
+{
+    if(index >= pendingRequests.count)
+    {
+        return NULL;
+    }
+    
+    return ToLocalNotification(pendingRequests[index]);
+}
+
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
@@ -276,7 +308,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
 
     if(_notificationReceived != nil)
     {
-        _lastReceivedNotification = ToLocalNotification(notification);
+        _lastReceivedNotification = ToLocalNotification(notification.request);
         _notificationReceived(_lastReceivedNotification);
     }
 }
@@ -286,7 +318,7 @@ LocalNotification* ToLocalNotification(UNNotification* notification)
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void (^)(void))completionHandler;
 {
-    _lastOpenedNotification = ToLocalNotification(response.notification);
+    _lastOpenedNotification = ToLocalNotification(response.notification.request);
 
     completionHandler();
 }

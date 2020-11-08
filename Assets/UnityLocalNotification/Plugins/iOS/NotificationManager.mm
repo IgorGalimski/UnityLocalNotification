@@ -90,4 +90,16 @@ extern "C"
         UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
         [center removeAllDeliveredNotifications];
     }
+
+    int GetPendingNotificationsCountInternal()
+    {
+        NotificationCenterDelegate* notificationCenterDelegate = [NotificationCenterDelegate sharedInstance];
+        return [notificationCenterDelegate GetPendingNotificationsCount];
+    }
+
+    LocalNotification* GetPendingNotificationInternal(int index)
+    {
+        NotificationCenterDelegate* notificationCenterDelegate = [NotificationCenterDelegate sharedInstance];
+        return [notificationCenterDelegate GetPendingNotificationAtIndex:index];
+    }
 }
