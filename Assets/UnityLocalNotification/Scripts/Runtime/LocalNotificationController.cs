@@ -293,7 +293,7 @@ namespace UnityLocalNotifications
             
             return null;
         }
-
+#if UNITY_IOS
         private static List<LocalNotification> GetPendingNotifications()
         {
             var size = GetPendingNotificationsCountInternal();
@@ -313,7 +313,7 @@ namespace UnityLocalNotifications
 
             return pendingNotifications;
         }
-        
+#endif
         public static void ClearReceivedNotifications()
         {
             try
