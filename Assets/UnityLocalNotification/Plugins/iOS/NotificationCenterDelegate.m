@@ -27,20 +27,21 @@ NSArray<UNNotificationRequest*>* pendingRequests;
 
 + (instancetype)sharedInstance;
 {
-    static dispatch_once_t onceToken;
+    static dispatch_once_t onceTokenActive;
     static NotificationCenterDelegate *sharedInstance = nil;
 
-    dispatch_once(&onceToken, ^{
+    dispatch_once(&onceTokenActive, ^{
         sharedInstance = [[NotificationCenterDelegate alloc] init];
-        
+
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-        [nc addObserverForName: UIApplicationDidEnterBackgroundNotification
+        [nc addObserverForName: UIApplicationWillResignActiveNotification
          object: nil
          queue: [NSOperationQueue mainQueue]
          usingBlock:^(NSNotification *notification) {
              [NotificationCenterDelegate sharedInstance].lastOpenedNotification = NULL;
          }];
     });
+    
     return sharedInstance;
 }
 

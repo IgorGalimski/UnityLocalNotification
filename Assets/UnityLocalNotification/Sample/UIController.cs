@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 #if UNITY_ANDROID
@@ -15,6 +14,8 @@ namespace UnityLocalNotifications.Sample
     public class UIController : MonoBehaviour
     {
         private const string NOTIFICATION_ENABLED_TEXT = "Notifications enabled: {0}";
+
+        private const string IS_OPENED_BY_NOTIFICATION_TEXT = "Is opened by notification: {0}";
         
         [SerializeField] 
         private Text _areNotificatonsEnabled;
@@ -76,7 +77,7 @@ namespace UnityLocalNotifications.Sample
 #endif
             _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
             
-            _isOpenedByNotification.text += LocalNotificationController.GetLastNotification() != null;
+            UpdateOpenedByNotificationStatus();
             
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
             
@@ -109,11 +110,13 @@ namespace UnityLocalNotifications.Sample
         {
             if (hasFocus)
             {
-                LocalNotificationController.UpdatePreviousPendingNotifications();
+                UpdateOpenedByNotificationStatus();
+
+                //LocalNotificationController.UpdatePreviousPendingNotifications();
             }
             else
             {
-                LocalNotificationController.SavePendingNotifications();
+                //LocalNotificationController.SavePendingNotifications();
                 
                 LocalNotificationController.ClearReceivedNotifications();
             }
@@ -177,6 +180,11 @@ namespace UnityLocalNotifications.Sample
         private void DeviceTokenReceived(string deviceToken)
         {
             _deviceToken.text += deviceToken;
+        }
+
+        private void UpdateOpenedByNotificationStatus()
+        {
+            _isOpenedByNotification.text = string.Format(IS_OPENED_BY_NOTIFICATION_TEXT, (LocalNotificationController.GetLastNotification() != null).ToString());
         }
 #endif
 
