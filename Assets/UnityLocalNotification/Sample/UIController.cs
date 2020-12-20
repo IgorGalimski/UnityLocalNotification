@@ -181,12 +181,12 @@ namespace UnityLocalNotifications.Sample
         {
             _deviceToken.text += deviceToken;
         }
-
+#endif
         private void UpdateOpenedByNotificationStatus()
         {
             _isOpenedByNotification.text = string.Format(IS_OPENED_BY_NOTIFICATION_TEXT, (LocalNotificationController.GetLastNotification() != null).ToString());
         }
-#endif
+
 
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
