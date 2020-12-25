@@ -72,11 +72,29 @@ public class NotificationManager
         return _mainActivity;
     }
 
+    private static AlarmManager GetAlarmManager()
+    {
+        if(_alarmManager == null)
+        {
+            _alarmManager = (AlarmManager) GetContext().getSystemService(Context.ALARM_SERVICE);
+        }
+
+        return _alarmManager;
+    }
+
+    private static android.app.NotificationManager GetNotificationManager()
+    {
+        if(_systemNotificationManager == null)
+        {
+            _systemNotificationManager = (android.app.NotificationManager) GetContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+
+        return _systemNotificationManager;
+    }
+
     public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback)
     {
         _notificationReceivedCallback = notificationReceivedCallback;
-        _alarmManager = (AlarmManager) GetContext().getSystemService(Context.ALARM_SERVICE);
-        _systemNotificationManager = (android.app.NotificationManager) GetContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         _prefs = GetContext().getSharedPreferences(NOTIFICATION_IDS_SHARED_PREFS, Context.MODE_PRIVATE);
         _prefsEditor = _prefs.edit();
@@ -119,7 +137,7 @@ public class NotificationManager
             channel.enableLights(notificationChannel.GetLight());
             channel.enableVibration(notificationChannel.GetVibration());
 
-            _systemNotificationManager.createNotificationChannel(channel);
+            GetNotificationManager().createNotificationChannel(channel);
         }
     }
 
@@ -152,7 +170,7 @@ public class NotificationManager
         int id = localNotification.GetID() == null ? (int) futureInMillis : localNotification.GetID().hashCode();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        GetAlarmManager().set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
         AddPendingNotificationId(id);
     }
@@ -177,7 +195,7 @@ public class NotificationManager
 
             if (broadcast != null)
             {
-                _alarmManager.cancel(broadcast);
+                GetAlarmManager().cancel(broadcast);
                 broadcast.cancel();
             }
         }
@@ -222,7 +240,7 @@ public class NotificationManager
 
     public static void RemoveReceivedNotificationsInternal()
     {
-        _systemNotificationManager.cancelAll();
+        GetNotificationManager().cancelAll();
     }
     
     public static ILocalNotification GetLocalNotification(Intent intent)
@@ -278,7 +296,7 @@ public class NotificationManager
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) 
         {
-            return _systemNotificationManager.areNotificationsEnabled();
+            return GetNotificationManager().areNotificationsEnabled();
         }
         
         return false;
