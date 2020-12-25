@@ -153,7 +153,7 @@ namespace UnityLocalNotifications.Sample
                 Title = "Test title",
                 Body = "Test body",
                 Data = "Test data",
-                FireInSeconds = 3
+                FireInSeconds = 200
             });
         }
 

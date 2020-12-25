@@ -17,6 +17,8 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
     public void onReceive(Context context, Intent intent)
     {
+        com.igorgalimski.unitylocalnotification.NotificationManager.SetContext(context);
+
         if(!com.igorgalimski.unitylocalnotification.NotificationManager.AreNotificationEnabledInternal())
         {
             return;

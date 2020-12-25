@@ -44,6 +44,11 @@ public class NotificationManager
         return _context;
     }
 
+    public static void SetContext(Context context)
+    {
+        _context = context;
+    }
+
     private static Class GetMainActivity()
     {
         try
