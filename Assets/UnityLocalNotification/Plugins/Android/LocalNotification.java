@@ -9,21 +9,24 @@ public class LocalNotification implements ILocalNotification
     private static final String TITLE_KEY = "title";
     private static final String BODY_KEY = "body";
     private static final String DATA_KEY = "data";
-    private static final String SECONDS_KEY = "seconds";
+    private static final String FIRE_IN_SECONDS_KEY = "fireInSeconds";
+    private static final String FIRED_SECONDS_KEY = "firedSeconds";
 
     private String _id;
     private String _title;
     private String _body;
     private String _data;
     private int _fireInSeconds;
+    private int _firedSeconds;
 
-    public LocalNotification(String id, String title, String body, String data, int fireInSeconds)
+    public LocalNotification(String id, String title, String body, String data, int fireInSeconds, int firedSeconds)
     {
         _id = id;
         _title = title;
         _body = body;
         _data = data;
         _fireInSeconds = fireInSeconds;
+        _firedSeconds = firedSeconds;
     }
 
     @Override
@@ -57,6 +60,11 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
+    public int GetFiredSeconds() {
+        return _firedSeconds;
+    }
+
+    @Override
     public JSONObject GetAsObject()
     {
         JSONObject jsonObject = new JSONObject();
@@ -66,7 +74,8 @@ public class LocalNotification implements ILocalNotification
             jsonObject.put(TITLE_KEY, _title);
             jsonObject.put(BODY_KEY, _body);
             jsonObject.put(DATA_KEY, _data);
-            jsonObject.put(SECONDS_KEY, _fireInSeconds);
+            jsonObject.put(FIRE_IN_SECONDS_KEY, _fireInSeconds);
+            jsonObject.put(FIRED_SECONDS_KEY, _firedSeconds);
         }
         catch (JSONException e)
         {
@@ -85,7 +94,9 @@ public class LocalNotification implements ILocalNotification
         String title = null;
         String body = null;
         String data = null;
-        int seconds = 0;
+        int fireInSeconds = 0;
+        int firedSeconds = 0;
+
         try
         {
             if(!jsonObject.has(ID_KEY))
@@ -97,14 +108,15 @@ public class LocalNotification implements ILocalNotification
             title = jsonObject.getString(TITLE_KEY);
             body = jsonObject.getString(BODY_KEY);
             data = jsonObject.getString(DATA_KEY);
-            seconds = jsonObject.getInt(SECONDS_KEY);
+            fireInSeconds = jsonObject.getInt(FIRE_IN_SECONDS_KEY);
+            firedSeconds = jsonObject.getInt(FIRED_SECONDS_KEY);
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
 
-        LocalNotification localNotification = new LocalNotification(id, title, body, data, seconds);
+        LocalNotification localNotification = new LocalNotification(id, title, body, data, fireInSeconds, firedSeconds);
         return localNotification;
     }
 }

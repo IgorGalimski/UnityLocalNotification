@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
@@ -209,7 +210,8 @@ public class NotificationManager
         String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
         String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
         String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
-        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0);
+        int seconds = (int) (System.currentTimeMillis() / 1000);
+        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0, seconds);
         
         return localNotification;
     }

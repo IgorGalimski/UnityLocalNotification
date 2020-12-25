@@ -14,5 +14,7 @@ public interface ILocalNotification
 
     int GetFireInSeconds();
 
+    int GetFiredSeconds();
+
     JSONObject GetAsObject();
 }
