@@ -70,10 +70,8 @@ namespace UnityLocalNotifications.Sample
             notificationChannel.ShowBadge = true;
             notificationChannel.Lights = true;
             notificationChannel.Vibration = true;
-            
-            LocalNotificationController.CreateNotificationChannel(notificationChannel);
 
-            
+            LocalNotificationController.CreateNotificationChannel(notificationChannel);
 #endif
             _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
             
@@ -186,7 +184,6 @@ namespace UnityLocalNotifications.Sample
         {
             _isOpenedByNotification.text = string.Format(IS_OPENED_BY_NOTIFICATION_TEXT, (LocalNotificationController.GetLastNotification() != null).ToString());
         }
-
 
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {

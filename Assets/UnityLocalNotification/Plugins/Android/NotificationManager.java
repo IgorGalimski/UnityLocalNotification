@@ -27,6 +27,9 @@ public class NotificationManager
 {
     private static final String NOTIFICATION_IDS_SHARED_PREFS = "INTENTS";
     private static final String RECEIVED_NOTIFICATION_IDS_SHARED_PREFS = "RECEIVED_INTENTS";
+
+    private static final String PLAYER_ACTIVITY_POSTFIX = ".UnityPlayerActivity";
+
     private static Context _context;
     private static Class _mainActivity;
 
@@ -43,25 +46,39 @@ public class NotificationManager
     
     public static ILocalNotification LastReceivedNotification;
 
-    public static void InitializeInternal(Context context, String mainActivity, INotificationReceivedCallback notificationReceivedCallback)
+    private static Context GetContext()
     {
-        _context = context;
-        
+        if(_context == null)
+        {
+            UnityPlayerActivity unityPlayerActivity = (UnityPlayerActivity)UnityPlayer.currentActivity;
+            _context = unityPlayerActivity.getApplicationContext();
+        }
+
+        return _context;
+    }
+
+    private static Class GetMainActivity()
+    {
         try
         {
-            _mainActivity = Class.forName(mainActivity);
-        } 
+            _mainActivity = Class.forName(BuildConfig.APPLICATION_ID + PLAYER_ACTIVITY_POSTFIX);
+        }
         catch (ClassNotFoundException ignored)
         {
             UnityPlayerActivity unityPlayerActivity = (UnityPlayerActivity)UnityPlayer.currentActivity;
             _mainActivity = unityPlayerActivity.getClass();
         }
 
-        _notificationReceivedCallback = notificationReceivedCallback;
-        _alarmManager = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
-        _systemNotificationManager = (android.app.NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
+        return _mainActivity;
+    }
 
-        _prefs = context.getSharedPreferences(NOTIFICATION_IDS_SHARED_PREFS, Context.MODE_PRIVATE);
+    public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback)
+    {
+        _notificationReceivedCallback = notificationReceivedCallback;
+        _alarmManager = (AlarmManager) GetContext().getSystemService(Context.ALARM_SERVICE);
+        _systemNotificationManager = (android.app.NotificationManager) GetContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        _prefs = GetContext().getSharedPreferences(NOTIFICATION_IDS_SHARED_PREFS, Context.MODE_PRIVATE);
         _prefsEditor = _prefs.edit();
 
         //method
@@ -108,23 +125,23 @@ public class NotificationManager
 
     public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
     {
-        int icon = _context.getApplicationInfo().icon;
+        int icon = GetContext().getApplicationInfo().icon;
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(_context, _notificationChannelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(GetContext(), _notificationChannelId)
                 .setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
-        Intent intent = new Intent(_context, _mainActivity);
+        Intent intent = new Intent(GetContext(), GetMainActivity());
         intent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
-        PendingIntent activity = PendingIntent.getActivity(_context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent activity = PendingIntent.getActivity(GetContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(activity);
 
         Notification notification = builder.build();
 
-        Intent notificationIntent = new Intent(_context, NotificationBroadcastReceiver.class);
+        Intent notificationIntent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
 
         notificationIntent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
 
@@ -133,7 +150,7 @@ public class NotificationManager
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
         int id = localNotification.GetID() == null ? (int) futureInMillis : localNotification.GetID().hashCode();
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(_context, id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         _alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
@@ -155,8 +172,8 @@ public class NotificationManager
         for (String id : GetPendingIntents())
         {
             //try
-            Intent intent = new Intent(_context, NotificationBroadcastReceiver.class);
-            PendingIntent broadcast = PendingIntent.getBroadcast(_context, Integer.valueOf(id), intent, PendingIntent.FLAG_NO_CREATE);
+            Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
+            PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(id), intent, PendingIntent.FLAG_NO_CREATE);
 
             if (broadcast != null)
             {

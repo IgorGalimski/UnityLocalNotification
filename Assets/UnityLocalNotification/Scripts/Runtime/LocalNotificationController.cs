@@ -152,19 +152,15 @@ namespace UnityLocalNotifications
         {
             try
             {
-                var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-                var activityClass = activity.Call<AndroidJavaObject>("getClass");
-                var context = activity.Call<AndroidJavaObject>("getApplicationContext");
-                
                 var notificationReceivedCallback = new NotificationReceivedCallback();
                 NotificationReceivedCallback.NotificationReceived += OnNotificationReceived;
 
                 _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
-                _notificationManager.CallStatic("InitializeInternal", context, Application.identifier + ".UnityPlayerActivity", notificationReceivedCallback);
+                _notificationManager.CallStatic("InitializeInternal", notificationReceivedCallback);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
+                Debug.LogError("Initialize error: " + exception.Message);
             }
         }
 
@@ -174,8 +170,9 @@ namespace UnityLocalNotifications
             {
                 _notificationManager.CallStatic("CreateChannelInternal", notificationChannel);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
+                Debug.LogError("CreateNotificationChannel error: " + exception.Message);
             }
         }
 #endif
@@ -255,6 +252,9 @@ namespace UnityLocalNotifications
 #endif
                 
 #if UNITY_ANDROID
+                
+                Debug.LogError(_notificationManager);
+                
                 var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
                 return ParseNotificationFromAndroidJavaObject(notificationIntent);
 #endif
