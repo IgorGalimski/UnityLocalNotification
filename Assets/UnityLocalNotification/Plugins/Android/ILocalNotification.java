@@ -5,6 +5,8 @@ import org.json.JSONObject;
 public interface ILocalNotification
 {
     String GetID();
+
+    void SetID(int id);
     
     String GetTitle();
 

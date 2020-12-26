@@ -14,7 +14,8 @@ public class NotificationProvider
 {
     private static final String NOTIFICATION_IDS_SHARED_PREFS = "NOTIFICATIONS";
 
-    private static final String RECEIVED_NOTIFICATION_IDS_SHARED_PREFS = "RECEIVED_INTENTS";
+    private static final String RECEIVED_NOTIFICATION_IDS_SHARED_PREFS = "RECEIVED_NOTIFICATIONS";
+    private static final String PENDING_NOTIFICATION_IDS_SHARED_PREFS = "PENDING_NOTIFICATIONS";
     private static final String NOTIFICATION_CHANNEL_ID_SHARED_PREFS = "NOTIFICATION_CHANNEL";
 
     private static SharedPreferences _prefs;
@@ -22,6 +23,9 @@ public class NotificationProvider
 
     private static JSONArray _receivedNotificationsArray;
     private static List<ILocalNotification> _receivedNotifications;
+
+    private static JSONArray _pendingNotificationsArray;
+    private static HashSet<ILocalNotification> _pendingNotifications;
 
     private static SharedPreferences GetPrefs()
     {
@@ -53,14 +57,18 @@ public class NotificationProvider
         GetEditor().putString(NOTIFICATION_CHANNEL_ID_SHARED_PREFS, channelID);
     }
 
-    public static HashSet<String> GetPendingIntents()
+    public static void SetPendingNotifications(HashSet<ILocalNotification> notifications)
     {
-        return (HashSet<String>) GetPrefs().getStringSet(NOTIFICATION_IDS_SHARED_PREFS, new HashSet<String>());
-    }
+        _pendingNotifications = notifications;
 
-    public static void SetPendingIntents(HashSet<String> intents)
-    {
-        GetEditor().putStringSet(NOTIFICATION_IDS_SHARED_PREFS, intents);
+        for (ILocalNotification localNotification: notifications)
+        {
+            GetPendingNotificationsArray().put(localNotification);
+        }
+
+        String notificationArrayString = GetPendingNotificationsArray().toString();
+
+        GetEditor().putString(PENDING_NOTIFICATION_IDS_SHARED_PREFS, notificationArrayString);
         GetEditor().apply();
     }
 
@@ -115,6 +123,38 @@ public class NotificationProvider
         return _receivedNotifications;
     }
 
+    public static HashSet<ILocalNotification> GetPendingNotifications()
+    {
+        if(_pendingNotifications == null)
+        {
+            try
+            {
+                _pendingNotifications = new HashSet<>();
+                String pendingNotificationsList = GetPrefs().getString(PENDING_NOTIFICATION_IDS_SHARED_PREFS, "[{}]");
+
+                JSONArray jsonArray = new JSONArray(pendingNotificationsList);
+                for (int i=0; i < jsonArray.length(); i++)
+                {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    ILocalNotification localNotification = LocalNotification.FromJSONObject(jsonObject);
+
+                    if(localNotification != null)
+                    {
+                        _pendingNotifications.add(localNotification);
+                    }
+
+                    GetPendingNotificationsArray().put(jsonObject);
+                }
+            }
+            catch (Exception exception)
+            {
+
+            }
+        }
+
+        return _pendingNotifications;
+    }
+
     private static JSONArray ReceivedNotificationsArray()
     {
         if(_receivedNotificationsArray == null)
@@ -123,5 +163,15 @@ public class NotificationProvider
         }
 
         return _receivedNotificationsArray;
+    }
+
+    private static JSONArray GetPendingNotificationsArray()
+    {
+        if(_pendingNotificationsArray == null)
+        {
+            _pendingNotificationsArray = new JSONArray();
+        }
+
+        return _pendingNotificationsArray;
     }
 }

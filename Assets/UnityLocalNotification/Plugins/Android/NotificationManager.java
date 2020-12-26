@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
@@ -132,12 +131,23 @@ public class NotificationManager
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
-        int id = localNotification.GetID() == null ? (int) futureInMillis : localNotification.GetID().hashCode();
+
+        int id;
+        if(localNotification.GetID() != null)
+        {
+            id = localNotification.GetID().hashCode();
+        }
+        else
+        {
+            id = (int) futureInMillis;
+        }
+        localNotification.SetID(id);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         GetAlarmManager().set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
-        AddPendingNotificationId(id);
+        AddPendingNotification(localNotification);
     }
 
     private static Bundle GetNotificationBundle(ILocalNotification localNotification)
@@ -152,11 +162,11 @@ public class NotificationManager
 
     public static void RemoveScheduledNotificationsInternal()
     {
-        for (String id : GetPendingIntents())
+        for (ILocalNotification localNotification : GetPendingNotifications())
         {
             //try
             Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
-            PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(id), intent, PendingIntent.FLAG_NO_CREATE);
+            PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
 
             if (broadcast != null)
             {
@@ -165,7 +175,7 @@ public class NotificationManager
             }
         }
 
-        NotificationProvider.SetPendingIntents(new HashSet<>());
+        NotificationProvider.SetPendingNotifications(new HashSet<>());
     }
     
     public static ILocalNotification GetOpenedNotificationInternal()
@@ -176,25 +186,25 @@ public class NotificationManager
         return GetLocalNotification(activityIntent);
     }
 
-    private static HashSet<String> GetPendingIntents()
+    private static HashSet<ILocalNotification> GetPendingNotifications()
     {
-        return NotificationProvider.GetPendingIntents();
+        return NotificationProvider.GetPendingNotifications();
     }
 
-    private static void AddPendingNotificationId(int id)
+    private static void AddPendingNotification(ILocalNotification localNotification)
     {
-        HashSet<String> pendingIntents = GetPendingIntents();
-        pendingIntents.add(String.valueOf(id));
+        HashSet<ILocalNotification> pendingIntents = GetPendingNotifications();
+        pendingIntents.add(localNotification);
 
-        NotificationProvider.SetPendingIntents(pendingIntents);
+        NotificationProvider.SetPendingNotifications(pendingIntents);
     }
 
-    private static void RemotePendingIntentId(int id)
+    private static void RemovePendingNotification(ILocalNotification localNotification)
     {
-        HashSet<String> pendingIntents = GetPendingIntents();
-        pendingIntents.remove(String.valueOf(id));
+        HashSet<ILocalNotification> pendingNotifications = GetPendingNotifications();
+        pendingNotifications.remove(localNotification);
 
-        NotificationProvider.SetPendingIntents(pendingIntents);
+        NotificationProvider.SetPendingNotifications(pendingNotifications);
     }
 
     public static void RemoveReceivedNotificationsInternal()
@@ -231,6 +241,7 @@ public class NotificationManager
         }
 
         NotificationProvider.AddReceivedNotification(localNotification);
+        RemovePendingNotification(localNotification);
     }
 
     public static List<ILocalNotification> GetReceivedNotificationsListInternal()

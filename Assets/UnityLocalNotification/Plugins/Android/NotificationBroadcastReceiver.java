@@ -23,14 +23,26 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
         {
             return;
         }
-        
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Notification notification = intent.getParcelableExtra(NOTIFICATION);
-        notificationManager.notify(0, notification);
+        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
+        {
+            for (ILocalNotification localNotification: NotificationProvider.GetPendingNotifications()) 
+            {
+                com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
+            }
 
-        ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
+            NotificationProvider.ClearPendingNotifications();
+        }
+        else
+        {
+            NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+            Notification notification = intent.getParcelableExtra(NOTIFICATION);
+            notificationManager.notify(0, notification);
+
+            ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
+
+            com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+        }
     }
 }

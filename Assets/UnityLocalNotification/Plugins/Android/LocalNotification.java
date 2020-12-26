@@ -34,7 +34,12 @@ public class LocalNotification implements ILocalNotification
     {
         return _id;
     }
-    
+
+    @Override
+    public void SetID(int id) {
+        _id = String.valueOf(id);
+    }
+
     @Override
     public String GetTitle()
     {

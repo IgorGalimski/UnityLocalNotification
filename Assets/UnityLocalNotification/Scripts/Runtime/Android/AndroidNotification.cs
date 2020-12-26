@@ -14,12 +14,16 @@ namespace UnityLocalNotifications.Android
         public String Data;
 
         public int FireInSeconds;
+
+        public int FiredSeconds;
         
         public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotification")
         {
         }
 
         public String GetID() => ID;
+
+        public void SetID(int id) => ID = id.ToString();
 
         public String GetTitle() => Title;
 
@@ -28,5 +32,7 @@ namespace UnityLocalNotifications.Android
         public String GetData() => Data;
 
         public int GetFireInSeconds() => FireInSeconds;
+
+        public int GetFiredSeconds() => FiredSeconds;
     }
 }
