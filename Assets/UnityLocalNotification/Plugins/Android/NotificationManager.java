@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationManager
@@ -115,7 +115,7 @@ public class NotificationManager
                 .setSmallIcon(icon);
 
         long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
-        
+
         int id;
         if(localNotification.GetID() != null)
         {
@@ -176,7 +176,7 @@ public class NotificationManager
             }
         }
 
-        NotificationProvider.SetPendingNotifications(new HashSet<>());
+        NotificationProvider.SetPendingNotifications(new ArrayList<>());
     }
     
     public static ILocalNotification GetOpenedNotificationInternal()
@@ -187,14 +187,14 @@ public class NotificationManager
         return GetLocalNotification(activityIntent);
     }
 
-    private static HashSet<ILocalNotification> GetPendingNotifications()
+    private static List<ILocalNotification> GetPendingNotifications()
     {
         return NotificationProvider.GetPendingNotifications();
     }
 
     private static void AddPendingNotification(ILocalNotification localNotification)
     {
-        HashSet<ILocalNotification> pendingIntents = GetPendingNotifications();
+        List<ILocalNotification> pendingIntents = GetPendingNotifications();
         pendingIntents.add(localNotification);
 
         NotificationProvider.SetPendingNotifications(pendingIntents);
@@ -202,7 +202,7 @@ public class NotificationManager
 
     private static void RemovePendingNotification(ILocalNotification localNotification)
     {
-        HashSet<ILocalNotification> pendingNotifications = GetPendingNotifications();
+        List<ILocalNotification> pendingNotifications = GetPendingNotifications();
         pendingNotifications.remove(localNotification);
 
         NotificationProvider.SetPendingNotifications(pendingNotifications);

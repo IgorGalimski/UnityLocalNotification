@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class NotificationProvider
@@ -25,7 +25,7 @@ public class NotificationProvider
     private static List<ILocalNotification> _receivedNotifications;
 
     private static JSONArray _pendingNotificationsArray;
-    private static HashSet<ILocalNotification> _pendingNotifications;
+    private static List<ILocalNotification> _pendingNotifications;
 
     private static SharedPreferences GetPrefs()
     {
@@ -57,9 +57,10 @@ public class NotificationProvider
         GetEditor().putString(NOTIFICATION_CHANNEL_ID_SHARED_PREFS, channelID);
     }
 
-    public static void SetPendingNotifications(HashSet<ILocalNotification> notifications)
+    public static void SetPendingNotifications(List<ILocalNotification> notifications)
     {
         _pendingNotifications = notifications;
+        _pendingNotificationsArray = null;
 
         for (ILocalNotification localNotification: notifications)
         {
@@ -86,6 +87,7 @@ public class NotificationProvider
     public static void ClearReceivedNotifications()
     {
         GetReceivedNotificationsList().clear();
+        _receivedNotificationsArray = null;
 
         GetEditor().remove(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS);
         GetEditor().apply();
@@ -98,66 +100,59 @@ public class NotificationProvider
             try
             {
                 _receivedNotifications = new ArrayList<>();
-                String receivedNotificationsList = GetPrefs().getString(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS, "[{}]");
 
-                JSONArray jsonArray = new JSONArray(receivedNotificationsList);
-                for (int i=0; i < jsonArray.length(); i++)
-                {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    ILocalNotification localNotification = LocalNotification.FromJSONObject(jsonObject);
-
-                    if(localNotification != null)
-                    {
-                        _receivedNotifications.add(localNotification);
-                    }
-
-                    ReceivedNotificationsArray().put(jsonObject);
-                }
+                GetNotificationsFromPrefs(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS, _receivedNotifications, ReceivedNotificationsArray());
             }
-            catch (Exception exception)
+            catch (JSONException exception)
             {
-
             }
         }
 
         return _receivedNotifications;
     }
 
-    public static HashSet<ILocalNotification> GetPendingNotifications()
+    public static List<ILocalNotification> GetPendingNotifications()
     {
         if(_pendingNotifications == null)
         {
             try
             {
-                _pendingNotifications = new HashSet<>();
-                String pendingNotificationsList = GetPrefs().getString(PENDING_NOTIFICATION_IDS_SHARED_PREFS, "[{}]");
+                _pendingNotifications = new ArrayList<>();
 
-                JSONArray jsonArray = new JSONArray(pendingNotificationsList);
-                for (int i=0; i < jsonArray.length(); i++)
-                {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    ILocalNotification localNotification = LocalNotification.FromJSONObject(jsonObject);
-
-                    if(localNotification != null)
-                    {
-                        _pendingNotifications.add(localNotification);
-                    }
-
-                    GetPendingNotificationsArray().put(jsonObject);
-                }
+                GetNotificationsFromPrefs(PENDING_NOTIFICATION_IDS_SHARED_PREFS, _pendingNotifications, GetPendingNotificationsArray());
             }
             catch (Exception exception)
             {
-
             }
         }
 
         return _pendingNotifications;
     }
+    
+    private static void GetNotificationsFromPrefs(String prefsKey, 
+                                                  List<ILocalNotification> notificationsList, 
+                                                  JSONArray notificationsArray) throws JSONException 
+    {
+        String pendingNotificationsList = GetPrefs().getString(prefsKey, "[]");
+
+        JSONArray jsonArray = new JSONArray(pendingNotificationsList);
+        for (int i=0; i < jsonArray.length(); i++)
+        {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            ILocalNotification localNotification = LocalNotification.FromJSONObject(jsonObject);
+
+            if(localNotification != null)
+            {
+                notificationsList.add(localNotification);
+                notificationsArray.put(jsonObject);
+            }
+        }
+    }
 
     public static void ClearPendingNotifications()
     {
         GetPendingNotifications().clear();
+        _pendingNotificationsArray = null;
 
         GetEditor().remove(PENDING_NOTIFICATION_IDS_SHARED_PREFS);
         GetEditor().apply();

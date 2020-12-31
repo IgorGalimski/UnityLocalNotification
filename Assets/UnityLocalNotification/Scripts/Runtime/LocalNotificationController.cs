@@ -80,6 +80,15 @@ namespace UnityLocalNotifications
         
 #if UNITY_ANDROID
         private static AndroidJavaClass _notificationManager;
+        private static AndroidJavaClass GetNotificationManager()
+        {
+            if (_notificationManager == null)
+            {
+                Initialize();
+            }
+
+            return _notificationManager;
+        }
 #endif
         
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
@@ -168,7 +177,7 @@ namespace UnityLocalNotifications
         {
             try
             {
-                _notificationManager.CallStatic("CreateChannelInternal", notificationChannel);
+                GetNotificationManager().CallStatic("CreateChannelInternal", notificationChannel);
             }
             catch (Exception exception)
             {
@@ -226,7 +235,7 @@ namespace UnityLocalNotifications
                     FireInSeconds = localNotification.FireInSeconds
                 };
 
-                _notificationManager.CallStatic("ScheduleLocalNotificationInternal", androidNotification);
+                GetNotificationManager().CallStatic("ScheduleLocalNotificationInternal", androidNotification);
 #endif
 
             }
@@ -253,9 +262,7 @@ namespace UnityLocalNotifications
                 
 #if UNITY_ANDROID
                 
-                Debug.LogError(_notificationManager);
-                
-                var notificationIntent = _notificationManager.CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
+                var notificationIntent = GetNotificationManager().CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
                 return ParseNotificationFromAndroidJavaObject(notificationIntent);
 #endif
             }
@@ -281,8 +288,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-                var notificationIntent =
- _notificationManager.CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
+                var notificationIntent = GetNotificationManager().CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
                 return ParseNotificationsFromAndroidJavaObject(notificationIntent);
 #endif
             }
@@ -323,7 +329,7 @@ namespace UnityLocalNotifications
 #endif
                 
 #if UNITY_ANDROID
-                _notificationManager.CallStatic("ClearReceivedNotificationsListInternal");
+                GetNotificationManager().CallStatic("ClearReceivedNotificationsListInternal");
 #endif
             }
             catch (Exception exception)
@@ -355,7 +361,7 @@ namespace UnityLocalNotifications
 #endif
                 
 #if UNITY_ANDROID
-                _notificationManager.CallStatic("RemoveScheduledNotificationsInternal");
+                GetNotificationManager().CallStatic("RemoveScheduledNotificationsInternal");
 #endif
             }
             catch (Exception exception)
@@ -372,7 +378,7 @@ namespace UnityLocalNotifications
                 RemoveReceivedNotificationsInternal();
 #endif
 #if UNITY_ANDROID
-                _notificationManager.CallStatic("RemoveReceivedNotificationsInternal");
+                GetNotificationManager().CallStatic("RemoveReceivedNotificationsInternal");
 #endif
             }
             catch (Exception exception)
@@ -389,7 +395,7 @@ namespace UnityLocalNotifications
                 return AreNotificationEnabledInternal();
 #endif
 #if UNITY_ANDROID
-                return _notificationManager.CallStatic<bool>("AreNotificationEnabledInternal");
+                return GetNotificationManager().CallStatic<bool>("AreNotificationEnabledInternal");
 #endif
             }
             catch (Exception exception)
@@ -403,7 +409,7 @@ namespace UnityLocalNotifications
 #if UNITY_ANDROID
         private static void OnNotificationReceived()
         {
-            var notification = _notificationManager.GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            var notification = GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
             
             NotificationReceivedEvent?.Invoke((LocalNotification)ParseNotificationFromAndroidJavaObject(notification));
         }
