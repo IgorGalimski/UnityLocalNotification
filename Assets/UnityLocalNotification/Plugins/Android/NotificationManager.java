@@ -114,6 +114,19 @@ public class NotificationManager
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
+        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
+        
+        int id;
+        if(localNotification.GetID() != null)
+        {
+            id = localNotification.GetID().hashCode();
+        }
+        else
+        {
+            id = (int) futureInMillis;
+        }
+        localNotification.SetID(id);
+
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
@@ -130,19 +143,6 @@ public class NotificationManager
         notificationIntent.putExtra(NotificationBroadcastReceiver.NOTIFICATION, notification);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
-
-        int id;
-        if(localNotification.GetID() != null)
-        {
-            id = localNotification.GetID().hashCode();
-        }
-        else
-        {
-            id = (int) futureInMillis;
-        }
-        localNotification.SetID(id);
-
         PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         GetAlarmManager().set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
@@ -153,6 +153,7 @@ public class NotificationManager
     private static Bundle GetNotificationBundle(ILocalNotification localNotification)
     {
         Bundle bundle = new Bundle();
+        bundle.putString(NotificationBroadcastReceiver.ID, localNotification.GetID());
         bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
         bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
         bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());

@@ -63,7 +63,7 @@ public class NotificationProvider
 
         for (ILocalNotification localNotification: notifications)
         {
-            GetPendingNotificationsArray().put(localNotification);
+            GetPendingNotificationsArray().put(localNotification.GetAsObject());
         }
 
         String notificationArrayString = GetPendingNotificationsArray().toString();
@@ -153,6 +153,14 @@ public class NotificationProvider
         }
 
         return _pendingNotifications;
+    }
+
+    public static void ClearPendingNotifications()
+    {
+        GetPendingNotifications().clear();
+
+        GetEditor().remove(PENDING_NOTIFICATION_IDS_SHARED_PREFS);
+        GetEditor().apply();
     }
 
     private static JSONArray ReceivedNotificationsArray()
