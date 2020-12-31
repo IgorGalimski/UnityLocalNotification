@@ -110,11 +110,15 @@ namespace UnityLocalNotifications.Sample
             {
                 UpdateOpenedByNotificationStatus();
 
-                //LocalNotificationController.UpdatePreviousPendingNotifications();
+#if UNITY_IOS
+                LocalNotificationController.UpdatePreviousPendingNotifications();
+#endif
             }
             else
             {
-                //LocalNotificationController.SavePendingNotifications();
+#if UNITY_IOS
+                LocalNotificationController.SavePendingNotifications();
+#endif
                 
                 LocalNotificationController.ClearReceivedNotifications();
             }

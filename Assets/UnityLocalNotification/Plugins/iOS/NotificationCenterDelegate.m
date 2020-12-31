@@ -22,6 +22,8 @@ NSArray<UNNotificationRequest*>* pendingRequests;
     {
         UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
         center.delegate = [NotificationCenterDelegate sharedInstance];
+        
+        [self UpdateScheduledNotificationList];
     });
 }
 
