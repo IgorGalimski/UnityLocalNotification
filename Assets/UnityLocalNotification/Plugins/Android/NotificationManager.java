@@ -147,7 +147,7 @@ public class NotificationManager
 
         GetAlarmManager().set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
 
-        AddPendingNotification(localNotification);
+        AddPendingNotification(GetLocalNotification(notificationIntent));
     }
 
     private static Bundle GetNotificationBundle(ILocalNotification localNotification)
