@@ -26,7 +26,9 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
         {
-            for (ILocalNotification localNotification: NotificationProvider.GetPendingNotifications()) 
+            List<ILocalNotification> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
+
+            for (ILocalNotification localNotification: pendingNotifications)
             {
                 com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
             }
