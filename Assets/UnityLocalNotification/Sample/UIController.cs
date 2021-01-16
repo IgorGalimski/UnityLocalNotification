@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
-
+using UnityLocalNotifications.iOS;
 #if UNITY_ANDROID
 using UnityLocalNotifications.Android;
 #endif
@@ -46,12 +47,14 @@ namespace UnityLocalNotifications.Sample
 
         [SerializeField] 
         private Button _removeDeliveredNotifications = default;
+
+        [SerializeField] 
+        private Button _saveButton = default;
         
         public void Start()
         {
 #if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
-            LocalNotificationController.UpdatePreviousPendingNotifications();
             LocalNotificationController.RequestNotificationEnabledStatus();
 
             LocalNotificationController.NotificationEnabledStatusReceived += OnNotificationStatusEnabledHandler;
@@ -81,12 +84,14 @@ namespace UnityLocalNotifications.Sample
             
  #if UNITY_IOS
             LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;
+            LocalNotificationController.PendingNotificationUpdated += LocalNotificationController.SavePendingNotifications;
             
             _requestAuthorization.onClick.AddListener(OnAuthorizationRequestHandler);
 #endif
             _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
+            _saveButton.onClick.AddListener(OnPendingNotificationUpdated);
         }
 
         public void OnDestroy()
@@ -94,7 +99,6 @@ namespace UnityLocalNotifications.Sample
             LocalNotificationController.NotificationReceivedEvent -= NotificationReceivedHandler;
 #if UNITY_IOS
             LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
-            
             LocalNotificationController.DeviceTokenReceived -= DeviceTokenReceived;
             
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
@@ -109,17 +113,9 @@ namespace UnityLocalNotifications.Sample
             if (hasFocus)
             {
                 UpdateOpenedByNotificationStatus();
-
-#if UNITY_IOS
-                LocalNotificationController.UpdatePreviousPendingNotifications();
-#endif
             }
             else
             {
-#if UNITY_IOS
-                LocalNotificationController.SavePendingNotifications();
-#endif
-                
                 LocalNotificationController.ClearReceivedNotifications();
             }
         }
@@ -157,7 +153,7 @@ namespace UnityLocalNotifications.Sample
                 Title = "Test title",
                 Body = "Test body",
                 Data = "Test data",
-                FireInSeconds = 200
+                FireInSeconds = 20
             });
         }
 
@@ -182,6 +178,16 @@ namespace UnityLocalNotifications.Sample
         private void DeviceTokenReceived(string deviceToken)
         {
             _deviceToken.text += deviceToken;
+        }
+
+        private void OnPendingNotificationUpdated()
+        {
+            Debug.LogError("OnPendingNotificationUpdated my method");
+
+            LocalNotificationController.GetReceivedNotifications(_ =>
+            {
+                Debug.LogError(_.Count);
+            });
         }
 #endif
         private void UpdateOpenedByNotificationStatus()

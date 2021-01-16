@@ -22,8 +22,6 @@ namespace UnityLocalNotifications
 
         private const string PENDING_NOTIFICATIONS_KEY = nameof(PENDING_NOTIFICATIONS_KEY);
 
-        private static LocalNotificationCollection _previousPendingNotifications;
-        
         [DllImport("__Internal")]
         private static extern void RequestAuthorizationInternal(int options,
             AuthorizationStatusCallbackDelegate authorizationStatusCallbackDelegate);
@@ -36,7 +34,9 @@ namespace UnityLocalNotifications
 
         [DllImport("__Internal")]
         private static extern void InitializeInternal(int notificationOptions,
-            LocalNotificationDelegate notificationReceivedDelegate, DeviceTokenDelegate deviceTokenDelegate);
+            LocalNotificationDelegate notificationReceivedDelegate, 
+            DeviceTokenDelegate deviceTokenDelegate,
+            PendingNotificationsUpdatedDelegate pendingNotificationsUpdatedDelegate);
 
         [DllImport("__Internal")]
         private static extern void ScheduleLocalNotificationInternal(IntPtr localNotification);
@@ -62,6 +62,9 @@ namespace UnityLocalNotifications
         [DllImport("__Internal")]
         private static extern IntPtr GetPendingNotificationInternal(int index);
 
+        [DllImport("__Internal")]
+        private static extern void UpdateScheduledNotificationListInternal();
+
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
         private delegate void LocalNotificationDelegate(LocalNotification localNotification);
@@ -69,12 +72,16 @@ namespace UnityLocalNotifications
         private delegate void DeviceTokenDelegate(string localNotification);
 
         private delegate void RequestNotificationsEnabledStatusDelegate(bool enabled);
+        
+        private delegate void PendingNotificationsUpdatedDelegate();
 
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
 
         public static event Action<string> DeviceTokenReceived = deviceToken => { };
 
         public static event Action<bool> NotificationEnabledStatusReceived = enabled => { };
+
+        public static event Action PendingNotificationUpdated = () => { };
 
 #endif
         
@@ -98,7 +105,7 @@ namespace UnityLocalNotifications
         {
             try
             {
-                InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback);
+                InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback, PendingNotificationsUpdatedCallback);
             }
             catch (Exception exception)
             {
@@ -118,19 +125,11 @@ namespace UnityLocalNotifications
             }
         }
 
-        public static void UpdatePreviousPendingNotifications()
+        public static void RequestUpdatePendingNotifications()
         {
             try
             {
-                var previousPendingNotificationsString = PlayerPrefs.GetString(PENDING_NOTIFICATIONS_KEY);
-                if (!string.IsNullOrEmpty(previousPendingNotificationsString))
-                {
-                    _previousPendingNotifications = JsonUtility.FromJson<LocalNotificationCollection>(previousPendingNotificationsString);
-                }
-                else
-                {
-                    _previousPendingNotifications = new LocalNotificationCollection();
-                }
+                UpdateScheduledNotificationListInternal();
             }
             catch (Exception exception)
             {
@@ -143,15 +142,56 @@ namespace UnityLocalNotifications
             try
             {
                 var pendingNotifications = GetPendingNotifications();
+                var localNotificationCollection = new LocalNotificationCollection();
+                localNotificationCollection._localNotifications = pendingNotifications;
 
-                var pendingNotificationsString = JsonUtility.ToJson(pendingNotifications);
-                
+                var pendingNotificationsString = JsonUtility.ToJson(localNotificationCollection);
+
                 PlayerPrefs.SetString(PENDING_NOTIFICATIONS_KEY, pendingNotificationsString);
                 PlayerPrefs.Save();
             }
             catch (Exception exception)
             {
                 Debug.LogError("SavePendingNotifications error: " + exception.Message);
+            }
+        }
+
+        public static void GetReceivedNotifications(Action<List<LocalNotification>> receivedNotifications)
+        {
+            try
+            {
+                if (receivedNotifications == null)
+                {
+                    Debug.LogError("GetReceivedNotifications error: callback is null");
+                    
+                    return;
+                }
+                
+                var previousPendingNotificationsString = PlayerPrefs.GetString(PENDING_NOTIFICATIONS_KEY);
+                var savedPendingNotifications = !string.IsNullOrEmpty(previousPendingNotificationsString) 
+                    ? JsonUtility.FromJson<LocalNotificationCollection>(previousPendingNotificationsString) 
+                    : new LocalNotificationCollection();
+
+                PendingNotificationUpdated += OnPendingNotificationUpdated;
+                
+                RequestUpdatePendingNotifications();
+
+                void OnPendingNotificationUpdated()
+                {
+                    PendingNotificationUpdated -= OnPendingNotificationUpdated;
+                    
+                    var pendingNotifications = GetPendingNotifications();
+
+                    var deliveredNotifications =
+                        savedPendingNotifications.LocalNotifications().Except(pendingNotifications, 
+                            new LocalNotificationEqualityComparer()).ToList();
+                    
+                    receivedNotifications.Invoke(deliveredNotifications);
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("GetReceivedNotifications error: " + exception.Message);
             }
         }
 #endif
@@ -281,8 +321,7 @@ namespace UnityLocalNotifications
 #if UNITY_IOS
                 var deliveredNotifications = new List<LocalNotification>();
 
-                deliveredNotifications =
-                    _previousPendingNotifications.LocalNotifications().Except(GetPendingNotifications(), new LocalNotificationEqualityComparer()).ToList();
+                
 
                 return deliveredNotifications;
 #endif
@@ -303,6 +342,7 @@ namespace UnityLocalNotifications
         private static List<LocalNotification> GetPendingNotifications()
         {
             var size = GetPendingNotificationsCountInternal();
+            
             var pendingNotifications = new List<LocalNotification>();
                 
             for (var i = 0; i < size; i++)
@@ -478,6 +518,12 @@ namespace UnityLocalNotifications
         private static void DeviceTokenReceivedCallback(bool enabled)
         {
             NotificationEnabledStatusReceived(enabled);
+        }
+        
+        [MonoPInvokeCallback(typeof(PendingNotificationsUpdatedDelegate))]
+        private static void PendingNotificationsUpdatedCallback()
+        {
+            PendingNotificationUpdated();
         }
 #endif
     }

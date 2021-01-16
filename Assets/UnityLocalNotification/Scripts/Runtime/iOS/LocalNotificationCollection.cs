@@ -1,15 +1,16 @@
 using System;
+using System.Collections.Generic;
 
 namespace UnityLocalNotifications.iOS
 {
     [Serializable]
     public class LocalNotificationCollection
     {
-        public LocalNotification[] _localNotifications;
+        public List<LocalNotification> _localNotifications;
 
-        public LocalNotification[] LocalNotifications()
+        public List<LocalNotification> LocalNotifications()
         {
-            return _localNotifications ?? new LocalNotification[0];
+            return _localNotifications ?? new List<LocalNotification>();
         }
     }
 }
