@@ -23,16 +23,24 @@ namespace UnityLocalNotifications
 
         public int FireInSeconds;
 
-        public int FiredSeconds;
+        public long FiredSeconds;
+
+        public DateTime FiredSecondsDateTime
+        {
+            get
+            {
+                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                return dateTime.AddMilliseconds(FireInSeconds);
+            }
+        }
 
         public override string ToString()
         {
-            var fireIn = TimeSpan.FromSeconds(FireInSeconds);
-            
-            var firedTimeSpan = TimeSpan.FromSeconds(FiredSeconds);
-            var fireDateTime = DateTime.Now.Add(firedTimeSpan);
-            
-            return $"Title: {Title} \n Body: {Body} \n FireIn: {fireIn} \n FiredSeconds: {fireDateTime.ToLongTimeString()} \n Data: {Data}";
+            return $"Title: {Title} \n " +
+                   $"Body: {Body} \n " +
+                   $"FiredSeconds: {FiredSecondsDateTime} \n " +
+                   $"FireInSeconds: {FireInSeconds} \n " +
+                   $"Data: {Data}";
         }
 
         public override int GetHashCode()

@@ -12,6 +12,7 @@
 @implementation NotificationCenterDelegate
 
 NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
+NSString *const FIRED_IN_SECONDS_KEY = @"firedInSeconds";
 
 NSArray<UNNotificationRequest*>* pendingRequests;
 
@@ -73,9 +74,12 @@ NSArray<UNNotificationRequest*>* pendingRequests;
     {
         objNotificationContent.body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
     }
+    
+    NSInteger firedSeconds = [now timeIntervalSince1970] * 1000;
 
     NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] init];
     [userInfo setObject: @(seconds) forKey:FIRE_IN_SECONDS_KEY];
+    [userInfo setObject: @(firedSeconds) forKey:FIRED_IN_SECONDS_KEY];
    
     if(localNotification->Data != nil)
     {
@@ -184,6 +188,11 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
     
     localNotification->FiredSeconds = seconds;
     
+    if(request.identifier != nil && request.identifier.length > 0)
+    {
+        localNotification->ID = strdup([request.identifier UTF8String]);
+    }
+    
     if (content.title != nil && content.title.length > 0)
     {
         localNotification->Title = strdup([content.title UTF8String]);
@@ -277,6 +286,12 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
         {
             int fireInSeconds = [content.userInfo[FIRE_IN_SECONDS_KEY] intValue];
             localNotification->FireInSeconds = fireInSeconds;
+        }
+        
+        if ([[content.userInfo allKeys] containsObject:FIRED_IN_SECONDS_KEY])
+        {
+            long firedInSeconds = [content.userInfo[FIRED_IN_SECONDS_KEY] longValue];
+            localNotification->FiredSeconds = firedInSeconds;
         }
     }
     else

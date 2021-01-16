@@ -84,7 +84,6 @@ namespace UnityLocalNotifications.Sample
             
  #if UNITY_IOS
             LocalNotificationController.DeviceTokenReceived += DeviceTokenReceived;
-            LocalNotificationController.PendingNotificationUpdated += LocalNotificationController.SavePendingNotifications;
             
             _requestAuthorization.onClick.AddListener(OnAuthorizationRequestHandler);
 #endif
@@ -155,6 +154,8 @@ namespace UnityLocalNotifications.Sample
                 Data = "Test data",
                 FireInSeconds = 20
             });
+            
+            LocalNotificationController.SavePendingNotifications();
         }
 
         private void OnRemoveScheduledNotifications()

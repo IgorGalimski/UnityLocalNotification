@@ -141,6 +141,14 @@ namespace UnityLocalNotifications
         {
             try
             {
+                PendingNotificationUpdated += OnPendingNotificationUpdated;
+                
+                RequestUpdatePendingNotifications();
+
+                void OnPendingNotificationUpdated()
+                {
+                    PendingNotificationUpdated -= OnPendingNotificationUpdated;
+                    
                 var pendingNotifications = GetPendingNotifications();
                 var localNotificationCollection = new LocalNotificationCollection();
                 localNotificationCollection._localNotifications = pendingNotifications;
