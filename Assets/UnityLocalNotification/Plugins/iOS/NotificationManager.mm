@@ -16,10 +16,14 @@ extern "C"
 
     bool notificationsEnabled = false;
 
-    void InitializeInternal(NSInteger notificationOptions, NotificationReceived notificationReceived, DeviceTokenReceived deviceTokenReceived)
+    void InitializeInternal(NSInteger notificationOptions,
+                            NotificationReceived notificationReceived,
+                            DeviceTokenReceived deviceTokenReceived,
+                            PendingNotificationsUpdated pendingNotificationUpdated)
     {
         [NotificationCenterDelegate sharedInstance].notificationReceived = notificationReceived;
         [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
+        [NotificationCenterDelegate sharedInstance].pendingNotificationUpdated = pendingNotificationUpdated;
         
         [DeviceTokenHandler sharedInstance].deviceTokenReceived = deviceTokenReceived;
     }
@@ -101,5 +105,10 @@ extern "C"
     {
         NotificationCenterDelegate* notificationCenterDelegate = [NotificationCenterDelegate sharedInstance];
         return [notificationCenterDelegate GetPendingNotificationAtIndex:index];
+    }
+
+    void UpdateScheduledNotificationListInternal()
+    {
+        [[NotificationCenterDelegate sharedInstance] UpdateScheduledNotificationList];
     }
 }

@@ -14,6 +14,7 @@
 
 @property (nonatomic) LocalNotification* lastOpenedNotification;
 @property (nonatomic) LocalNotification* lastReceivedNotification;
+@property (nonatomic) PendingNotificationsUpdated pendingNotificationUpdated;
 @property (nonatomic) NSInteger notificationOptions;
 @property (nonatomic) NotificationReceived notificationReceived;
 
@@ -22,6 +23,7 @@
 -(void) ScheduleLocalNotification:(LocalNotification*) LocalNotification;
 -(int) GetPendingNotificationsCount;
 -(LocalNotification*) GetPendingNotificationAtIndex:(int) index;
+-(void) UpdateScheduledNotificationList;
 
 @end
 

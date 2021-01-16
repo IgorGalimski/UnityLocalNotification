@@ -9,6 +9,7 @@
 
 typedef void (*AuthorizationStatusCallback)(struct AuthorizationRequestResult* result);
 typedef void (*NotificationReceived)(struct LocalNotification* localNotification);
+typedef void (*PendingNotificationsUpdated)(void);
 typedef void (*DeviceTokenReceived)(char* deviceToken);
 
 typedef struct AuthorizationRequestResult

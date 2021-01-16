@@ -22,8 +22,6 @@ NSArray<UNNotificationRequest*>* pendingRequests;
     {
         UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
         center.delegate = [NotificationCenterDelegate sharedInstance];
-        
-        [self UpdateScheduledNotificationList];
     });
 }
 
@@ -165,8 +163,14 @@ void UpdateBugdeCounter()
 -(void)UpdateScheduledNotificationList
 {
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
+    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) 
+    {
         pendingRequests = requests;
+        
+        if(_pendingNotificationUpdated != nil)
+        {
+            _pendingNotificationUpdated();
+        } 
     }];
 }
 
