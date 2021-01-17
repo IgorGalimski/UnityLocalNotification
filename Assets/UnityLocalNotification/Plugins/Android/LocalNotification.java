@@ -70,6 +70,11 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
+    public void SetFiredSeconds(int firedSeconds) {
+        _firedSeconds = firedSeconds;
+    }
+
+    @Override
     public JSONObject GetAsObject()
     {
         JSONObject jsonObject = new JSONObject();

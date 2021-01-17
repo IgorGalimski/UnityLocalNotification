@@ -127,6 +127,9 @@ public class NotificationManager
         }
         localNotification.SetID(id);
 
+        Integer fireSecondsUTC = (int)(System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds());
+        localNotification.SetFiredSeconds(fireSecondsUTC);
+
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
@@ -157,6 +160,7 @@ public class NotificationManager
         bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
         bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
         bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());
+        bundle.putInt(NotificationBroadcastReceiver.FIRED_SECONDS, localNotification.GetFiredSeconds());
 
         return bundle;
     }
@@ -226,8 +230,8 @@ public class NotificationManager
         String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
         String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
         String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
-        int seconds = (int) (System.currentTimeMillis() / 1000);
-        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0, seconds);
+        Integer firedSeconds = localNotificationBundle.getInt(NotificationBroadcastReceiver.FIRED_SECONDS);
+        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0, firedSeconds);
         
         return localNotification;
     }

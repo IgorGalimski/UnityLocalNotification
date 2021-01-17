@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +16,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
     public static String TITLE = "title";
     public static String BODY = "body";
     public static String DATA = "data";
+    public static String FIRED_SECONDS = "firedSeconds";
 
     public void onReceive(Context context, Intent intent)
     {
@@ -47,6 +47,13 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
             if(localNotification != null)
             {
+                long realtime = System.currentTimeMillis()/1000;
+
+                if(realtime > localNotification.GetFiredSeconds())
+                {
+                    return;
+                }
+
                 notificationManager.notify(localNotification.GetID().hashCode(), notification);
 
                 com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
