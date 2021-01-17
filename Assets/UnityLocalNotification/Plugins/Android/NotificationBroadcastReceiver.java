@@ -6,6 +6,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NotificationBroadcastReceiver extends BroadcastReceiver
 {
     public static String NOTIFICATION = "notification";
@@ -40,11 +43,14 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             Notification notification = intent.getParcelableExtra(NOTIFICATION);
-            notificationManager.notify(0, notification);
-
             ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
 
-            com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+            if(localNotification != null)
+            {
+                notificationManager.notify(localNotification.GetID().hashCode(), notification);
+
+                com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+            }
         }
     }
 }
