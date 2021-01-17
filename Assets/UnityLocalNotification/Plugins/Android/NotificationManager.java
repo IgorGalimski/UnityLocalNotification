@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -20,6 +21,8 @@ import java.util.List;
 
 public class NotificationManager
 {
+    private static final String LOG = "NotificationManager";
+
     private static final String PLAYER_ACTIVITY_POSTFIX = ".UnityPlayerActivity";
 
     private static Context _context;
@@ -108,13 +111,22 @@ public class NotificationManager
     public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
     {
         int icon = GetContext().getApplicationInfo().icon;
+        
+        Notification.Builder notificationBuilder;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 
+        {
+            notificationBuilder = new NotificationCompat.Builder(GetContext());
+        } 
+        else
+        {
+            notificationBuilder = new NotificationCompat.Builder(GetContext(), NotificationProvider.GetNotificationChannelID());
+        }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(GetContext(), NotificationProvider.GetNotificationChannelID())
-                .setContentTitle(localNotification.GetTitle())
+        builder.setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + localNotification.GetFireInSeconds()*1000;
+        long futureInMillis = SystemClock.elapsedRealtime() + 3*1000;
 
         int id;
         if(localNotification.GetID() != null)
@@ -127,7 +139,7 @@ public class NotificationManager
         }
         localNotification.SetID(id);
 
-        Integer fireSecondsUTC = (int)(System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds());
+        long fireSecondsUTC = System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds();
         localNotification.SetFiredSeconds(fireSecondsUTC);
 
         Bundle notificationBundle = GetNotificationBundle(localNotification);
@@ -160,7 +172,7 @@ public class NotificationManager
         bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
         bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
         bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());
-        bundle.putInt(NotificationBroadcastReceiver.FIRED_SECONDS, localNotification.GetFiredSeconds());
+        bundle.putLong(NotificationBroadcastReceiver.FIRED_SECONDS, localNotification.GetFiredSeconds());
 
         return bundle;
     }
@@ -169,14 +181,20 @@ public class NotificationManager
     {
         for (ILocalNotification localNotification : GetPendingNotifications())
         {
-            //try
-            Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
-            PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
-
-            if (broadcast != null)
+            try
             {
-                GetAlarmManager().cancel(broadcast);
-                broadcast.cancel();
+                Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
+                PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
+
+                if (broadcast != null)
+                {
+                    GetAlarmManager().cancel(broadcast);
+                    broadcast.cancel();
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.e(LOG, "RemoveScheduledNotificationsInternal: " + exception.getMessage());
             }
         }
 
@@ -230,7 +248,7 @@ public class NotificationManager
         String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
         String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
         String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
-        Integer firedSeconds = localNotificationBundle.getInt(NotificationBroadcastReceiver.FIRED_SECONDS);
+        Long firedSeconds = localNotificationBundle.getLong(NotificationBroadcastReceiver.FIRED_SECONDS);
         ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0, firedSeconds);
         
         return localNotification;

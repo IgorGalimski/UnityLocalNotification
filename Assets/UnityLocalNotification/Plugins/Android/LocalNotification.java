@@ -17,9 +17,9 @@ public class LocalNotification implements ILocalNotification
     private String _body;
     private String _data;
     private int _fireInSeconds;
-    private int _firedSeconds;
+    private long _firedSeconds;
 
-    public LocalNotification(String id, String title, String body, String data, int fireInSeconds, int firedSeconds)
+    public LocalNotification(String id, String title, String body, String data, int fireInSeconds, long firedSeconds)
     {
         _id = id;
         _title = title;
@@ -65,12 +65,12 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
-    public int GetFiredSeconds() {
+    public long GetFiredSeconds() {
         return _firedSeconds;
     }
 
     @Override
-    public void SetFiredSeconds(int firedSeconds) {
+    public void SetFiredSeconds(long firedSeconds) {
         _firedSeconds = firedSeconds;
     }
 
