@@ -158,6 +158,7 @@ namespace UnityLocalNotifications
                 PlayerPrefs.SetString(PENDING_NOTIFICATIONS_KEY, pendingNotificationsString);
                 PlayerPrefs.Save();
             }
+            }
             catch (Exception exception)
             {
                 Debug.LogError("SavePendingNotifications error: " + exception.Message);
