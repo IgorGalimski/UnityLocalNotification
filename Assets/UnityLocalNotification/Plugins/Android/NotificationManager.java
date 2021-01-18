@@ -126,7 +126,7 @@ public class NotificationManager
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + 3*1000;
+        long futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
 
         int id;
         if(localNotification.GetID() != null)
@@ -160,7 +160,14 @@ public class NotificationManager
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        GetAlarmManager().set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+        {
+            GetAlarmManager().set(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
+        }
+        else
+        {
+            GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+        }
 
         AddPendingNotification(GetLocalNotification(notificationIntent));
     }

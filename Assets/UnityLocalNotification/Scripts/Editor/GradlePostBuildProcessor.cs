@@ -51,6 +51,7 @@ namespace UnityLocalNotification.Scripts.Editor
             
             var notificationManagerReceiver = manifestDoc.CreateElement("receiver");
             notificationManagerReceiver.SetAttribute("name", ANDROID_NAMESPACE_URI, NOTIFICATION_BROADCAST_RECEIVER);
+            notificationManagerReceiver.SetAttribute("exported", ANDROID_NAMESPACE_URI, "true");
 
             var filter = manifestDoc.CreateElement("intent-filter");
             notificationManagerReceiver.AppendChild(filter);
