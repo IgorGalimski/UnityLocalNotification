@@ -111,8 +111,8 @@ public class NotificationManager
     public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
     {
         int icon = GetContext().getApplicationInfo().icon;
-        
-        Notification.Builder notificationBuilder;
+
+        NotificationCompat.Builder notificationBuilder;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 
         {
             notificationBuilder = new NotificationCompat.Builder(GetContext());
@@ -122,7 +122,7 @@ public class NotificationManager
             notificationBuilder = new NotificationCompat.Builder(GetContext(), NotificationProvider.GetNotificationChannelID());
         }
 
-        builder.setContentTitle(localNotification.GetTitle())
+        notificationBuilder.setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
                 .setSmallIcon(icon);
 
@@ -147,9 +147,9 @@ public class NotificationManager
         Intent intent = new Intent(GetContext(), GetMainActivity());
         intent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
         PendingIntent activity = PendingIntent.getActivity(GetContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.setContentIntent(activity);
+        notificationBuilder.setContentIntent(activity);
 
-        Notification notification = builder.build();
+        Notification notification = notificationBuilder.build();
 
         Intent notificationIntent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
 
