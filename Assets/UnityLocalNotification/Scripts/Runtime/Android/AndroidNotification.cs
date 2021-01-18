@@ -15,7 +15,7 @@ namespace UnityLocalNotifications.Android
 
         public int FireInSeconds;
 
-        public int FiredSeconds;
+        public long FiredSeconds;
         
         public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotification")
         {
@@ -33,6 +33,8 @@ namespace UnityLocalNotifications.Android
 
         public int GetFireInSeconds() => FireInSeconds;
 
-        public int GetFiredSeconds() => FiredSeconds;
+        public long GetFiredSeconds() => FiredSeconds;
+
+        public void SetFiredSeconds(long firedSeconds) => FiredSeconds = firedSeconds;
     }
 }
