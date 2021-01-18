@@ -166,7 +166,7 @@ public class NotificationManager
         }
         else
         {
-            GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+            GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
         }
 
         AddPendingNotification(GetLocalNotification(notificationIntent));
