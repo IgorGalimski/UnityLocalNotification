@@ -16,11 +16,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
     public static String NOTIFICATION = "notification";
     public static String LOCAL_NOTIFICATION = "local_notification";
-    public static String ID = "id";
-    public static String TITLE = "title";
-    public static String BODY = "body";
-    public static String DATA = "data";
-    public static String FIRED_SECONDS = "firedSeconds";
 
     public void onReceive(Context context, Intent intent)
     {

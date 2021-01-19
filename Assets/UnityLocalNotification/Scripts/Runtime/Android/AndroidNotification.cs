@@ -8,10 +8,14 @@ namespace UnityLocalNotifications.Android
         public String ID;
         
         public String Title;
+        
+        public bool AutoCancel;
 
         public String Body;
 
         public String Data;
+
+        public String BigIconId;
 
         public int FireInSeconds;
 
@@ -25,11 +29,15 @@ namespace UnityLocalNotifications.Android
 
         public void SetID(int id) => ID = id.ToString();
 
+        public Boolean GetAutoCancel() => AutoCancel;
+
         public String GetTitle() => Title;
 
         public String GetBody() => Body;
 
         public String GetData() => Data;
+
+        String GetBigIconId() => BigIconId;
 
         public int GetFireInSeconds() => FireInSeconds;
 

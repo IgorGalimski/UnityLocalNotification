@@ -8,11 +8,15 @@ public interface ILocalNotification
 
     void SetID(int id);
     
+    boolean GetAutoCancel();
+    
     String GetTitle();
 
     String GetBody();
 
     String GetData();
+    
+    String GetBigIconId();
 
     int GetFireInSeconds();
 

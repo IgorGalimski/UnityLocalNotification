@@ -175,11 +175,11 @@ public class NotificationManager
     private static Bundle GetNotificationBundle(ILocalNotification localNotification)
     {
         Bundle bundle = new Bundle();
-        bundle.putString(NotificationBroadcastReceiver.ID, localNotification.GetID());
-        bundle.putString(NotificationBroadcastReceiver.TITLE, localNotification.GetTitle());
-        bundle.putString(NotificationBroadcastReceiver.BODY, localNotification.GetBody());
-        bundle.putString(NotificationBroadcastReceiver.DATA, localNotification.GetData());
-        bundle.putLong(NotificationBroadcastReceiver.FIRED_SECONDS, localNotification.GetFiredSeconds());
+        bundle.putString(LocalNotification.ID_KEY, localNotification.GetID());
+        bundle.putString(LocalNotification.TITLE_KEY, localNotification.GetTitle());
+        bundle.putString(LocalNotification.BODY_KEY, localNotification.GetBody());
+        bundle.putString(LocalNotification.DATA_KEY, localNotification.GetData());
+        bundle.putLong(LocalNotification.FIRED_SECONDS_KEY, localNotification.GetFiredSeconds());
 
         return bundle;
     }
@@ -251,12 +251,14 @@ public class NotificationManager
             return null;
         }
 
-        String id = localNotificationBundle.getString(NotificationBroadcastReceiver.ID);
-        String title = localNotificationBundle.getString(NotificationBroadcastReceiver.TITLE);
-        String body = localNotificationBundle.getString(NotificationBroadcastReceiver.BODY);
-        String data = localNotificationBundle.getString(NotificationBroadcastReceiver.DATA);
-        Long firedSeconds = localNotificationBundle.getLong(NotificationBroadcastReceiver.FIRED_SECONDS);
-        ILocalNotification localNotification = new LocalNotification(id, title, body, data, 0, firedSeconds);
+        String id = localNotificationBundle.getString(LocalNotification.ID_KEY);
+        Boolean autoCancel = localNotificationBundle.getBoolean(LocalNotification.AUTO_CANCEL_KEY);
+        String title = localNotificationBundle.getString(LocalNotification.TITLE_KEY);
+        String body = localNotificationBundle.getString(LocalNotification.BODY_KEY);
+        String data = localNotificationBundle.getString(LocalNotification.DATA_KEY);
+        String bigIconId = localNotificationBundle.getString(LocalNotification.BIG_ICON_ID_KEY);
+        Long firedSeconds = localNotificationBundle.getLong(LocalNotification.FIRED_SECONDS_KEY);
+        ILocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, bigIconId,0, firedSeconds);
         
         return localNotification;
     }
