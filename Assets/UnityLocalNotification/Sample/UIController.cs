@@ -73,8 +73,6 @@ namespace UnityLocalNotifications.Sample
 
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
 #endif
-            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
-            
             UpdateOpenedByNotificationStatus();
             
             LocalNotificationController.NotificationReceivedEvent += NotificationReceivedHandler;
@@ -183,6 +181,7 @@ namespace UnityLocalNotifications.Sample
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
             _localNotificationReceived.text = localNotification.ToString();
+            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
         }
     }   
 }

@@ -389,7 +389,7 @@ namespace UnityLocalNotifications
             try
             {
 #if UNITY_IOS
-
+                RemoveReceivedNotificationsInternal();
 #endif
                 
 #if UNITY_ANDROID
