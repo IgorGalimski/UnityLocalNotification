@@ -21,7 +21,7 @@ import java.util.List;
 
 public class NotificationManager
 {
-    private static final String LOG = "NotificationManager";
+    public static final String LOG = "NotificationManager";
 
     private static final String PLAYER_ACTIVITY_POSTFIX = ".UnityPlayerActivity";
 

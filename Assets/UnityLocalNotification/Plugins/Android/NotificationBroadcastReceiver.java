@@ -5,11 +5,15 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationBroadcastReceiver extends BroadcastReceiver
 {
+    private static int NOTIFICATION_DELAY = 5;
+
     public static String NOTIFICATION = "notification";
     public static String LOCAL_NOTIFICATION = "local_notification";
     public static String ID = "id";
@@ -49,8 +53,10 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
             {
                 long realtime = System.currentTimeMillis()/1000;
 
-                if(realtime > localNotification.GetFiredSeconds())
+                if((realtime - localNotification.GetFiredSeconds()) > NOTIFICATION_DELAY)
                 {
+                    Log.e(com.igorgalimski.unitylocalnotification.NotificationManager.LOG, "Notification time is expired");
+
                     return;
                 }
 
