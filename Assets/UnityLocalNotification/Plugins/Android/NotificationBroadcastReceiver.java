@@ -41,7 +41,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
         {
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            Notification notification = intent.getParcelableExtra(NOTIFICATION);
             ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
 
             if(localNotification != null)
@@ -55,6 +54,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
                     return;
                 }
 
+                Notification notification = intent.getParcelableExtra(NOTIFICATION);
                 notificationManager.notify(localNotification.GetID().hashCode(), notification);
 
                 com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
