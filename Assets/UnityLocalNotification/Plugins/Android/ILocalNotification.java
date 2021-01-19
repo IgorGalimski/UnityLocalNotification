@@ -2,29 +2,26 @@ package com.igorgalimski.unitylocalnotification;
 
 import org.json.JSONObject;
 
-public interface ILocalNotification
+public interface ILocalNotification extends ILocalNotificationBridge
 {
-    String GetID();
-
     void SetID(int id);
-    
-    boolean GetAutoCancel();
-    
-    String GetTitle();
-
-    String GetBody();
-
-    String GetData();
-    
-    String GetSmallIconId();
-    
-    String GetLargeIconId();
-
-    int GetFireInSeconds();
-
-    long GetFiredSeconds();
 
     void SetFiredSeconds(long firedSeconds);
 
     JSONObject GetAsObject();
+
+    static ILocalNotification GetFromBridge(ILocalNotificationBridge localNotificationBridge)
+    {
+        ILocalNotification localNotification = new LocalNotification(localNotificationBridge.GetID(),
+                localNotificationBridge.GetAutoCancel(),
+                localNotificationBridge.GetTitle(),
+                localNotificationBridge.GetBody(),
+                localNotificationBridge.GetData(),
+                localNotificationBridge.GetSmallIconId(),
+                localNotificationBridge.GetLargeIconId(),
+                localNotificationBridge.GetFireInSeconds(),
+                localNotificationBridge.GetFiredSeconds());
+
+        return localNotification;
+    }
 }

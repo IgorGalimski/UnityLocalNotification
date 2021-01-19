@@ -15,7 +15,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
     private static int NOTIFICATION_DELAY = 5;
 
     public static String NOTIFICATION = "notification";
-    public static String LOCAL_NOTIFICATION = "local_notification";
 
     public void onReceive(Context context, Intent intent)
     {
@@ -28,9 +27,9 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
 
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
         {
-            List<ILocalNotification> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
+            List<ILocalNotificationBridge> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
 
-            for (ILocalNotification localNotification: pendingNotifications)
+            for (ILocalNotificationBridge localNotification: pendingNotifications)
             {
                 com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
             }

@@ -130,7 +130,7 @@ public class NotificationProvider
     }
     
     private static void GetNotificationsFromPrefs(String prefsKey, 
-                                                  List<ILocalNotification> notificationsList, 
+                                                  List<ILocalNotification> notificationsList,
                                                   JSONArray notificationsArray) throws JSONException 
     {
         String pendingNotificationsList = GetPrefs().getString(prefsKey, "[]");

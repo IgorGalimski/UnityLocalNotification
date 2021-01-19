@@ -263,37 +263,50 @@ namespace UnityLocalNotifications
         }
 #endif
 
+#if UNITY_IOS
         public static void ScheduleLocalNotification(LocalNotification localNotification)
         {
             try
             {
-#if UNITY_IOS
+
                 var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(localNotification));
                 Marshal.StructureToPtr(localNotification, ptr, false);
                 
                 ScheduleLocalNotificationInternal(ptr);
-#endif
-#if UNITY_ANDROID
-                var androidNotification = new AndroidNotification
-                {
-                    Title = localNotification.Title,
-                    AutoCancel = true,
-                    Body = localNotification.Body,
-                    Data = localNotification.Data,
-                    SmallIconId = "small_icon",
-                    LargeIconId = "large_icon",
-                    FireInSeconds = localNotification.FireInSeconds
-                };
-
-                GetNotificationManager().CallStatic("ScheduleLocalNotificationInternal", androidNotification);
-#endif
-
             }
             catch (Exception exception)
             {
                 Debug.LogError("ScheduleLocalNotification error: " + exception.Message);
             }
         }
+#endif
+
+#if UNITY_ANDROID
+        public static void ScheduleLocalNotification(LocalNotification localNotification, 
+            bool autoCancel = true, string smallIconId = null, string largeIconId = null)
+        {
+            try
+            {
+                var androidNotification = new AndroidNotification
+                {
+                    Title = localNotification.Title,
+                    AutoCancel = autoCancel,
+                    Body = localNotification.Body,
+                    Data = localNotification.Data,
+                    SmallIconId = smallIconId,
+                    LargeIconId = largeIconId,
+                    FireInSeconds = localNotification.FireInSeconds
+                };
+
+                GetNotificationManager().CallStatic("ScheduleLocalNotificationInternal", androidNotification);
+            }
+        
+            catch (Exception exception)
+            {
+                Debug.LogError("ScheduleLocalNotification error: " + exception.Message);
+            }
+        }
+#endif
 
         public static LocalNotification? GetLastNotification()
         {
@@ -348,6 +361,7 @@ namespace UnityLocalNotifications
             
             return null;
         }
+        
 #if UNITY_IOS
         private static List<LocalNotification> GetPendingNotifications()
         {
@@ -474,11 +488,15 @@ namespace UnityLocalNotifications
             var title = notification.Call<string>("GetTitle");
             var body = notification.Call<string>("GetBody");
             var data = notification.Call<string>("GetData");
+            var fireInSeconds = notification.Call<int>("GetFireInSeconds");
+            var firedSeconds = notification.Call<long>("GetFiredSeconds");
             
             var localNotification = new LocalNotification();
             localNotification.Title = title;
             localNotification.Body = body;
             localNotification.Data = data;
+            localNotification.FireInSeconds = fireInSeconds;
+            localNotification.FiredSeconds = firedSeconds;
 
             return localNotification;
         }

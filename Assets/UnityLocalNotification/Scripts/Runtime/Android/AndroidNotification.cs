@@ -23,7 +23,7 @@ namespace UnityLocalNotifications.Android
 
         public long FiredSeconds;
         
-        public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotification")
+        public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotificationBridge")
         {
         }
 

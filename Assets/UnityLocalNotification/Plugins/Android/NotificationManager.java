@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class NotificationManager
 
     private static INotificationReceivedCallback _notificationReceivedCallback;
 
-    public static ILocalNotification LastReceivedNotification;
+    public static ILocalNotificationBridge LastReceivedNotification;
 
     public static Context GetContext()
     {
@@ -113,8 +112,10 @@ public class NotificationManager
         }
     }
 
-    public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
+    public static void ScheduleLocalNotificationInternal(ILocalNotificationBridge localNotificationBridge)
     {
+        ILocalNotification localNotification = ILocalNotification.GetFromBridge(localNotificationBridge);
+
         NotificationCompat.Builder notificationBuilder;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
         {
@@ -187,7 +188,7 @@ public class NotificationManager
             GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
         }
 
-        AddPendingNotification(GetLocalNotification(notificationIntent));
+        AddPendingNotification(localNotification);
     }
 
     private static Integer GetDrawableId(String resourceId)
@@ -225,19 +226,9 @@ public class NotificationManager
         return null;
     }
 
-    private static Bundle GetNotificationBundle(ILocalNotification notification)
+    private static Bundle GetNotificationBundle(ILocalNotification localNotification)
     {
         Bundle bundle = new Bundle();
-
-        ILocalNotification localNotification = new LocalNotification(notification.GetID(),
-                notification.GetAutoCancel(),
-                notification.GetTitle(),
-                notification.GetBody(),
-                notification.GetData(),
-                notification.GetSmallIconId(),
-                notification.GetLargeIconId(),
-                notification.GetFireInSeconds(),
-                notification.GetFiredSeconds());
 
         bundle.putString(LocalNotification.NOTIFICATION, localNotification.GetAsObject().toString());
 
@@ -246,7 +237,7 @@ public class NotificationManager
 
     public static void RemoveScheduledNotificationsInternal()
     {
-        for (ILocalNotification localNotification : GetPendingNotifications())
+        for (ILocalNotificationBridge localNotification : GetPendingNotifications())
         {
             try
             {
@@ -268,7 +259,7 @@ public class NotificationManager
         NotificationProvider.SetPendingNotifications(new ArrayList<>());
     }
 
-    public static ILocalNotification GetOpenedNotificationInternal()
+    public static ILocalNotificationBridge GetOpenedNotificationInternal()
     {
         Activity unityPlayerActivity = UnityPlayer.currentActivity;
         Intent activityIntent = unityPlayerActivity.getIntent();
@@ -289,7 +280,7 @@ public class NotificationManager
         NotificationProvider.SetPendingNotifications(pendingIntents);
     }
 
-    private static void RemovePendingNotification(ILocalNotification localNotification)
+    private static void RemovePendingNotification(ILocalNotificationBridge localNotification)
     {
         List<ILocalNotification> pendingNotifications = GetPendingNotifications();
         pendingNotifications.remove(localNotification);

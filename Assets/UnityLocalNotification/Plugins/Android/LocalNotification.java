@@ -5,6 +5,9 @@ import org.json.JSONObject;
 
 public class LocalNotification implements ILocalNotification
 {
+    public static final String NOTIFICATION = "notification";
+    public static final String LOCAL_NOTIFICATION = "localNotification";
+    
     public static final String ID_KEY = "id";
     public static final String AUTO_CANCEL_KEY = "autoCancel";
     public static final String TITLE_KEY = "title";
@@ -122,7 +125,7 @@ public class LocalNotification implements ILocalNotification
         return jsonObject;
     }
 
-    public static ILocalNotification FromJSONObject(JSONObject jsonObject) {
+    public static ILocalNotificationBridge FromJSONObject(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;
         }
