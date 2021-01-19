@@ -164,7 +164,6 @@ public class NotificationManager
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
-        intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
         PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder.setContentIntent(activity);
 
@@ -172,7 +171,7 @@ public class NotificationManager
 
         Intent notificationIntent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
 
-        //notificationIntent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
+        notificationIntent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
 
         notificationIntent.putExtra(LocalNotification.NOTIFICATION, notification);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -226,9 +225,19 @@ public class NotificationManager
         return null;
     }
 
-    private static Bundle GetNotificationBundle(ILocalNotification localNotification)
+    private static Bundle GetNotificationBundle(ILocalNotification notification)
     {
         Bundle bundle = new Bundle();
+
+        ILocalNotification localNotification = new LocalNotification(notification.GetID(),
+                notification.GetAutoCancel(),
+                notification.GetTitle(),
+                notification.GetBody(),
+                notification.GetData(),
+                notification.GetSmallIconId(),
+                notification.GetLargeIconId(),
+                notification.GetFireInSeconds(),
+                notification.GetFiredSeconds());
 
         bundle.putString(LocalNotification.NOTIFICATION, localNotification.GetAsObject().toString());
 
