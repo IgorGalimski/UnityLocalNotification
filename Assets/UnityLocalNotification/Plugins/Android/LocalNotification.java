@@ -10,7 +10,7 @@ public class LocalNotification implements ILocalNotification
     private static final String TITLE_KEY = "title";
     private static final String BODY_KEY = "body";
     private static final String DATA_KEY = "data";
-    private static final String BIG_ICON_ID_KEY = "bigIconId";
+    private static final String LARGE_ICON_ID_KEY = "largeIconId";
     private static final String FIRE_IN_SECONDS_KEY = "fireInSeconds";
     private static final String FIRED_SECONDS_KEY = "firedSeconds";
 
@@ -19,18 +19,18 @@ public class LocalNotification implements ILocalNotification
     private String _title;
     private String _body;
     private String _data;
-    private String _bigIconId;
+    private String _largeIconId;
     private int _fireInSeconds;
     private long _firedSeconds;
 
-    public LocalNotification(String id, boolean autoCancel, String title, String body, String data, String bigIconId, int fireInSeconds, long firedSeconds)
+    public LocalNotification(String id, boolean autoCancel, String title, String body, String data, String largeIconId, int fireInSeconds, long firedSeconds)
     {
         _id = id;
         _autoCancel = autoCancel;
         _title = title;
         _body = body;
         _data = data;
-        _bigIconId = bigIconId;
+        _largeIconId = largeIconId;
         _fireInSeconds = fireInSeconds;
         _firedSeconds = firedSeconds;
     }
@@ -70,8 +70,8 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
-    public String GetBigIconId() {
-       return _bigIconId;
+    public String GetLargeIconId() {
+       return _largeIconId;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class LocalNotification implements ILocalNotification
             jsonObject.put(TITLE_KEY, _title);
             jsonObject.put(BODY_KEY, _body);
             jsonObject.put(DATA_KEY, _data);
-            jsonObject.put(BIG_ICON_ID_KEY, _bigIconId);
+            jsonObject.put(LARGE_ICON_ID_KEY, _largeIconId);
             jsonObject.put(FIRE_IN_SECONDS_KEY, _fireInSeconds);
             jsonObject.put(FIRED_SECONDS_KEY, _firedSeconds);
         }
@@ -123,7 +123,7 @@ public class LocalNotification implements ILocalNotification
         String title = null;
         String body = null;
         String data = null;
-        String bigIconId = null;
+        String largeIconId = null;
         int fireInSeconds = 0;
         int firedSeconds = 0;
 
@@ -139,7 +139,7 @@ public class LocalNotification implements ILocalNotification
             title = jsonObject.getString(TITLE_KEY);
             body = jsonObject.getString(BODY_KEY);
             data = jsonObject.getString(DATA_KEY);
-            bigIconId = jsonObject.getString(BIG_ICON_ID_KEY);
+            largeIconId = jsonObject.getString(BIG_ICON_ID_KEY);
             fireInSeconds = jsonObject.getInt(FIRE_IN_SECONDS_KEY);
             firedSeconds = jsonObject.getInt(FIRED_SECONDS_KEY);
         }
@@ -148,7 +148,7 @@ public class LocalNotification implements ILocalNotification
             e.printStackTrace();
         }
 
-        LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, bigIconId, fireInSeconds, firedSeconds);
+        LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId, fireInSeconds, firedSeconds);
         return localNotification;
     }
 }

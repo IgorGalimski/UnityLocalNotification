@@ -7,6 +7,9 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -124,7 +127,14 @@ public class NotificationManager
 
         notificationBuilder.setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
-                .setSmallIcon(icon);
+                .setSmallIcon(icon)
+                .setAutoCancel(localNotification.GetAutoCancel());
+
+        Bitmap largeIcon = GetDrawable(localNotification.GetLargeIconId());
+        if(largeIcon != null)
+        {
+            notificationBuilder.setLargeIcon(largeIcon);
+        }
 
         long futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
 
@@ -146,7 +156,7 @@ public class NotificationManager
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
         intent.putExtra(NotificationBroadcastReceiver.LOCAL_NOTIFICATION, notificationBundle);
-        PendingIntent activity = PendingIntent.getActivity(GetContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder.setContentIntent(activity);
 
         Notification notification = notificationBuilder.build();
@@ -170,6 +180,28 @@ public class NotificationManager
         }
 
         AddPendingNotification(GetLocalNotification(notificationIntent));
+    }
+
+    private static Bitmap GetDrawable(String resourceId)
+    {
+        try
+        {
+            Resources res = GetContext().getResources();
+            if (res != null)
+            {
+                int id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
+                if (id == 0)
+                    id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+
+                return BitmapFactory.decodeResource(GetContext().getResources(), id);
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "GetDrawable error: " + exception.getMessage());
+        }
+
+        return null;
     }
 
     private static Bundle GetNotificationBundle(ILocalNotification localNotification)
@@ -256,9 +288,9 @@ public class NotificationManager
         String title = localNotificationBundle.getString(LocalNotification.TITLE_KEY);
         String body = localNotificationBundle.getString(LocalNotification.BODY_KEY);
         String data = localNotificationBundle.getString(LocalNotification.DATA_KEY);
-        String bigIconId = localNotificationBundle.getString(LocalNotification.BIG_ICON_ID_KEY);
+        String largeIconId = localNotificationBundle.getString(LocalNotification.LARGE_ICON_ID_KEY);
         Long firedSeconds = localNotificationBundle.getLong(LocalNotification.FIRED_SECONDS_KEY);
-        ILocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, bigIconId,0, firedSeconds);
+        ILocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId,0, firedSeconds);
         
         return localNotification;
     }

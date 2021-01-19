@@ -16,7 +16,9 @@ public interface ILocalNotification
 
     String GetData();
     
-    String GetBigIconId();
+    String GetSmallIconId();
+    
+    String GetLargeIconId();
 
     int GetFireInSeconds();
 
