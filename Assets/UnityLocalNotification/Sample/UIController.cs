@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityLocalNotifications.iOS;
@@ -15,6 +17,9 @@ namespace UnityLocalNotifications.Sample
     public class UIController : MonoBehaviour
     {
         private const string NOTIFICATION_ENABLED_TEXT = "Notifications enabled: {0}";
+        
+        private const string FOREGROUND_RECEIVED_NOTIFICATIONS_TEXT = "Foreground notifications: {0}";
+        private const string BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT = "Background notifications: {0}";
 
         private const string IS_OPENED_BY_NOTIFICATION_TEXT = "Is opened by notification: {0}";
         
@@ -22,7 +27,10 @@ namespace UnityLocalNotifications.Sample
         private Text _areNotificatonsEnabled;
 
         [SerializeField] 
-        private Text _receivedNotifications;
+        private Text _foregroundReceivedNotifications;
+        
+        [SerializeField] 
+        private Text _backgroundReceivedNotifications;
         
         [SerializeField] 
         private Text _isOpenedByNotification = default;
@@ -47,6 +55,9 @@ namespace UnityLocalNotifications.Sample
 
         [SerializeField] 
         private Button _removeDeliveredNotifications = default;
+
+        [SerializeField] 
+        private Button _requestReceivedNotification = default;
 
         public void Start()
         {
@@ -85,6 +96,8 @@ namespace UnityLocalNotifications.Sample
             _scheduleNotification.onClick.AddListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
+            
+            _requestReceivedNotification.onClick.AddListener(OnRequestReceivedNotification);
         }
 
         public void OnDestroy()
@@ -99,6 +112,8 @@ namespace UnityLocalNotifications.Sample
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
+            
+            _requestReceivedNotification.onClick.RemoveListener(OnRequestReceivedNotification);
         }
 
         public void OnApplicationFocus(bool hasFocus)
@@ -109,12 +124,15 @@ namespace UnityLocalNotifications.Sample
             }
             else
             {
+#if UNITY_IOS
+                LocalNotificationController.SavePendingNotifications();
+#endif
+                
                 LocalNotificationController.ClearReceivedNotifications();
             }
         }
 
 #if UNITY_IOS
-
         private void OnNotificationStatusEnabledHandler(bool notificationEnabled)
         {
             LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
@@ -148,6 +166,10 @@ namespace UnityLocalNotifications.Sample
                 Data = "Test data",
                 FireInSeconds = 20
             });
+            
+#if UNITY_IOS
+            LocalNotificationController.SavePendingNotifications();
+#endif
         }
 
         private void OnRemoveScheduledNotifications()
@@ -158,6 +180,25 @@ namespace UnityLocalNotifications.Sample
         private void OnRemoveDeliveredNotifications()
         {
             LocalNotificationController.RemoveDeliveredNotifications();
+        }
+
+        private void OnRequestReceivedNotification()
+        {
+#if UNITY_IOS
+            LocalNotificationController.GetReceivedNotifications(receivedNotifications =>
+                {
+                    UpdateBackgroundNotifications(receivedNotifications);
+                });
+#endif
+
+#if UNITY_ANDROID
+            UpdateBackgroundNotifications(LocalNotificationController.GetReceivedNotifications());
+#endif
+
+            void UpdateBackgroundNotifications(List<LocalNotification> receivedNotifications)
+            {
+                _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications.Count);
+            }
         }
         
 #if UNITY_IOS
@@ -181,7 +222,7 @@ namespace UnityLocalNotifications.Sample
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
             _localNotificationReceived.text = localNotification.ToString();
-            _receivedNotifications.text += LocalNotificationController.GetReceivedNotifications()?.Count;
+            _foregroundReceivedNotifications.text = string.Format(FOREGROUND_RECEIVED_NOTIFICATIONS_TEXT, LocalNotificationController.GetReceivedNotifications()?.Count);
         }
     }   
 }

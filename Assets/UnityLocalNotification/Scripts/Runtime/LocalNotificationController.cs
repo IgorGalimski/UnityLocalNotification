@@ -149,15 +149,15 @@ namespace UnityLocalNotifications
                 {
                     PendingNotificationUpdated -= OnPendingNotificationUpdated;
                     
-                var pendingNotifications = GetPendingNotifications();
-                var localNotificationCollection = new LocalNotificationCollection();
-                localNotificationCollection._localNotifications = pendingNotifications;
+                    var pendingNotifications = GetPendingNotifications();
+                    var localNotificationCollection = new LocalNotificationCollection();
+                    localNotificationCollection._localNotifications = pendingNotifications;
 
-                var pendingNotificationsString = JsonUtility.ToJson(localNotificationCollection);
+                    var pendingNotificationsString = JsonUtility.ToJson(localNotificationCollection);
 
-                PlayerPrefs.SetString(PENDING_NOTIFICATIONS_KEY, pendingNotificationsString);
-                PlayerPrefs.Save();
-            }
+                    PlayerPrefs.SetString(PENDING_NOTIFICATIONS_KEY, pendingNotificationsString);
+                    PlayerPrefs.Save();
+                }
             }
             catch (Exception exception)
             {
