@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -113,8 +112,6 @@ public class NotificationManager
 
     public static void ScheduleLocalNotificationInternal(ILocalNotification localNotification)
     {
-        int icon = GetContext().getApplicationInfo().icon;
-
         NotificationCompat.Builder notificationBuilder;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 
         {
@@ -127,8 +124,17 @@ public class NotificationManager
 
         notificationBuilder.setContentTitle(localNotification.GetTitle())
                 .setContentText(localNotification.GetBody())
-                .setSmallIcon(icon)
                 .setAutoCancel(localNotification.GetAutoCancel());
+
+        int smallIconId = GetDrawableId(localNotification.GetSmallIconId());
+        if(smallIconId != 0)
+        {
+            notificationBuilder.setSmallIcon(smallIconId);
+        }
+        else
+        {
+            notificationBuilder.setSmallIcon(GetContext().getApplicationInfo().icon);
+        }
 
         Bitmap largeIcon = GetDrawable(localNotification.GetLargeIconId());
         if(largeIcon != null)
@@ -182,17 +188,30 @@ public class NotificationManager
         AddPendingNotification(GetLocalNotification(notificationIntent));
     }
 
+    private static Integer GetDrawableId(String resourceId)
+    {
+        int id = 0;
+
+        Resources res = GetContext().getResources();
+        if (res != null)
+        {
+            id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
+            if (id == 0)
+            {
+                id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+            }
+        }
+
+        return id;
+    }
+
     private static Bitmap GetDrawable(String resourceId)
     {
         try
         {
-            Resources res = GetContext().getResources();
-            if (res != null)
+            int id = GetDrawableId(resourceId);
+            if(id != 0)
             {
-                int id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
-                if (id == 0)
-                    id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
-
                 return BitmapFactory.decodeResource(GetContext().getResources(), id);
             }
         }
@@ -208,9 +227,12 @@ public class NotificationManager
     {
         Bundle bundle = new Bundle();
         bundle.putString(LocalNotification.ID_KEY, localNotification.GetID());
+        bundle.putBoolean(LocalNotification.AUTO_CANCEL_KEY, localNotification.GetAutoCancel());
         bundle.putString(LocalNotification.TITLE_KEY, localNotification.GetTitle());
         bundle.putString(LocalNotification.BODY_KEY, localNotification.GetBody());
         bundle.putString(LocalNotification.DATA_KEY, localNotification.GetData());
+        bundle.putString(LocalNotification.SMALL_ICON_ID_KEY, localNotification.GetSmallIconId());
+        bundle.putString(LocalNotification.LARGE_ICON_ID_KEY, localNotification.GetLargeIconId());
         bundle.putLong(LocalNotification.FIRED_SECONDS_KEY, localNotification.GetFiredSeconds());
 
         return bundle;
@@ -288,9 +310,10 @@ public class NotificationManager
         String title = localNotificationBundle.getString(LocalNotification.TITLE_KEY);
         String body = localNotificationBundle.getString(LocalNotification.BODY_KEY);
         String data = localNotificationBundle.getString(LocalNotification.DATA_KEY);
+        String smallIconId = localNotificationBundle.getString(LocalNotification.SMALL_ICON_ID_KEY);
         String largeIconId = localNotificationBundle.getString(LocalNotification.LARGE_ICON_ID_KEY);
         Long firedSeconds = localNotificationBundle.getLong(LocalNotification.FIRED_SECONDS_KEY);
-        ILocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId,0, firedSeconds);
+        ILocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, smallIconId, largeIconId,0, firedSeconds);
         
         return localNotification;
     }

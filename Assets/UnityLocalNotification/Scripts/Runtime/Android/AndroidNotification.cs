@@ -15,6 +15,8 @@ namespace UnityLocalNotifications.Android
 
         public String Data;
 
+        public String SmallIconId;
+
         public String LargeIconId;
 
         public int FireInSeconds;
@@ -36,6 +38,8 @@ namespace UnityLocalNotifications.Android
         public String GetBody() => Body;
 
         public String GetData() => Data;
+
+        String GetSmallIconId() => SmallIconId;
 
         String GetLargeIconId() => LargeIconId;
 

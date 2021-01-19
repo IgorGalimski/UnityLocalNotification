@@ -267,8 +267,6 @@ namespace UnityLocalNotifications
         {
             try
             {
-                localNotification.ID = localNotification.ID ?? Guid.NewGuid().ToString();
-                
 #if UNITY_IOS
                 var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(localNotification));
                 Marshal.StructureToPtr(localNotification, ptr, false);
@@ -279,8 +277,11 @@ namespace UnityLocalNotifications
                 var androidNotification = new AndroidNotification
                 {
                     Title = localNotification.Title,
+                    AutoCancel = true,
                     Body = localNotification.Body,
                     Data = localNotification.Data,
+                    SmallIconId = "small_icon",
+                    LargeIconId = "large_icon",
                     FireInSeconds = localNotification.FireInSeconds
                 };
 
