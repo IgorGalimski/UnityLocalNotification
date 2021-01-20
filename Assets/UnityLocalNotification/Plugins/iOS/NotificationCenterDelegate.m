@@ -14,6 +14,8 @@
 NSString *const FIRE_IN_SECONDS_KEY = @"fireInSeconds";
 NSString *const FIRED_IN_SECONDS_KEY = @"firedInSeconds";
 
+NSString *const LOCAL_PUSH_DATA_KEY = @"localPushData";
+
 NSArray<UNNotificationRequest*>* pendingRequests;
 
 + (void)load
@@ -83,7 +85,7 @@ NSArray<UNNotificationRequest*>* pendingRequests;
    
     if(localNotification->Data != nil)
     {
-        [userInfo setObject:@(localNotification->Data) forKey:@"data"];
+        [userInfo setObject:@(localNotification->Data) forKey:LOCAL_PUSH_DATA_KEY];
     }
     
     objNotificationContent.userInfo = userInfo;
@@ -167,14 +169,14 @@ void UpdateBugdeCounter()
 -(void)UpdateScheduledNotificationList
 {
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) 
+    [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests)
     {
         pendingRequests = requests;
         
         if(_pendingNotificationUpdated != nil)
         {
             _pendingNotificationUpdated();
-        } 
+        }
     }];
 }
 
@@ -276,22 +278,38 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
             
             [extraDictionary removeObjectForKey:@"aps"];
         }
-        
-        NSError* error;
-        NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options: NSJSONWritingPrettyPrinted error: &error];
-        
-        localNotification->Data = strdup([data bytes]);
 
         if ([[content.userInfo allKeys] containsObject:FIRE_IN_SECONDS_KEY])
         {
             int fireInSeconds = [content.userInfo[FIRE_IN_SECONDS_KEY] intValue];
             localNotification->FireInSeconds = fireInSeconds;
+            
+            [extraDictionary removeObjectForKey:FIRE_IN_SECONDS_KEY];
         }
         
         if ([[content.userInfo allKeys] containsObject:FIRED_IN_SECONDS_KEY])
         {
             long firedInSeconds = [content.userInfo[FIRED_IN_SECONDS_KEY] longValue];
             localNotification->FiredSeconds = firedInSeconds;
+            
+            [extraDictionary removeObjectForKey:FIRED_IN_SECONDS_KEY];
+        }
+        
+        if ([[content.userInfo allKeys] containsObject:LOCAL_PUSH_DATA_KEY])
+        {
+            extraDictionary = [extraDictionary objectForKey:LOCAL_PUSH_DATA_KEY];
+        }
+        
+        if ([NSJSONSerialization isValidJSONObject: extraDictionary])
+        {
+            NSError* error;
+            NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options: NSJSONWritingPrettyPrinted error: &error];
+            
+            localNotification->Data = strdup([data bytes]);
+        }
+        else
+        {
+            localNotification->Data = strdup([[extraDictionary description] UTF8String]);
         }
     }
     else
