@@ -195,13 +195,16 @@ public class NotificationManager
     {
         int id = 0;
 
-        Resources res = GetContext().getResources();
-        if (res != null)
+        if(resourceId != null)
         {
-            id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
-            if (id == 0)
+            Resources res = GetContext().getResources();
+            if (res != null)
             {
-                id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+                id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
+                if (id == 0)
+                {
+                    id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+                }
             }
         }
 

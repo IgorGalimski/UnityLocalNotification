@@ -1140,7 +1140,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Remove delivered
+  m_Text: RequestReceivedNotifications
 --- !u!222 &897780259
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -125,7 +125,7 @@ public class LocalNotification implements ILocalNotification
         return jsonObject;
     }
 
-    public static ILocalNotificationBridge FromJSONObject(JSONObject jsonObject) {
+    public static ILocalNotification FromJSONObject(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;
         }

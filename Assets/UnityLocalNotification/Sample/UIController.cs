@@ -125,10 +125,10 @@ namespace UnityLocalNotifications.Sample
             else
             {
 #if UNITY_IOS
-                LocalNotificationController.SavePendingNotifications();
+                //LocalNotificationController.SavePendingNotifications();
 #endif
                 
-                LocalNotificationController.ClearReceivedNotifications();
+                //LocalNotificationController.ClearReceivedNotifications();
             }
         }
 
@@ -164,7 +164,7 @@ namespace UnityLocalNotifications.Sample
                 Title = "Test title",
                 Body = "Test body",
                 Data = "Test data",
-                FireInSeconds = 20
+                FireInSeconds = 5
             });
             
 #if UNITY_IOS
