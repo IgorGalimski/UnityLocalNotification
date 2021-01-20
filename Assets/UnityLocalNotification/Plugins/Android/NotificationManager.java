@@ -146,7 +146,9 @@ public class NotificationManager
             notificationBuilder.setLargeIcon(largeIcon);
         }
 
-        long futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
+        Integer sec = 3;
+
+        long futureInMillis = System.currentTimeMillis() + sec*1000;
 
         int id;
         if(localNotification.GetID() != null)
@@ -159,7 +161,7 @@ public class NotificationManager
         }
         localNotification.SetID(id);
 
-        long fireSecondsUTC = System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds();
+        long fireSecondsUTC = System.currentTimeMillis()/1000 + sec;
         localNotification.SetFiredSeconds(fireSecondsUTC);
 
         Bundle notificationBundle = GetNotificationBundle(localNotification);
@@ -283,7 +285,7 @@ public class NotificationManager
         NotificationProvider.SetPendingNotifications(pendingIntents);
     }
 
-    private static void RemovePendingNotification(ILocalNotificationBridge localNotification)
+    private static void RemovePendingNotification(ILocalNotification localNotification)
     {
         List<ILocalNotification> pendingNotifications = GetPendingNotifications();
         pendingNotifications.remove(localNotification);

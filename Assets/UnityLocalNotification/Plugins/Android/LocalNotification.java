@@ -1,5 +1,7 @@
 package com.igorgalimski.unitylocalnotification;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -97,7 +99,8 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
-    public void SetFiredSeconds(long firedSeconds) {
+    public void SetFiredSeconds(long firedSeconds)
+    {
         _firedSeconds = firedSeconds;
     }
 
@@ -107,22 +110,27 @@ public class LocalNotification implements ILocalNotification
         JSONObject jsonObject = new JSONObject();
         try
         {
-            jsonObject.put(ID_KEY, _id);
+            jsonObject.put(ID_KEY, GetValue(_id));
             jsonObject.put(AUTO_CANCEL_KEY, _autoCancel);
-            jsonObject.put(TITLE_KEY, _title);
-            jsonObject.put(BODY_KEY, _body);
-            jsonObject.put(DATA_KEY, _data);
-            jsonObject.put(SMALL_ICON_ID_KEY, _smallIconId);
-            jsonObject.put(LARGE_ICON_ID_KEY, _largeIconId);
+            jsonObject.put(TITLE_KEY, GetValue(_title));
+            jsonObject.put(BODY_KEY, GetValue(_body));
+            jsonObject.put(DATA_KEY, GetValue(_data));
+            jsonObject.put(SMALL_ICON_ID_KEY, GetValue(_smallIconId));
+            jsonObject.put(LARGE_ICON_ID_KEY, GetValue(_largeIconId));
             jsonObject.put(FIRE_IN_SECONDS_KEY, _fireInSeconds);
             jsonObject.put(FIRED_SECONDS_KEY, _firedSeconds);
         }
         catch (JSONException e)
         {
-            e.printStackTrace();
+            Log.e(NotificationManager.LOG, "GetAsObject", e);
         }
 
         return jsonObject;
+    }
+
+    private Object GetValue(String value)
+    {
+        return value == null ? JSONObject.NULL : value;
     }
 
     public static ILocalNotification FromJSONObject(JSONObject jsonObject) {
@@ -138,7 +146,7 @@ public class LocalNotification implements ILocalNotification
         String smallIconId = null;
         String largeIconId = null;
         int fireInSeconds = 0;
-        int firedSeconds = 0;
+        long firedSeconds = 0;
 
         try
         {
@@ -155,11 +163,11 @@ public class LocalNotification implements ILocalNotification
             smallIconId = jsonObject.getString(SMALL_ICON_ID_KEY);
             largeIconId = jsonObject.getString(LARGE_ICON_ID_KEY);
             fireInSeconds = jsonObject.getInt(FIRE_IN_SECONDS_KEY);
-            firedSeconds = jsonObject.getInt(FIRED_SECONDS_KEY);
+            firedSeconds = jsonObject.getLong(FIRED_SECONDS_KEY);
         }
         catch (JSONException e)
         {
-            e.printStackTrace();
+            Log.e(NotificationManager.LOG, "FromJSONObject", e);
         }
 
         LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId, smallIconId, fireInSeconds, firedSeconds);
