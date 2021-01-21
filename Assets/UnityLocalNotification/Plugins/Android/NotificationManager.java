@@ -167,6 +167,8 @@ public class NotificationManager
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
+        intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
+        
         PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         notificationBuilder.setContentIntent(activity);
 
