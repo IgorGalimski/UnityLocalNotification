@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,10 +57,7 @@ namespace UnityLocalNotifications.Sample
         [SerializeField] 
         private Button _removeDeliveredNotifications = default;
 
-        [SerializeField] 
-        private Button _requestReceivedNotification = default;
-
-        public void Start()
+        public IEnumerator Start()
         {
 #if UNITY_IOS
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
@@ -81,8 +79,6 @@ namespace UnityLocalNotifications.Sample
             notificationChannel.Vibration = true;
 
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
-            
-            UpdateBackgroundNotifications(LocalNotificationController.ReceivedNotifications);
 #endif
             UpdateOpenedByNotificationStatus();
             
@@ -97,7 +93,9 @@ namespace UnityLocalNotifications.Sample
             _removeScheduledNotifications.onClick.AddListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
             
-            _requestReceivedNotification.onClick.AddListener(OnRequestReceivedNotification);
+            yield return new WaitForEndOfFrame();
+            
+            UpdateBackgroundNotifications(LocalNotificationController.ReceivedNotifications);
         }
 
         public void OnDestroy()
@@ -112,8 +110,6 @@ namespace UnityLocalNotifications.Sample
             _scheduleNotification.onClick.RemoveListener(ScheduleLocalNotificationHandler);
             _removeScheduledNotifications.onClick.RemoveListener(OnRemoveScheduledNotifications);
             _removeDeliveredNotifications.onClick.RemoveListener(OnRemoveDeliveredNotifications);
-            
-            _requestReceivedNotification.onClick.RemoveListener(OnRequestReceivedNotification);
         }
 
         public void OnApplicationFocus(bool hasFocus)
@@ -166,10 +162,6 @@ namespace UnityLocalNotifications.Sample
                 Data = "Test data",
                 FireInSeconds = 5
             });
-            
-#if UNITY_IOS
-            LocalNotificationController.SavePendingNotifications();
-#endif
         }
 
         private void OnRemoveScheduledNotifications()
@@ -182,19 +174,9 @@ namespace UnityLocalNotifications.Sample
             LocalNotificationController.RemoveDeliveredNotifications();
         }
 
-        private void OnRequestReceivedNotification()
-        {
-#if UNITY_IOS
-            LocalNotificationController.GetReceivedNotifications(receivedNotifications =>
-                {
-                    UpdateBackgroundNotifications(receivedNotifications);
-                });
-#endif
-        }
-        
         private void UpdateBackgroundNotifications(List<LocalNotification> receivedNotifications)
         {
-            _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications.Count);
+            _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications?.Count);
         }
         
 #if UNITY_IOS

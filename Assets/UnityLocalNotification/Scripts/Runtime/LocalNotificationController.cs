@@ -84,10 +84,9 @@ namespace UnityLocalNotifications
         public static event Action PendingNotificationUpdated = () => { };
 
 #endif
-        
-#if UNITY_ANDROID
         public static List<LocalNotification> ReceivedNotifications { get; private set; }
         
+#if UNITY_ANDROID
         private static AndroidJavaClass _notificationManager;
         private static AndroidJavaClass GetNotificationManager()
         {
@@ -112,11 +111,20 @@ namespace UnityLocalNotifications
                 ForegroundReceivedNotifications = new List<LocalNotification>();
                 
                 InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback, PendingNotificationsUpdatedCallback);
+
+                GetReceivedNotifications(OnGetReceivedNotifications);
+
+                SavePendingNotifications();
             }
             catch (Exception exception)
             {
                 Debug.LogError("Initialize error: " + exception.Message);
             }
+        }
+
+        private static void OnGetReceivedNotifications(List<LocalNotification> localNotifications)
+        {
+            ReceivedNotifications = localNotifications;
         }
 
         public static void RequestNotificationEnabledStatus()
@@ -131,7 +139,7 @@ namespace UnityLocalNotifications
             }
         }
 
-        public static void RequestUpdatePendingNotifications()
+        private static void RequestUpdatePendingNotifications()
         {
             try
             {
@@ -143,7 +151,7 @@ namespace UnityLocalNotifications
             }
         }
 
-        public static void SavePendingNotifications()
+        private static void SavePendingNotifications()
         {
             try
             {
@@ -171,7 +179,7 @@ namespace UnityLocalNotifications
             }
         }
 
-        public static void GetReceivedNotifications(Action<List<LocalNotification>> receivedNotifications)
+        private static void GetReceivedNotifications(Action<List<LocalNotification>> receivedNotifications)
         {
             try
             {
@@ -284,6 +292,8 @@ namespace UnityLocalNotifications
                 Marshal.StructureToPtr(localNotification, ptr, false);
                 
                 ScheduleLocalNotificationInternal(ptr);
+
+                SavePendingNotifications();
             }
             catch (Exception exception)
             {
@@ -541,6 +551,8 @@ namespace UnityLocalNotifications
         private static void NotificationReceivedCallback(LocalNotification localNotification)
         {
             ForegroundReceivedNotifications.Add(localNotification);
+            
+            SavePendingNotifications();
             
             NotificationReceivedEvent(localNotification);
         }

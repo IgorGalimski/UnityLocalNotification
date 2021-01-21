@@ -123,8 +123,6 @@ NSArray<UNNotificationRequest*>* pendingRequests;
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error)
     {
         UpdateBugdeCounter();
-        
-        [self UpdateScheduledNotificationList];
     }];
 }
 
