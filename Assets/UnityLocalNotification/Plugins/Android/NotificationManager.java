@@ -146,9 +146,7 @@ public class NotificationManager
             notificationBuilder.setLargeIcon(largeIcon);
         }
 
-        Integer sec = 3;
-
-        long futureInMillis = System.currentTimeMillis() + sec*1000;
+        long futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
 
         int id;
         if(localNotification.GetID() != null)
@@ -161,7 +159,7 @@ public class NotificationManager
         }
         localNotification.SetID(id);
 
-        long fireSecondsUTC = System.currentTimeMillis()/1000 + sec;
+        long fireSecondsUTC = System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds();
         localNotification.SetFiredSeconds(fireSecondsUTC);
 
         Bundle notificationBundle = GetNotificationBundle(localNotification);
