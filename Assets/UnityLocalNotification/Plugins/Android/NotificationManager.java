@@ -1,6 +1,7 @@
 package com.igorgalimski.unitylocalnotification;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -332,8 +333,32 @@ public class NotificationManager
             _notificationReceivedCallback.OnNotificationReceived();
         }
 
-        NotificationProvider.AddReceivedNotification(localNotification);
+        if(!IsAppOnForeground())
+        {
+            NotificationProvider.AddReceivedNotification(localNotification);
+        }
+
         RemovePendingNotification(localNotification);
+    }
+
+    private static boolean IsAppOnForeground()
+    {
+        ActivityManager activityManager = (ActivityManager) GetContext().getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null)
+        {
+            return false;
+        }
+
+        final String packageName = GetContext().getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses)
+        {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static List<ILocalNotification> GetReceivedNotificationsListInternal()
