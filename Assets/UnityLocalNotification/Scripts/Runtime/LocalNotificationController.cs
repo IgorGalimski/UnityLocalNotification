@@ -100,6 +100,8 @@ namespace UnityLocalNotifications
         }
 #endif
         
+        public static List<LocalNotification> ForegroundReceivedNotifications { get; private set; } = new List<LocalNotification>();
+        
         public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
         
 #if UNITY_IOS
@@ -107,6 +109,8 @@ namespace UnityLocalNotifications
         {
             try
             {
+                ForegroundReceivedNotifications = new List<LocalNotification>();
+                
                 InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback, PendingNotificationsUpdatedCallback);
             }
             catch (Exception exception)
@@ -220,6 +224,7 @@ namespace UnityLocalNotifications
 
                 ReceivedNotifications = GetReceivedNotifications();
                 
+                ForegroundReceivedNotifications = new List<LocalNotification>();
                 ClearReceivedNotifications();
             }
             catch (Exception exception)
@@ -472,9 +477,12 @@ namespace UnityLocalNotifications
 #if UNITY_ANDROID
         private static void OnNotificationReceived()
         {
-            var notification = GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            var notificationJavaObject = GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            var localNotification = (LocalNotification)ParseNotificationFromAndroidJavaObject(notificationJavaObject);
             
-            NotificationReceivedEvent?.Invoke((LocalNotification)ParseNotificationFromAndroidJavaObject(notification));
+            ForegroundReceivedNotifications.Add(localNotification);
+
+            NotificationReceivedEvent?.Invoke(localNotification);
         }
 
         private static LocalNotification? ParseNotificationFromAndroidJavaObject(AndroidJavaObject notification)
@@ -532,6 +540,8 @@ namespace UnityLocalNotifications
         [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
         private static void NotificationReceivedCallback(LocalNotification localNotification)
         {
+            ForegroundReceivedNotifications.Add(localNotification);
+            
             NotificationReceivedEvent(localNotification);
         }
         

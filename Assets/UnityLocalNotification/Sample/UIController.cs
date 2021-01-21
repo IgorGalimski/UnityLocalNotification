@@ -81,6 +81,8 @@ namespace UnityLocalNotifications.Sample
             notificationChannel.Vibration = true;
 
             LocalNotificationController.CreateNotificationChannel(notificationChannel);
+            
+            UpdateBackgroundNotifications(LocalNotificationController.ReceivedNotifications);
 #endif
             UpdateOpenedByNotificationStatus();
             
@@ -96,8 +98,6 @@ namespace UnityLocalNotifications.Sample
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
             
             _requestReceivedNotification.onClick.AddListener(OnRequestReceivedNotification);
-            
-            UpdateBackgroundNotifications(LocalNotificationController.ReceivedNotifications);
         }
 
         public void OnDestroy()
@@ -218,7 +218,7 @@ namespace UnityLocalNotifications.Sample
         private void NotificationReceivedHandler(LocalNotification localNotification)
         {
             _localNotificationReceived.text = localNotification.ToString();
-            _foregroundReceivedNotifications.text = string.Format(FOREGROUND_RECEIVED_NOTIFICATIONS_TEXT, LocalNotificationController.GetReceivedNotifications()?.Count);
+            _foregroundReceivedNotifications.text = string.Format(FOREGROUND_RECEIVED_NOTIFICATIONS_TEXT, LocalNotificationController.ForegroundReceivedNotifications?.Count);
         }
     }   
 }
