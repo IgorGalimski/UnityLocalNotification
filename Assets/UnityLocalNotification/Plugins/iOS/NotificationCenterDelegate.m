@@ -77,7 +77,7 @@ NSArray<UNNotificationRequest*>* pendingRequests;
         objNotificationContent.body = [NSString localizedUserNotificationStringForKey: [NSString stringWithUTF8String: localNotification->Body] arguments:nil];
     }
     
-    NSInteger firedSeconds = [now timeIntervalSince1970] * 1000;
+    NSInteger firedSeconds = [now timeIntervalSince1970];
 
     NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] init];
     [userInfo setObject: @(seconds) forKey:FIRE_IN_SECONDS_KEY];
