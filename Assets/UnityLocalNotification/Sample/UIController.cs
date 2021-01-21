@@ -98,6 +98,8 @@ namespace UnityLocalNotifications.Sample
             _removeDeliveredNotifications.onClick.AddListener(OnRemoveDeliveredNotifications);
             
             _requestReceivedNotification.onClick.AddListener(OnRequestReceivedNotification);
+            
+            UpdateBackgroundNotifications(LocalNotificationController.ReceivedNotifications);
         }
 
         public void OnDestroy()
@@ -190,15 +192,11 @@ namespace UnityLocalNotifications.Sample
                     UpdateBackgroundNotifications(receivedNotifications);
                 });
 #endif
-
-#if UNITY_ANDROID
-            UpdateBackgroundNotifications(LocalNotificationController.GetReceivedNotifications());
-#endif
-
-            void UpdateBackgroundNotifications(List<LocalNotification> receivedNotifications)
-            {
-                _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications.Count);
-            }
+        }
+        
+        private void UpdateBackgroundNotifications(List<LocalNotification> receivedNotifications)
+        {
+            _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications.Count);
         }
         
 #if UNITY_IOS

@@ -86,7 +86,7 @@ namespace UnityLocalNotifications
 #endif
         
 #if UNITY_ANDROID
-        public static List<LocalNotification> ReceivedNotification { get; private set; }
+        public static List<LocalNotification> ReceivedNotifications { get; private set; }
         
         private static AndroidJavaClass _notificationManager;
         private static AndroidJavaClass GetNotificationManager()
@@ -218,7 +218,8 @@ namespace UnityLocalNotifications
                 _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
                 _notificationManager.CallStatic("InitializeInternal", notificationReceivedCallback);
 
-                ReceivedNotification = GetReceivedNotifications();
+                ReceivedNotifications = GetReceivedNotifications();
+                
                 ClearReceivedNotifications();
             }
             catch (Exception exception)
