@@ -7,6 +7,8 @@ namespace UnityLocalNotifications
     [Serializable]
     public struct LocalNotification
     {
+        public bool Local;
+        
         public string ID;
         
         public string Title;

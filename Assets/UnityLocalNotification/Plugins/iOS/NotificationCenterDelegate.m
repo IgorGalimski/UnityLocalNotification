@@ -296,6 +296,8 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
         if ([[content.userInfo allKeys] containsObject:LOCAL_PUSH_DATA_KEY])
         {
             extraDictionary = [extraDictionary objectForKey:LOCAL_PUSH_DATA_KEY];
+            
+            localNotification->Local = true;
         }
         
         if ([NSJSONSerialization isValidJSONObject: extraDictionary])
