@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using UnityLocalNotifications.iOS;
 #if UNITY_ANDROID
 using UnityLocalNotifications.Android;
 #endif
 
 #if UNITY_IOS
 using UnityLocalNotifications.Authorization;
+using UnityLocalNotifications.iOS;
 #endif
 
 namespace UnityLocalNotifications.Sample
@@ -69,8 +69,6 @@ namespace UnityLocalNotifications.Sample
 #endif
             
 #if UNITY_ANDROID
-            LocalNotificationController.Initialize();
-
             UpdateNotificationStatus();
 
             var notificationChannel = new NotificationChannel();

@@ -208,7 +208,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-        public static void Initialize()
+        private static void Initialize()
         {
             try
             {
