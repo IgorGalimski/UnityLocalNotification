@@ -95,140 +95,169 @@ public class NotificationManager
 
     public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback)
     {
-        _notificationReceivedCallback = notificationReceivedCallback;
+        try
+        {
+            _notificationReceivedCallback = notificationReceivedCallback;
 
-        ComponentName receiver = new ComponentName(GetContext(), NotificationBroadcastReceiver.class);
-        PackageManager pm = GetContext().getPackageManager();
+            ComponentName receiver = new ComponentName(GetContext(), NotificationBroadcastReceiver.class);
+            PackageManager pm = GetContext().getPackageManager();
 
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "InitializeInternal", exception);
+        }
     }
 
     public static void CreateChannelInternal(INotificationChannel notificationChannel)
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        try
         {
-            String notificationChannelId = notificationChannel.GetId();
-            NotificationProvider.SetNotificationChannelID(notificationChannelId);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            {
+                String notificationChannelId = notificationChannel.GetId();
+                NotificationProvider.SetNotificationChannelID(notificationChannelId);
 
-            NotificationChannel channel = new NotificationChannel(notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
-            channel.setDescription(notificationChannel.GetDescription());
-            channel.setShowBadge(notificationChannel.GetShowBadge());
-            channel.enableLights(notificationChannel.GetLight());
-            channel.enableVibration(notificationChannel.GetVibration());
+                NotificationChannel channel = new NotificationChannel(notificationChannelId, notificationChannel.GetName(), notificationChannel.GetImportance());
+                channel.setDescription(notificationChannel.GetDescription());
+                channel.setShowBadge(notificationChannel.GetShowBadge());
+                channel.enableLights(notificationChannel.GetLight());
+                channel.enableVibration(notificationChannel.GetVibration());
 
-            GetNotificationManager().createNotificationChannel(channel);
+                GetNotificationManager().createNotificationChannel(channel);
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "CreateChannelInternal", exception);
         }
     }
 
     public static void ScheduleLocalNotificationInternal(ILocalNotificationBridge localNotificationBridge)
     {
-        ILocalNotification localNotification = ILocalNotification.GetFromBridge(localNotificationBridge);
-
-        NotificationCompat.Builder notificationBuilder;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        try
         {
-            notificationBuilder = new NotificationCompat.Builder(GetContext());
+            ILocalNotification localNotification = ILocalNotification.GetFromBridge(localNotificationBridge);
+
+            NotificationCompat.Builder notificationBuilder;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+            {
+                notificationBuilder = new NotificationCompat.Builder(GetContext());
+            }
+            else
+            {
+                notificationBuilder = new NotificationCompat.Builder(GetContext(), NotificationProvider.GetNotificationChannelID());
+            }
+
+            notificationBuilder.setContentTitle(localNotification.GetTitle())
+                    .setContentText(localNotification.GetBody())
+                    .setAutoCancel(localNotification.GetAutoCancel());
+
+            int smallIconId = GetDrawableId(localNotification.GetSmallIconId());
+            if(smallIconId != 0)
+            {
+                notificationBuilder.setSmallIcon(smallIconId);
+            }
+            else
+            {
+                notificationBuilder.setSmallIcon(GetContext().getApplicationInfo().icon);
+            }
+
+            Bitmap largeIcon = GetDrawable(localNotification.GetLargeIconId());
+            if(largeIcon != null)
+            {
+                notificationBuilder.setLargeIcon(largeIcon);
+            }
+
+            long futureInMillis;
+
+            if(localNotification.GetFiredSeconds() == 0)
+            {
+               futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
+
+               long fireSecondsUTC = futureInMillis/1000;
+               localNotification.SetFiredSeconds(fireSecondsUTC);
+            }
+            else
+            {
+               futureInMillis = localNotification.GetFiredSeconds()*1000;
+            }
+
+            notificationBuilder.setWhen(futureInMillis);
+
+            int id;
+            if(localNotification.GetID() != null)
+            {
+                id = localNotification.GetID().hashCode();
+            }
+            else
+            {
+                id = (int) futureInMillis;
+            }
+            localNotification.SetID(id);
+
+            Bundle notificationBundle = GetNotificationBundle(localNotification);
+
+            Intent intent = new Intent(GetContext(), GetMainActivity());
+            intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
+
+            PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, 0);
+            notificationBuilder.setContentIntent(activity);
+
+            Notification notification = notificationBuilder.build();
+
+            Intent notificationIntent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
+
+            notificationIntent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
+
+            notificationIntent.putExtra(LocalNotification.NOTIFICATION, notification);
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            {
+                GetAlarmManager().set(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
+            }
+            else
+            {
+                GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
+            }
+
+            AddPendingNotification(localNotification);
+
         }
-        else
+        catch (Exception exception)
         {
-            notificationBuilder = new NotificationCompat.Builder(GetContext(), NotificationProvider.GetNotificationChannelID());
+            Log.e(LOG, "ScheduleLocalNotificationInternal", exception);
         }
-
-        notificationBuilder.setContentTitle(localNotification.GetTitle())
-                .setContentText(localNotification.GetBody())
-                .setAutoCancel(localNotification.GetAutoCancel());
-
-        int smallIconId = GetDrawableId(localNotification.GetSmallIconId());
-        if(smallIconId != 0)
-        {
-            notificationBuilder.setSmallIcon(smallIconId);
-        }
-        else
-        {
-            notificationBuilder.setSmallIcon(GetContext().getApplicationInfo().icon);
-        }
-
-        Bitmap largeIcon = GetDrawable(localNotification.GetLargeIconId());
-        if(largeIcon != null)
-        {
-            notificationBuilder.setLargeIcon(largeIcon);
-        }
-
-        long futureInMillis;
-
-        if(localNotification.GetFiredSeconds() == 0)
-        {
-           futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
-
-           long fireSecondsUTC = futureInMillis/1000;
-           localNotification.SetFiredSeconds(fireSecondsUTC);
-        }
-        else
-        {
-           futureInMillis = localNotification.GetFiredSeconds()*1000;
-        }
-        
-        notificationBuilder.setWhen(futureInMillis);
-
-        int id;
-        if(localNotification.GetID() != null)
-        {
-            id = localNotification.GetID().hashCode();
-        }
-        else
-        {
-            id = (int) futureInMillis;
-        }
-        localNotification.SetID(id);
-
-        Bundle notificationBundle = GetNotificationBundle(localNotification);
-
-        Intent intent = new Intent(GetContext(), GetMainActivity());
-        intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
-
-        PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, 0);
-        notificationBuilder.setContentIntent(activity);
-
-        Notification notification = notificationBuilder.build();
-
-        Intent notificationIntent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
-
-        notificationIntent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
-
-        notificationIntent.putExtra(LocalNotification.NOTIFICATION, notification);
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-        {
-            GetAlarmManager().set(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
-        }
-        else
-        {
-            GetAlarmManager().setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, futureInMillis, pendingIntent);
-        }
-
-        AddPendingNotification(localNotification);
     }
 
     private static Integer GetDrawableId(String resourceId)
     {
         int id = 0;
 
-        if(resourceId != null)
+        try
         {
-            Resources res = GetContext().getResources();
-            if (res != null)
+            if(resourceId != null)
             {
-                id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
-                if (id == 0)
+                Resources res = GetContext().getResources();
+                if (res != null)
                 {
-                    id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+                    id = res.getIdentifier(resourceId, "mipmap", GetContext().getPackageName());
+                    if (id == 0)
+                    {
+                        id = res.getIdentifier(resourceId, "drawable", GetContext().getPackageName());
+                    }
                 }
             }
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "GetDrawableId", exception);
         }
 
         return id;
@@ -246,7 +275,7 @@ public class NotificationManager
         }
         catch (Exception exception)
         {
-            Log.e(LOG, "GetDrawable error: " + exception.getMessage());
+            Log.e(LOG, "GetDrawable", exception);
         }
 
         return null;
@@ -256,41 +285,64 @@ public class NotificationManager
     {
         Bundle bundle = new Bundle();
 
-        bundle.putString(LocalNotification.NOTIFICATION, localNotification.GetAsObject().toString());
+        try
+        {
+            bundle.putString(LocalNotification.NOTIFICATION, localNotification.GetAsObject().toString());
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "GetNotificationBundle", exception);
+        }
 
         return bundle;
     }
 
     public static void RemoveScheduledNotificationsInternal()
     {
-        for (ILocalNotificationBridge localNotification : GetPendingNotifications())
+        try
         {
-            try
+            for (ILocalNotificationBridge localNotification : GetPendingNotifications())
             {
-                Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
-                PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
-
-                if (broadcast != null)
+                try
                 {
-                    GetAlarmManager().cancel(broadcast);
-                    broadcast.cancel();
+                    Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
+                    PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
+
+                    if (broadcast != null)
+                    {
+                        GetAlarmManager().cancel(broadcast);
+                        broadcast.cancel();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Log.e(LOG, "RemoveScheduledNotifications", exception);
                 }
             }
-            catch (Exception exception)
-            {
-                Log.e(LOG, "RemoveScheduledNotificationsInternal: " + exception.getMessage());
-            }
-        }
 
-        NotificationProvider.SetPendingNotifications(new ArrayList<>());
+            NotificationProvider.SetPendingNotifications(new ArrayList<>());
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "RemoveScheduledNotificationsInternal", exception);
+        }
     }
 
     public static ILocalNotificationBridge GetOpenedNotificationInternal()
     {
-        Activity unityPlayerActivity = UnityPlayer.currentActivity;
-        Intent activityIntent = unityPlayerActivity.getIntent();
+        try
+        {
+            Activity unityPlayerActivity = UnityPlayer.currentActivity;
+            Intent activityIntent = unityPlayerActivity.getIntent();
 
-        return GetLocalNotification(activityIntent);
+            return GetLocalNotification(activityIntent);
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "GetOpenedNotificationInternal", exception);
+        }
+
+        return null;
     }
 
     private static List<ILocalNotification> GetPendingNotifications()
@@ -300,23 +352,44 @@ public class NotificationManager
 
     private static void AddPendingNotification(ILocalNotification localNotification)
     {
-        List<ILocalNotification> pendingIntents = GetPendingNotifications();
-        pendingIntents.add(localNotification);
+        try
+        {
+            List<ILocalNotification> pendingIntents = GetPendingNotifications();
+            pendingIntents.add(localNotification);
 
-        NotificationProvider.SetPendingNotifications(pendingIntents);
+            NotificationProvider.SetPendingNotifications(pendingIntents);
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "AddPendingNotification", exception);
+        }
     }
 
     private static void RemovePendingNotification(ILocalNotification localNotification)
     {
-        List<ILocalNotification> pendingNotifications = GetPendingNotifications();
-        pendingNotifications.remove(localNotification);
+        try
+        {
+            List<ILocalNotification> pendingNotifications = GetPendingNotifications();
+            pendingNotifications.remove(localNotification);
 
-        NotificationProvider.SetPendingNotifications(pendingNotifications);
+            NotificationProvider.SetPendingNotifications(pendingNotifications);
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "RemovePendingNotification", exception);
+        }
     }
 
     public static void RemoveReceivedNotificationsInternal()
     {
-        GetNotificationManager().cancelAll();
+        try
+        {
+            GetNotificationManager().cancelAll();
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "RemoveReceivedNotificationsInternal", exception);
+        }
     }
 
     public static ILocalNotification GetLocalNotification(Intent intent)
@@ -336,9 +409,9 @@ public class NotificationManager
 
             return LocalNotification.FromJSONObject(pushNotificationJSONObject);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Log.e(LOG, "GetLocalNotification", e);
+            Log.e(LOG, "GetLocalNotification", exception);
         }
 
         return null;
@@ -346,38 +419,54 @@ public class NotificationManager
 
     public static void NotifyNotificationReceived(ILocalNotification localNotification)
     {
-        LastReceivedNotification = localNotification;
-
-        if(_notificationReceivedCallback != null)
+        try
         {
-            _notificationReceivedCallback.OnNotificationReceived();
-        }
+            LastReceivedNotification = localNotification;
 
-        if(!IsAppOnForeground())
+            if(_notificationReceivedCallback != null)
+            {
+                _notificationReceivedCallback.OnNotificationReceived();
+            }
+
+            if(!IsAppOnForeground())
+            {
+                NotificationProvider.AddReceivedNotification(localNotification);
+            }
+
+            RemovePendingNotification(localNotification);
+        }
+        catch (Exception exception)
         {
-            NotificationProvider.AddReceivedNotification(localNotification);
+            Log.e(LOG, "NotifyNotificationReceived", exception);
         }
-
-        RemovePendingNotification(localNotification);
     }
 
     private static boolean IsAppOnForeground()
     {
-        ActivityManager activityManager = (ActivityManager) GetContext().getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        if (appProcesses == null)
+        try
         {
-            return false;
-        }
-
-        final String packageName = GetContext().getPackageName();
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses)
-        {
-            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName))
+            ActivityManager activityManager = (ActivityManager) GetContext().getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            if (appProcesses == null)
             {
-                return true;
+                return false;
+            }
+
+            final String packageName = GetContext().getPackageName();
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses)
+            {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                        && appProcess.processName.equals(packageName))
+                {
+                    return true;
+                }
             }
         }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "IsAppOnForeground", exception);
+        }
+
         return false;
     }
 
@@ -393,9 +482,16 @@ public class NotificationManager
 
     public static boolean AreNotificationEnabledInternal()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        try
         {
-            return GetNotificationManager().areNotificationsEnabled();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            {
+                return GetNotificationManager().areNotificationsEnabled();
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "AreNotificationEnabledInternal", exception);
         }
 
         return false;
