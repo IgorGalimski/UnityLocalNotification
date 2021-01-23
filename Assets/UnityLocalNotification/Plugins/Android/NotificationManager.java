@@ -6,8 +6,10 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -94,6 +96,13 @@ public class NotificationManager
     public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback)
     {
         _notificationReceivedCallback = notificationReceivedCallback;
+
+        ComponentName receiver = new ComponentName(GetContext(), NotificationBroadcastReceiver.class);
+        PackageManager pm = GetContext().getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
     }
 
     public static void CreateChannelInternal(INotificationChannel notificationChannel)
@@ -168,7 +177,7 @@ public class NotificationManager
         Intent intent = new Intent(GetContext(), GetMainActivity());
         intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
         
-        PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, 0);
         notificationBuilder.setContentIntent(activity);
 
         Notification notification = notificationBuilder.build();
@@ -180,7 +189,7 @@ public class NotificationManager
         notificationIntent.putExtra(LocalNotification.NOTIFICATION, notification);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(GetContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
         {
