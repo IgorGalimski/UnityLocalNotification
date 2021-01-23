@@ -12,52 +12,48 @@ import java.util.List;
 
 public class NotificationBroadcastReceiver extends BroadcastReceiver
 {
-    private static int NOTIFICATION_DELAY = 5;
-
     public static String NOTIFICATION = "notification";
 
     public void onReceive(Context context, Intent intent)
     {
-        com.igorgalimski.unitylocalnotification.NotificationManager.SetContext(context);
-
-        if(!com.igorgalimski.unitylocalnotification.NotificationManager.AreNotificationEnabledInternal())
+        try 
         {
-            return;
-        }
-
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
-        {
-            List<ILocalNotificationBridge> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
-
-            for (ILocalNotificationBridge localNotification: pendingNotifications)
+            com.igorgalimski.unitylocalnotification.NotificationManager.SetContext(context);
+    
+            if(!com.igorgalimski.unitylocalnotification.NotificationManager.AreNotificationEnabledInternal())
             {
-                com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
+                return;
             }
-
-            NotificationProvider.ClearPendingNotifications();
-        }
-        else
-        {
-            NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
-
-            if(localNotification != null)
+    
+            if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
             {
-                long realtime = System.currentTimeMillis()/1000;
-
-                if((realtime - localNotification.GetFiredSeconds()) > NOTIFICATION_DELAY)
+                List<ILocalNotificationBridge> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
+    
+                for (ILocalNotificationBridge localNotification: pendingNotifications)
                 {
-                    Log.e(com.igorgalimski.unitylocalnotification.NotificationManager.LOG, "Notification time is expired");
-
-                    return;
+                    com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
                 }
-
-                Notification notification = intent.getParcelableExtra(NOTIFICATION);
-                notificationManager.notify(localNotification.GetID().hashCode(), notification);
-
-                com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+    
+                NotificationProvider.ClearPendingNotifications();
             }
+            else
+            {
+                NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+    
+                ILocalNotification localNotification = com.igorgalimski.unitylocalnotification.NotificationManager.GetLocalNotification(intent);
+    
+                if(localNotification != null)
+                {
+                    Notification notification = intent.getParcelableExtra(NOTIFICATION);
+                    notificationManager.notify(localNotification.GetID().hashCode(), notification);
+    
+                    com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.e(com.igorgalimski.unitylocalnotification.NotificationManager.LOG, "onReceive", exception);
         }
     }
 }
