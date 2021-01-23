@@ -169,6 +169,8 @@ public class NotificationManager
         {
            futureInMillis = localNotification.GetFiredSeconds()*1000;
         }
+        
+        notificationBuilder.setWhen(futureInMillis);
 
         int id;
         if(localNotification.GetID() != null)
