@@ -156,7 +156,19 @@ public class NotificationManager
             notificationBuilder.setLargeIcon(largeIcon);
         }
 
-        long futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
+        long futureInMillis;
+
+        if(localNotification.GetFiredSeconds() == 0)
+        {
+           futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
+
+           long fireSecondsUTC = futureInMillis/1000;
+           localNotification.SetFiredSeconds(fireSecondsUTC);
+        }
+        else
+        {
+           futureInMillis = localNotification.GetFiredSeconds()*1000;
+        }
 
         int id;
         if(localNotification.GetID() != null)
@@ -169,14 +181,11 @@ public class NotificationManager
         }
         localNotification.SetID(id);
 
-        long fireSecondsUTC = System.currentTimeMillis()/1000 + localNotification.GetFireInSeconds();
-        localNotification.SetFiredSeconds(fireSecondsUTC);
-
         Bundle notificationBundle = GetNotificationBundle(localNotification);
 
         Intent intent = new Intent(GetContext(), GetMainActivity());
         intent.putExtra(LocalNotification.LOCAL_NOTIFICATION, notificationBundle);
-        
+
         PendingIntent activity = PendingIntent.getActivity(GetContext(), id, intent, 0);
         notificationBuilder.setContentIntent(activity);
 
