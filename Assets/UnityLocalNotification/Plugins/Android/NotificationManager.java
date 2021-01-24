@@ -306,7 +306,7 @@ public class NotificationManager
                 CancellById(Integer.valueOf(localNotification.GetID()));
             }
 
-            NotificationProvider.SetPendingNotifications(new ArrayList<>());
+             NotificationProvider.ClearPendingNotifications();
         }
         catch (Exception exception)
         {

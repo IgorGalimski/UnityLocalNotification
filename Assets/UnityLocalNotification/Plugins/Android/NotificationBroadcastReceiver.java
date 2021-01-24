@@ -28,13 +28,13 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
             if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction()))
             {
                 List<ILocalNotificationBridge> pendingNotifications = new ArrayList<>(NotificationProvider.GetPendingNotifications());
+
+                NotificationProvider.ClearPendingNotifications();
     
                 for (ILocalNotificationBridge localNotification: pendingNotifications)
                 {
                     com.igorgalimski.unitylocalnotification.NotificationManager.ScheduleLocalNotificationInternal(localNotification);
                 }
-    
-                NotificationProvider.ClearPendingNotifications();
             }
             else
             {
@@ -45,7 +45,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
                 if(localNotification != null)
                 {
                     Notification notification = intent.getParcelableExtra(NOTIFICATION);
-                    notificationManager.notify(localNotification.GetID().hashCode(), notification);
+                    notificationManager.notify(Integer.valueOf(localNotification.GetID()), notification);
     
                     com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
                 }
