@@ -296,28 +296,14 @@ public class NotificationManager
 
         return bundle;
     }
-
+    
     public static void RemoveScheduledNotificationsInternal()
     {
         try
         {
             for (ILocalNotificationBridge localNotification : GetPendingNotifications())
             {
-                try
-                {
-                    Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
-                    PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), Integer.valueOf(localNotification.GetID()), intent, PendingIntent.FLAG_NO_CREATE);
-
-                    if (broadcast != null)
-                    {
-                        GetAlarmManager().cancel(broadcast);
-                        broadcast.cancel();
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Log.e(LOG, "RemoveScheduledNotifications", exception);
-                }
+                CancellById(Integer.valueOf(localNotification.GetID()));
             }
 
             NotificationProvider.SetPendingNotifications(new ArrayList<>());
@@ -325,6 +311,25 @@ public class NotificationManager
         catch (Exception exception)
         {
             Log.e(LOG, "RemoveScheduledNotificationsInternal", exception);
+        }
+    }
+
+    public static void CancellById(Integer id)
+    {
+        try
+        {
+            Intent intent = new Intent(GetContext(), NotificationBroadcastReceiver.class);
+            PendingIntent broadcast = PendingIntent.getBroadcast(GetContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            if (broadcast != null)
+            {
+                GetAlarmManager().cancel(broadcast);
+                broadcast.cancel();
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.e(LOG, "RemoveScheduledNotifications", exception);
         }
     }
 
@@ -432,6 +437,8 @@ public class NotificationManager
             {
                 NotificationProvider.AddReceivedNotification(localNotification);
             }
+            
+            CancellById(Integer.valueOf(localNotification.GetID()));
 
             RemovePendingNotification(localNotification);
         }
