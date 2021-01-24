@@ -133,8 +133,33 @@ public class LocalNotification implements ILocalNotification
         return value == null ? JSONObject.NULL : value;
     }
 
-    public static ILocalNotification FromJSONObject(JSONObject jsonObject) {
-        if (jsonObject == null) {
+    @Override
+    public int hashCode() 
+    {
+        return Integer.valueOf(_id);
+    }
+
+    public boolean equals(Object o)
+    {
+        if(o == null)
+        {
+            return false;
+        }
+
+        if (!(o instanceof LocalNotification))
+        {
+            return false;
+        }
+
+        LocalNotification oNotification = (LocalNotification) o;
+
+        return oNotification._id.equals(_id);
+    }
+
+    public static ILocalNotification FromJSONObject(JSONObject jsonObject) 
+    {
+        if (jsonObject == null) 
+        {
             return null;
         }
 
