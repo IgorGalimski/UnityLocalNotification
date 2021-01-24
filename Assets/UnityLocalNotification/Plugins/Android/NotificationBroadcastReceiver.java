@@ -13,6 +13,11 @@ import java.util.List;
 public class NotificationBroadcastReceiver extends BroadcastReceiver
 {
     public static String NOTIFICATION = "notification";
+    
+    public NotificationBroadcastReceiver()
+    {
+        super();    
+    }
 
     public void onReceive(Context context, Intent intent)
     {
