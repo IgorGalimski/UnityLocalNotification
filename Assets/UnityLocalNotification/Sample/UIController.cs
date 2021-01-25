@@ -155,7 +155,7 @@ namespace UnityLocalNotifications.Sample
 
         private void ScheduleLocalNotificationHandler()
         {
-            LocalNotificationController.ScheduleLocalNotification(new LocalNotification
+            LocalNotificationController.ScheduleLocalNotification(new Notification
             {
                 Title = "Test title",
                 Body = "Test body",
