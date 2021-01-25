@@ -174,7 +174,7 @@ namespace UnityLocalNotifications.Sample
             LocalNotificationController.RemoveDeliveredNotifications();
         }
 
-        private void UpdateBackgroundNotifications(List<LocalNotification> receivedNotifications)
+        private void UpdateBackgroundNotifications(List<Notification> receivedNotifications)
         {
             _backgroundReceivedNotifications.text = string.Format(BACKGROUND_RECEIVED_NOTIFICATIONS_TEXT, receivedNotifications?.Count);
         }
@@ -197,9 +197,9 @@ namespace UnityLocalNotifications.Sample
             _isOpenedByNotification.text = string.Format(IS_OPENED_BY_NOTIFICATION_TEXT, (LocalNotificationController.GetLastNotification() != null).ToString());
         }
 
-        private void NotificationReceivedHandler(LocalNotification localNotification)
+        private void NotificationReceivedHandler(Notification notification)
         {
-            _localNotificationReceived.text = localNotification.ToString();
+            _localNotificationReceived.text = notification.ToString();
             _foregroundReceivedNotifications.text = string.Format(FOREGROUND_RECEIVED_NOTIFICATIONS_TEXT, LocalNotificationController.ForegroundReceivedNotifications?.Count);
         }
     }   

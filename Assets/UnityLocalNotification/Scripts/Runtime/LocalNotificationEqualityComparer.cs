@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace UnityLocalNotifications
 {
-    public class LocalNotificationEqualityComparer : IEqualityComparer<LocalNotification>
+    public class LocalNotificationEqualityComparer : IEqualityComparer<Notification>
     {
-        public bool Equals(LocalNotification firstLocalNotification, LocalNotification secondLocalNotification)
+        public bool Equals(Notification firstNotification, Notification secondNotification)
         {
-            return firstLocalNotification.GetHashCode() == secondLocalNotification.GetHashCode();
+            return firstNotification.GetHashCode() == secondNotification.GetHashCode();
         }
 
-        public int GetHashCode(LocalNotification localNotification)
+        public int GetHashCode(Notification notification)
         {
-            return localNotification.GetHashCode();
+            return notification.GetHashCode();
         }
     }
 }

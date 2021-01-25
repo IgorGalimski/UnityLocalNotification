@@ -84,7 +84,7 @@ namespace UnityLocalNotifications
         public static event Action PendingNotificationUpdated = () => { };
 
 #endif
-        public static List<LocalNotification> ReceivedNotifications { get; private set; }
+        public static List<Notification> ReceivedNotifications { get; private set; }
         
 #if UNITY_ANDROID
         private static AndroidJavaClass _notificationManager;
@@ -99,9 +99,9 @@ namespace UnityLocalNotifications
         }
 #endif
         
-        public static List<LocalNotification> ForegroundReceivedNotifications { get; private set; } = new List<LocalNotification>();
+        public static List<Notification> ForegroundReceivedNotifications { get; private set; } = new List<Notification>();
         
-        public static event Action<LocalNotification> NotificationReceivedEvent = notification => { }; 
+        public static event Action<Notification> NotificationReceivedEvent = notification => { }; 
         
 #if UNITY_IOS
         public static void Initialize(NotificationPresentationOptions notificationOptions)
@@ -232,7 +232,7 @@ namespace UnityLocalNotifications
 
                 ReceivedNotifications = GetReceivedNotifications();
                 
-                ForegroundReceivedNotifications = new List<LocalNotification>();
+                ForegroundReceivedNotifications = new List<Notification>();
                 ClearReceivedNotifications();
             }
             catch (Exception exception)
@@ -303,20 +303,20 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-        public static void ScheduleLocalNotification(LocalNotification localNotification, 
+        public static void ScheduleLocalNotification(Notification notification, 
             bool autoCancel = true, string smallIconId = null, string largeIconId = null)
         {
             try
             {
                 var androidNotification = new AndroidNotification
                 {
-                    Title = localNotification.Title,
+                    Title = notification.Title,
                     AutoCancel = autoCancel,
-                    Body = localNotification.Body,
-                    Data = localNotification.Data,
+                    Body = notification.Body,
+                    Data = notification.Data,
                     SmallIconId = smallIconId,
                     LargeIconId = largeIconId,
-                    FireInSeconds = localNotification.FireInSeconds
+                    FireInSeconds = notification.FireInSeconds
                 };
 
                 GetNotificationManager().CallStatic("ScheduleLocalNotificationInternal", androidNotification);
@@ -329,7 +329,7 @@ namespace UnityLocalNotifications
         }
 #endif
 
-        public static LocalNotification? GetLastNotification()
+        public static Notification? GetLastNotification()
         {
             try
             {
@@ -359,7 +359,7 @@ namespace UnityLocalNotifications
         }
         
 #if UNITY_ANDROID     
-        public static List<LocalNotification> GetReceivedNotifications()
+        public static List<Notification> GetReceivedNotifications()
         {
             try
             {
@@ -488,14 +488,14 @@ namespace UnityLocalNotifications
         private static void OnNotificationReceived()
         {
             var notificationJavaObject = GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
-            var localNotification = (LocalNotification)ParseNotificationFromAndroidJavaObject(notificationJavaObject);
+            var localNotification = (Notification)ParseNotificationFromAndroidJavaObject(notificationJavaObject);
             
             ForegroundReceivedNotifications.Add(localNotification);
 
             NotificationReceivedEvent?.Invoke(localNotification);
         }
 
-        private static LocalNotification? ParseNotificationFromAndroidJavaObject(AndroidJavaObject notification)
+        private static Notification? ParseNotificationFromAndroidJavaObject(AndroidJavaObject notification)
         {
             if (notification == null)
             {
@@ -508,7 +508,7 @@ namespace UnityLocalNotifications
             var fireInSeconds = notification.Call<int>("GetFireInSeconds");
             var firedSeconds = notification.Call<long>("GetFiredSeconds");
             
-            var localNotification = new LocalNotification();
+            var localNotification = new Notification();
             localNotification.Title = title;
             localNotification.Body = body;
             localNotification.Data = data;
@@ -518,9 +518,9 @@ namespace UnityLocalNotifications
             return localNotification;
         }
 
-        private static List<LocalNotification> ParseNotificationsFromAndroidJavaObject(AndroidJavaObject notificationsJavaObject)
+        private static List<Notification> ParseNotificationsFromAndroidJavaObject(AndroidJavaObject notificationsJavaObject)
         {
-            var notifications = new List<LocalNotification>();
+            var notifications = new List<Notification>();
 
             var count = notificationsJavaObject.Call<int>("size");
             

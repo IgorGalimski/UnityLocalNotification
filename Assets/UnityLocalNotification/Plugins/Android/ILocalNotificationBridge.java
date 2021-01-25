@@ -16,7 +16,7 @@ public interface ILocalNotificationBridge
     
     String GetLargeIconId();
 
-    int GetFireInSeconds();
+    double GetFireInSeconds();
 
     long GetFiredSeconds();
 }

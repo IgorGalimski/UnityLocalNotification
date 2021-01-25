@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace UnityLocalNotifications.Android
 {
@@ -19,7 +20,7 @@ namespace UnityLocalNotifications.Android
 
         public String LargeIconId;
 
-        public int FireInSeconds;
+        public double FireInSeconds;
 
         public long FiredSeconds;
         
@@ -27,26 +28,37 @@ namespace UnityLocalNotifications.Android
         {
         }
 
+        [Preserve]
         public String GetID() => ID;
 
+        [Preserve]
         public void SetID(int id) => ID = id.ToString();
 
+        [Preserve]
         public Boolean GetAutoCancel() => AutoCancel;
 
+        [Preserve]
         public String GetTitle() => Title;
 
+        [Preserve]
         public String GetBody() => Body;
 
+        [Preserve]
         public String GetData() => Data;
 
-        String GetSmallIconId() => SmallIconId;
+        [Preserve]
+        public String GetSmallIconId() => SmallIconId;
 
-        String GetLargeIconId() => LargeIconId;
+        [Preserve]
+        public String GetLargeIconId() => LargeIconId;
 
-        public int GetFireInSeconds() => FireInSeconds;
+        [Preserve]
+        public double GetFireInSeconds() => FireInSeconds;
 
+        [Preserve]
         public long GetFiredSeconds() => FiredSeconds;
 
+        [Preserve]
         public void SetFiredSeconds(long firedSeconds) => FiredSeconds = firedSeconds;
     }
 }

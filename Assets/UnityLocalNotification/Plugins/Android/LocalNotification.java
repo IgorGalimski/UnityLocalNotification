@@ -27,10 +27,10 @@ public class LocalNotification implements ILocalNotification
     private String _data;
     private String _smallIconId;
     private String _largeIconId;
-    private int _fireInSeconds;
+    private double _fireInSeconds;
     private long _firedSeconds;
 
-    public LocalNotification(String id, boolean autoCancel, String title, String body, String data, String smallIconId, String largeIconId, int fireInSeconds, long firedSeconds)
+    public LocalNotification(String id, boolean autoCancel, String title, String body, String data, String smallIconId, String largeIconId, double fireInSeconds, long firedSeconds)
     {
         _id = id;
         _autoCancel = autoCancel;
@@ -88,7 +88,7 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
-    public int GetFireInSeconds()
+    public double GetFireInSeconds()
     {
         return _fireInSeconds;
     }
@@ -170,7 +170,7 @@ public class LocalNotification implements ILocalNotification
         String data = null;
         String smallIconId = null;
         String largeIconId = null;
-        int fireInSeconds = 0;
+        double fireInSeconds = 0;
         long firedSeconds = 0;
 
         try
@@ -187,7 +187,7 @@ public class LocalNotification implements ILocalNotification
             data = jsonObject.getString(DATA_KEY);
             smallIconId = jsonObject.getString(SMALL_ICON_ID_KEY);
             largeIconId = jsonObject.getString(LARGE_ICON_ID_KEY);
-            fireInSeconds = jsonObject.getInt(FIRE_IN_SECONDS_KEY);
+            fireInSeconds = jsonObject.getDouble(FIRE_IN_SECONDS_KEY);
             firedSeconds = jsonObject.getLong(FIRED_SECONDS_KEY);
         }
         catch (JSONException e)

@@ -5,7 +5,7 @@ namespace UnityLocalNotifications
 {
     [StructLayout(LayoutKind.Sequential)]
     [Serializable]
-    public struct LocalNotification
+    public struct Notification
     {
         public bool Local;
         
@@ -23,7 +23,7 @@ namespace UnityLocalNotifications
 
         public string ThreadIdentifier;
 
-        public int FireInSeconds;
+        public double FireInSeconds;
 
         public long FiredSeconds;
 

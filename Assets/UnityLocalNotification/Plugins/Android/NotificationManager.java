@@ -176,7 +176,7 @@ public class NotificationManager
 
             if(localNotification.GetFiredSeconds() == 0)
             {
-               futureInMillis = System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000;
+               futureInMillis = (long) (System.currentTimeMillis() + localNotification.GetFireInSeconds()*1000);
 
                long fireSecondsUTC = futureInMillis/1000;
                localNotification.SetFiredSeconds(fireSecondsUTC);
