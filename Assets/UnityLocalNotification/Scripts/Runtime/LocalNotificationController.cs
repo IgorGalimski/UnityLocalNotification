@@ -67,7 +67,7 @@ namespace UnityLocalNotifications
 
         private delegate void AuthorizationStatusCallbackDelegate(AuthorizationRequestResult requestResult);
 
-        private delegate void LocalNotificationDelegate(LocalNotification localNotification);
+        private delegate void LocalNotificationDelegate(Notification localNotification);
 
         private delegate void DeviceTokenDelegate(string localNotification);
 
@@ -108,7 +108,7 @@ namespace UnityLocalNotifications
         {
             try
             {
-                ForegroundReceivedNotifications = new List<LocalNotification>();
+                ForegroundReceivedNotifications = new List<Notification>();
                 
                 InitializeInternal((int)notificationOptions, NotificationReceivedCallback, DeviceTokenReceivedCallback, PendingNotificationsUpdatedCallback);
 
@@ -122,7 +122,7 @@ namespace UnityLocalNotifications
             }
         }
 
-        private static void OnGetReceivedNotifications(List<LocalNotification> localNotifications)
+        private static void OnGetReceivedNotifications(List<Notification> localNotifications)
         {
             ReceivedNotifications = localNotifications;
         }
@@ -164,7 +164,7 @@ namespace UnityLocalNotifications
                     PendingNotificationUpdated -= OnPendingNotificationUpdated;
                     
                     var pendingNotifications = GetPendingNotifications();
-                    var localNotificationCollection = new LocalNotificationCollection();
+                    var localNotificationCollection = new NotificationCollection();
                     localNotificationCollection._localNotifications = pendingNotifications;
 
                     var pendingNotificationsString = JsonUtility.ToJson(localNotificationCollection);
@@ -179,7 +179,7 @@ namespace UnityLocalNotifications
             }
         }
 
-        private static void GetReceivedNotifications(Action<List<LocalNotification>> receivedNotifications)
+        private static void GetReceivedNotifications(Action<List<Notification>> receivedNotifications)
         {
             try
             {
@@ -192,8 +192,8 @@ namespace UnityLocalNotifications
                 
                 var previousPendingNotificationsString = PlayerPrefs.GetString(PENDING_NOTIFICATIONS_KEY);
                 var savedPendingNotifications = !string.IsNullOrEmpty(previousPendingNotificationsString) 
-                    ? JsonUtility.FromJson<LocalNotificationCollection>(previousPendingNotificationsString) 
-                    : new LocalNotificationCollection();
+                    ? JsonUtility.FromJson<NotificationCollection>(previousPendingNotificationsString) 
+                    : new NotificationCollection();
 
                 PendingNotificationUpdated += OnPendingNotificationUpdated;
                 
@@ -283,7 +283,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_IOS
-        public static void ScheduleLocalNotification(LocalNotification localNotification)
+        public static void ScheduleLocalNotification(Notification localNotification)
         {
             try
             {
@@ -334,12 +334,12 @@ namespace UnityLocalNotifications
             try
             {
 #if UNITY_IOS
-                LocalNotification? localNotification;
+                Notification? localNotification;
                 IntPtr ptr = GetLastNotificationInternal();
 
                 if (ptr != IntPtr.Zero)
                 {
-                    localNotification = Marshal.PtrToStructure<LocalNotification>(ptr);
+                    localNotification = Marshal.PtrToStructure<Notification>(ptr);
                     return localNotification.Value;
                 }
 #endif
@@ -377,20 +377,20 @@ namespace UnityLocalNotifications
 #endif
         
 #if UNITY_IOS
-        private static List<LocalNotification> GetPendingNotifications()
+        private static List<Notification> GetPendingNotifications()
         {
             var size = GetPendingNotificationsCountInternal();
             
-            var pendingNotifications = new List<LocalNotification>();
+            var pendingNotifications = new List<Notification>();
                 
             for (var i = 0; i < size; i++)
             {
-                LocalNotification data;
+                Notification data;
                 var ptr = GetPendingNotificationInternal(i);
 
                 if (ptr != IntPtr.Zero)
                 {
-                    data = (LocalNotification)Marshal.PtrToStructure(ptr, typeof(LocalNotification));
+                    data = (Notification)Marshal.PtrToStructure(ptr, typeof(Notification));
                     pendingNotifications.Add(data);
                 }
             }
@@ -548,7 +548,7 @@ namespace UnityLocalNotifications
         }
         
         [MonoPInvokeCallback(typeof(LocalNotificationDelegate))]
-        private static void NotificationReceivedCallback(LocalNotification localNotification)
+        private static void NotificationReceivedCallback(Notification localNotification)
         {
             ForegroundReceivedNotifications.Add(localNotification);
             
