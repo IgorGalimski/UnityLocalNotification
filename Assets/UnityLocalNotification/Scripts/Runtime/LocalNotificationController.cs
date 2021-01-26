@@ -505,7 +505,7 @@ namespace UnityLocalNotifications
             var title = notification.Call<string>("GetTitle");
             var body = notification.Call<string>("GetBody");
             var data = notification.Call<string>("GetData");
-            var fireInSeconds = notification.Call<int>("GetFireInSeconds");
+            var fireInSeconds = notification.Call<double>("GetFireInSeconds");
             var firedSeconds = notification.Call<long>("GetFiredSeconds");
             
             var localNotification = new Notification();

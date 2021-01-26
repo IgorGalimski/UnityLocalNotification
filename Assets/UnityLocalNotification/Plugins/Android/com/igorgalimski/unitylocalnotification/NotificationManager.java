@@ -19,9 +19,7 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.unity3d.player.BuildConfig;
 import com.unity3d.player.UnityPlayer;
-import com.unity3d.player.UnityPlayerActivity;
 
 import org.json.JSONObject;
 
@@ -47,7 +45,7 @@ public class NotificationManager
     {
         if(_context == null)
         {
-            UnityPlayerActivity unityPlayerActivity = (UnityPlayerActivity) UnityPlayer.currentActivity;
+            Activity unityPlayerActivity = UnityPlayer.currentActivity;
             _context = unityPlayerActivity.getApplicationContext();
         }
 
@@ -67,7 +65,7 @@ public class NotificationManager
         }
         catch (ClassNotFoundException ignored)
         {
-            UnityPlayerActivity unityPlayerActivity = (UnityPlayerActivity)UnityPlayer.currentActivity;
+            Activity unityPlayerActivity = UnityPlayer.currentActivity;
             _mainActivity = unityPlayerActivity.getClass();
         }
 

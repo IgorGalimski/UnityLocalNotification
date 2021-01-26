@@ -85,6 +85,9 @@ namespace UnityLocalNotification.Scripts.Editor
             if (!readable)
             {
                 importer.isReadable = true;
+                importer.SaveAndReimport();
+
+                AssetDatabase.ImportAsset(assetPath);
             }
 
             var newTexture = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
@@ -103,6 +106,9 @@ namespace UnityLocalNotification.Scripts.Editor
             if (!readable)
             {
                 importer.isReadable = false;
+                importer.SaveAndReimport();
+                
+                AssetDatabase.ImportAsset(assetPath);
             }
 
             return newTexture;
