@@ -19,7 +19,6 @@ namespace UnityLocalNotifications
     public static class LocalNotificationController
     {
 #if UNITY_IOS
-
         private const string PENDING_NOTIFICATIONS_KEY = nameof(PENDING_NOTIFICATIONS_KEY);
 
         [DllImport("__Internal")]
@@ -87,6 +86,9 @@ namespace UnityLocalNotifications
         public static List<Notification> ReceivedNotifications { get; private set; }
         
 #if UNITY_ANDROID
+        
+        private const string OPEN_APP_ACTIVITY = "com.igorgalimski.unitylocalnotification.UnityPlayerActivity";
+        
         private static AndroidJavaClass _notificationManager;
         private static AndroidJavaClass GetNotificationManager()
         {
@@ -230,7 +232,7 @@ namespace UnityLocalNotifications
                 NotificationReceivedCallback.NotificationReceived += OnNotificationReceived;
 
                 _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
-                _notificationManager.CallStatic("InitializeInternal", notificationReceivedCallback);
+                _notificationManager.CallStatic("InitializeInternal", notificationReceivedCallback, OPEN_APP_ACTIVITY);
 
                 ReceivedNotifications = GetReceivedNotifications();
                 

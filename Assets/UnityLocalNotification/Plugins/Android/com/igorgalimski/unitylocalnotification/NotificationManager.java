@@ -29,7 +29,7 @@ public class NotificationManager
 {
     public static final String LOG = "NotificationManager";
 
-    private static final String PLAYER_ACTIVITY_POSTFIX = ".UnityPlayerActivity";
+    private static String _openAppActivity;
 
     private static Context _context;
     private static Class _mainActivity;
@@ -61,7 +61,7 @@ public class NotificationManager
     {
         try
         {
-            _mainActivity = Class.forName(BuildConfig.APPLICATION_ID + PLAYER_ACTIVITY_POSTFIX);
+            _mainActivity = Class.forName(_openAppActivity);
         }
         catch (ClassNotFoundException ignored)
         {
@@ -92,11 +92,12 @@ public class NotificationManager
         return _systemNotificationManager;
     }
 
-    public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback)
+    public static void InitializeInternal(INotificationReceivedCallback notificationReceivedCallback, String openAppActivity)
     {
         try
         {
             _notificationReceivedCallback = notificationReceivedCallback;
+            _openAppActivity = openAppActivity;
 
             ComponentName receiver = new ComponentName(GetContext(), NotificationBroadcastReceiver.class);
             PackageManager pm = GetContext().getPackageManager();
