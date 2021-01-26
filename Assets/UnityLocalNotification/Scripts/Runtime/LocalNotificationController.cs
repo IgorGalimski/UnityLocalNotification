@@ -23,7 +23,7 @@ namespace UnityLocalNotifications
         private const string PENDING_NOTIFICATIONS_KEY = nameof(PENDING_NOTIFICATIONS_KEY);
 
         [DllImport("__Internal")]
-        private static extern void RequestAuthorizationInternal(int options,
+        private static extern void RequestPushAuthorizationInternal(int options,
             AuthorizationStatusCallbackDelegate authorizationStatusCallbackDelegate);
 
         [DllImport("__Internal")]
@@ -259,7 +259,7 @@ namespace UnityLocalNotifications
         {
             try
             {
-                RequestAuthorizationInternal((int) authorizationOption, AuthorizationRequestResultCallback);
+                RequestPushAuthorizationInternal((int) authorizationOption, AuthorizationRequestResultCallback);
             }
             catch (Exception exception)
             {

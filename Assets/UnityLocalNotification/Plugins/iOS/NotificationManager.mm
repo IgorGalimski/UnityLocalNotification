@@ -51,7 +51,7 @@ extern "C"
         [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     }
 
-    void RequestAuthorizationInternal(NSInteger authorizationOptions, AuthorizationStatusCallback callback)
+    void RequestPushAuthorizationInternal(NSInteger authorizationOptions, AuthorizationStatusCallback callback)
     {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center requestAuthorizationWithOptions:authorizationOptions completionHandler:^(BOOL granted, NSError * _Nullable error)
