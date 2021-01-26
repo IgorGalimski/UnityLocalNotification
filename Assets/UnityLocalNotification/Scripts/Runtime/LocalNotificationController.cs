@@ -114,6 +114,8 @@ namespace UnityLocalNotifications
 
                 GetReceivedNotifications(OnGetReceivedNotifications);
 
+                RequestNotificationEnabledStatus();
+
                 SavePendingNotifications();
             }
             catch (Exception exception)

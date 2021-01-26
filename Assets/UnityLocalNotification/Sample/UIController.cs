@@ -60,10 +60,9 @@ namespace UnityLocalNotifications.Sample
         public IEnumerator Start()
         {
 #if UNITY_IOS
-            LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
-            LocalNotificationController.RequestNotificationEnabledStatus();
-
             LocalNotificationController.NotificationEnabledStatusReceived += OnNotificationStatusEnabledHandler;
+            
+            LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
 #endif
             
 #if UNITY_ANDROID
