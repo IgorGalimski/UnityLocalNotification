@@ -173,7 +173,10 @@ void UpdateBugdeCounter()
         
         if(_pendingNotificationUpdated != nil)
         {
-            _pendingNotificationUpdated();
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                _pendingNotificationUpdated();
+            }
         }
     }];
 }
