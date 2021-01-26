@@ -19,11 +19,12 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.unity3d.player.BuildConfig;
 import com.unity3d.player.UnityPlayer;
+import com.unity3d.player.UnityPlayerActivity;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationManager
@@ -140,7 +141,7 @@ public class NotificationManager
     {
         try
         {
-            ILocalNotification localNotification = ILocalNotification.GetFromBridge(localNotificationBridge);
+            ILocalNotification localNotification = LocalNotification.GetFromBridge(localNotificationBridge);
 
             NotificationCompat.Builder notificationBuilder;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

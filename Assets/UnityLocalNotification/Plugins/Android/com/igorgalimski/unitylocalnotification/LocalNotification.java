@@ -198,4 +198,19 @@ public class LocalNotification implements ILocalNotification
         LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId, smallIconId, fireInSeconds, firedSeconds);
         return localNotification;
     }
+    
+    public static ILocalNotification GetFromBridge(ILocalNotificationBridge localNotificationBridge)
+    {
+        ILocalNotification localNotification = new LocalNotification(localNotificationBridge.GetID(),
+                localNotificationBridge.GetAutoCancel(),
+                localNotificationBridge.GetTitle(),
+                localNotificationBridge.GetBody(),
+                localNotificationBridge.GetData(),
+                localNotificationBridge.GetSmallIconId(),
+                localNotificationBridge.GetLargeIconId(),
+                localNotificationBridge.GetFireInSeconds(),
+                localNotificationBridge.GetFiredSeconds());
+
+        return localNotification;
+    }
 }
