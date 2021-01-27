@@ -84,7 +84,7 @@ public class NotificationProvider
         String notificationArrayString = GetPendingNotificationsArray().toString();
 
         GetEditor().putString(PENDING_NOTIFICATION_IDS_SHARED_PREFS, notificationArrayString);
-        GetEditor().apply();
+        GetEditor().commit();
     }
 
     public static void AddReceivedNotification(ILocalNotification localNotification)
@@ -95,7 +95,7 @@ public class NotificationProvider
         String notificationArrayString = ReceivedNotificationsArray().toString();
 
         GetEditor().putString(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS, notificationArrayString);
-        GetEditor().apply();
+        GetEditor().commit();
     }
 
     public static void ClearReceivedNotifications()
@@ -104,7 +104,7 @@ public class NotificationProvider
         _receivedNotificationsArray = null;
 
         GetEditor().remove(RECEIVED_NOTIFICATION_IDS_SHARED_PREFS);
-        GetEditor().apply();
+        GetEditor().commit();
     }
 
     public static List<ILocalNotification> GetReceivedNotificationsList()
@@ -169,7 +169,7 @@ public class NotificationProvider
         _pendingNotificationsArray = null;
 
         GetEditor().remove(PENDING_NOTIFICATION_IDS_SHARED_PREFS);
-        GetEditor().apply();
+        GetEditor().commit();
     }
 
     private static JSONArray ReceivedNotificationsArray()
