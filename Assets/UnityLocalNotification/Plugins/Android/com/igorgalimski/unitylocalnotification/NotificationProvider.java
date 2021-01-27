@@ -18,6 +18,8 @@ public class NotificationProvider
     private static final String PENDING_NOTIFICATION_IDS_SHARED_PREFS = "PENDING_NOTIFICATIONS";
     private static final String NOTIFICATION_CHANNEL_ID_SHARED_PREFS = "NOTIFICATION_CHANNEL";
 
+    private static final String OPEN_ACTIVITY_SHARED_PREFS = "OPEN_ACTIVITY";
+
     private static SharedPreferences _prefs;
     private static SharedPreferences.Editor _prefsEditor;
 
@@ -55,6 +57,18 @@ public class NotificationProvider
     public static void SetNotificationChannelID(String channelID)
     {
         GetEditor().putString(NOTIFICATION_CHANNEL_ID_SHARED_PREFS, channelID);
+        GetEditor().apply();
+    }
+
+    public static void SetOpenAppActivity(String openAppActivity)
+    {
+        GetEditor().putString(OPEN_ACTIVITY_SHARED_PREFS, openAppActivity);
+        GetEditor().apply();
+    }
+
+    public static String GetOpenAppActivity()
+    {
+        return GetPrefs().getString(OPEN_ACTIVITY_SHARED_PREFS, "");
     }
 
     public static void SetPendingNotifications(List<ILocalNotification> notifications)

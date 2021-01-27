@@ -29,8 +29,6 @@ public class NotificationManager
 {
     public static final String LOG = "NotificationManager";
 
-    private static String _openAppActivity;
-
     private static Context _context;
     private static Class _mainActivity;
 
@@ -61,7 +59,7 @@ public class NotificationManager
     {
         try
         {
-            _mainActivity = Class.forName(_openAppActivity);
+            _mainActivity = Class.forName(NotificationProvider.GetOpenAppActivity());
         }
         catch (ClassNotFoundException ignored)
         {
@@ -97,7 +95,7 @@ public class NotificationManager
         try
         {
             _notificationReceivedCallback = notificationReceivedCallback;
-            _openAppActivity = openAppActivity;
+            NotificationProvider.SetOpenAppActivity(openAppActivity);
 
             ComponentName receiver = new ComponentName(GetContext(), NotificationBroadcastReceiver.class);
             PackageManager pm = GetContext().getPackageManager();
