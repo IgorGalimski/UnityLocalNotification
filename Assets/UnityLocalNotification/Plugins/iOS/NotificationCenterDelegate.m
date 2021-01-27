@@ -306,7 +306,7 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
         if ([NSJSONSerialization isValidJSONObject: extraDictionary])
         {
             NSError* error;
-            NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options: NSJSONWritingPrettyPrinted error: &error];
+            NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options:0 error: &error];
             
             localNotification->Data = strdup([data bytes]);
         }
