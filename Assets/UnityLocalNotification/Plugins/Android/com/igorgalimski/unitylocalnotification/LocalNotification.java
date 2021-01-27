@@ -195,7 +195,7 @@ public class LocalNotification implements ILocalNotification
             Log.e(NotificationManager.LOG, "FromJSONObject", e);
         }
 
-        LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, largeIconId, smallIconId, fireInSeconds, firedSeconds);
+        LocalNotification localNotification = new LocalNotification(id, autoCancel, title, body, data, smallIconId, largeIconId, fireInSeconds, firedSeconds);
         return localNotification;
     }
     
