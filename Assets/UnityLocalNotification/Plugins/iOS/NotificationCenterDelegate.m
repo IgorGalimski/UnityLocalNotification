@@ -307,8 +307,9 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
         {
             NSError* error;
             NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options:0 error: &error];
+            NSString* dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             
-            localNotification->Data = strdup([data bytes]);
+            localNotification->Data = strdup([dataString UTF8String]);
         }
         else
         {
