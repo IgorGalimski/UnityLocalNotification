@@ -6,8 +6,6 @@ namespace UnityLocalNotifications.Android
 {
     public class AndroidNotification : AndroidJavaProxy
     {
-        public String ID;
-        
         public String Title;
         
         public bool AutoCancel;
@@ -29,10 +27,29 @@ namespace UnityLocalNotifications.Android
         }
 
         [Preserve]
-        public String GetID() => ID;
+        public int GetID()
+        {
+            var hash = 0;
 
-        [Preserve]
-        public void SetID(int id) => ID = id.ToString();
+            if (string.IsNullOrEmpty(Title))
+            {
+                hash += Title.GetHashCode();
+            }
+            
+            if (string.IsNullOrEmpty(Body))
+            {
+                hash += Body.GetHashCode();
+            }
+            
+            if (string.IsNullOrEmpty(Data))
+            {
+                hash += Data.GetHashCode();
+            }
+            
+            hash += FireInSeconds.GetHashCode();
+
+            return hash;
+        }
 
         [Preserve]
         public Boolean GetAutoCancel() => AutoCancel;

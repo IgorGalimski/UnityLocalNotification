@@ -2,7 +2,7 @@ package com.igorgalimski.unitylocalnotification;
 
 public interface ILocalNotificationBridge
 {
-    String GetID();
+    int GetID();
     
     boolean GetAutoCancel();
     

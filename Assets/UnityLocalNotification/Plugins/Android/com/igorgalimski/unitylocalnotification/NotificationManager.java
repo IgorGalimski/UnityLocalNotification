@@ -186,16 +186,7 @@ public class NotificationManager
 
             notificationBuilder.setWhen(futureInMillis);
 
-            int id;
-            if(localNotification.GetID() != null)
-            {
-                id = localNotification.GetID().hashCode();
-            }
-            else
-            {
-                id = (int) futureInMillis;
-            }
-            localNotification.SetID(id);
+            int id = localNotification.GetID();
 
             Bundle notificationBundle = GetNotificationBundle(localNotification);
 

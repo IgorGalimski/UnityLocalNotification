@@ -20,7 +20,7 @@ public class LocalNotification implements ILocalNotification
     public static final String FIRE_IN_SECONDS_KEY = "fireInSeconds";
     public static final String FIRED_SECONDS_KEY = "firedSeconds";
 
-    private String _id;
+    private int _id;
     private boolean _autoCancel;
     private String _title;
     private String _body;
@@ -30,7 +30,7 @@ public class LocalNotification implements ILocalNotification
     private double _fireInSeconds;
     private long _firedSeconds;
 
-    public LocalNotification(String id, boolean autoCancel, String title, String body, String data, String smallIconId, String largeIconId, double fireInSeconds, long firedSeconds)
+    public LocalNotification(int id, boolean autoCancel, String title, String body, String data, String smallIconId, String largeIconId, double fireInSeconds, long firedSeconds)
     {
         _id = id;
         _autoCancel = autoCancel;
@@ -44,14 +44,9 @@ public class LocalNotification implements ILocalNotification
     }
 
     @Override
-    public String GetID()
+    public int GetID()
     {
         return _id;
-    }
-
-    @Override
-    public void SetID(int id) {
-        _id = String.valueOf(id);
     }
 
     @Override
@@ -110,7 +105,7 @@ public class LocalNotification implements ILocalNotification
         JSONObject jsonObject = new JSONObject();
         try
         {
-            jsonObject.put(ID_KEY, GetValue(_id));
+            jsonObject.put(ID_KEY, _id);
             jsonObject.put(AUTO_CANCEL_KEY, _autoCancel);
             jsonObject.put(TITLE_KEY, GetValue(_title));
             jsonObject.put(BODY_KEY, GetValue(_body));
@@ -153,7 +148,7 @@ public class LocalNotification implements ILocalNotification
 
         LocalNotification oNotification = (LocalNotification) o;
 
-        return oNotification._id.equals(_id);
+        return oNotification._id == _id;
     }
 
     public static ILocalNotification FromJSONObject(JSONObject jsonObject) 
@@ -163,7 +158,7 @@ public class LocalNotification implements ILocalNotification
             return null;
         }
 
-        String id = null;
+        int id = 0;
         Boolean autoCancel = false;
         String title = null;
         String body = null;
@@ -180,7 +175,7 @@ public class LocalNotification implements ILocalNotification
                 return null;
             }
 
-            id = jsonObject.getString(ID_KEY);
+            id = jsonObject.getInt(ID_KEY);
             autoCancel = jsonObject.getBoolean(AUTO_CANCEL_KEY);
             title = jsonObject.getString(TITLE_KEY);
             body = jsonObject.getString(BODY_KEY);
