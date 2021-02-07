@@ -106,15 +106,7 @@ NSArray<UNNotificationRequest*>* pendingRequests;
 
     NSString* notificationId;
 
-    if(localNotification->ID != nil)
-    {
-        notificationId = [NSString stringWithUTF8String:localNotification->ID];
-    }
-    else
-    {
-        NSUUID *uuid = [NSUUID UUID];
-        notificationId = [uuid UUIDString];
-    }
+    notificationId = [@(localNotification->ID) stringValue];
 
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:notificationId
                                                                          content:objNotificationContent trigger:trigger];
@@ -193,7 +185,7 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
     
     if(request.identifier != nil && request.identifier.length > 0)
     {
-        localNotification->ID = strdup([request.identifier UTF8String]);
+        localNotification->ID = [request.identifier intValue];
     }
     
     if (content.title != nil && content.title.length > 0)

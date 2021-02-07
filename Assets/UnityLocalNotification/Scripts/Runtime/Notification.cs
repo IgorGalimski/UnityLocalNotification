@@ -9,7 +9,7 @@ namespace UnityLocalNotifications
     {
         public bool Local;
         
-        public string ID;
+        public int ID;
         
         public string Title;
         
@@ -48,6 +48,30 @@ namespace UnityLocalNotifications
         public override int GetHashCode()
         {
             return ID != null ? ID.GetHashCode() : 0;
+        }
+
+        public void UpdateID()
+        {
+            var hash = 0;
+
+            if (string.IsNullOrEmpty(Title))
+            {
+                hash += Title.GetHashCode();
+            }
+            
+            if (string.IsNullOrEmpty(Body))
+            {
+                hash += Body.GetHashCode();
+            }
+            
+            if (string.IsNullOrEmpty(Data))
+            {
+                hash += Data.GetHashCode();
+            }
+            
+            hash += FireInSeconds.GetHashCode();
+
+            ID = hash;
         }
     }
 }

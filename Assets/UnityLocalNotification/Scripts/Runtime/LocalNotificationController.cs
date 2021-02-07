@@ -292,6 +292,8 @@ namespace UnityLocalNotifications
             try
             {
 
+                localNotification.UpdateID();
+
                 var ptr = Marshal.AllocHGlobal(Marshal.SizeOf(localNotification));
                 Marshal.StructureToPtr(localNotification, ptr, false);
                 
