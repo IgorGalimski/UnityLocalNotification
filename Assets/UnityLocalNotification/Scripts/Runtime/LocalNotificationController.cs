@@ -287,7 +287,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_IOS
-        public static void ScheduleLocalNotification(Notification localNotification)
+        public static void ScheduleNotification(Notification localNotification)
         {
             try
             {
@@ -307,7 +307,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-        public static void ScheduleLocalNotification(Notification notification, 
+        public static void ScheduleNotification(Notification notification, 
             bool autoCancel = true, string smallIconId = null, string largeIconId = null)
         {
             try

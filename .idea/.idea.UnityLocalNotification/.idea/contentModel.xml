@@ -17,6 +17,7 @@
               <e p="GradlePostBuildProcessor.cs" t="Include" />
               <e p="OnPostprocessBuild.cs" t="Include" />
               <e p="PackageCreator.cs" t="Include" />
+              <e p="TexturePostProcessor.cs" t="Include" />
             </e>
             <e p="Runtime" t="Include">
               <e p="Android" t="Include">
@@ -30,11 +31,12 @@
                 <e p="AuthorizationRequest.cs" t="Include" />
               </e>
               <e p="iOS" t="Include">
-                <e p="LocalNotificationCollection.cs" t="Include" />
+                <e p="NotificationCollection.cs" t="Include" />
               </e>
-              <e p="LocalNotification.cs" t="Include" />
+              <e p="link.xml" t="Include" />
               <e p="LocalNotificationController.cs" t="Include" />
               <e p="LocalNotificationEqualityComparer.cs" t="Include" />
+              <e p="Notification.cs" t="Include" />
               <e p="NotificationPresentationOptions.cs" t="Include" />
               <e p="UnityLocalNotification.asmdef" t="Include" />
             </e>
