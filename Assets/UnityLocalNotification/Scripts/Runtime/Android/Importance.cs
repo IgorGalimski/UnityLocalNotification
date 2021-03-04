@@ -6,7 +6,7 @@ namespace UnityLocalNotifications.Android
         /// A notification with no importance: does not show in the shade.
         /// </summary>
         None = 0,
-        
+
         /// <summary>
         /// Min importance, notification is shown without sound and does not appear in the status bar
         /// </summary>

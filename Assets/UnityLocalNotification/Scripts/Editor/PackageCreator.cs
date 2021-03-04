@@ -16,14 +16,15 @@ namespace UnityLocalNotification.Scripts.Editor
         public static void ExportPackage()
         {
             var assetList = new List<string>();
-            
+
             foreach (var guid in AssetList)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 assetList.Add(assetPath);
             }
 
-            AssetDatabase.ExportPackage(assetList.ToArray(), "unity_local_notification.unitypackage", ExportPackageOptions.Recurse);
+            AssetDatabase.ExportPackage(assetList.ToArray(), "unity_local_notification.unitypackage",
+                ExportPackageOptions.Recurse);
         }
     }
 }

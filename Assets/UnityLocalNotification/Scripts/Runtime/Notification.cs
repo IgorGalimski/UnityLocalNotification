@@ -8,11 +8,11 @@ namespace UnityLocalNotifications
     public struct Notification
     {
         public bool Local;
-        
+
         public int ID;
-        
+
         public string Title;
-        
+
         public string Subtitle;
 
         public string Body;
@@ -31,8 +31,8 @@ namespace UnityLocalNotifications
         {
             get
             {
-                    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                    return dateTime.Add(TimeSpan.FromSeconds(FiredSeconds));
+                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                return dateTime.Add(TimeSpan.FromSeconds(FiredSeconds));
             }
         }
 
@@ -54,21 +54,12 @@ namespace UnityLocalNotifications
         {
             var hash = 0;
 
-            if (!string.IsNullOrEmpty(Title))
-            {
-                hash += Title.GetHashCode();
-            }
-            
-            if (!string.IsNullOrEmpty(Body))
-            {
-                hash += Body.GetHashCode();
-            }
-            
-            if (!string.IsNullOrEmpty(Data))
-            {
-                hash += Data.GetHashCode();
-            }
-            
+            if (!string.IsNullOrEmpty(Title)) hash += Title.GetHashCode();
+
+            if (!string.IsNullOrEmpty(Body)) hash += Body.GetHashCode();
+
+            if (!string.IsNullOrEmpty(Data)) hash += Data.GetHashCode();
+
             hash += FireInSeconds.GetHashCode();
 
             ID = hash;

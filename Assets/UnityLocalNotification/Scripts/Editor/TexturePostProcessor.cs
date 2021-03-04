@@ -11,7 +11,7 @@ namespace UnityLocalNotification.Scripts.Editor
     {
         private const string SMALL_TEXTURE_PATH = "Assets/icon_0.png";
         private const string LARGE_TEXTURE_PATH = "Assets/icon_1.png";
-        
+
         [Flags]
         private enum TextureScale : byte
         {
@@ -19,12 +19,12 @@ namespace UnityLocalNotification.Scripts.Editor
             Large = 2,
             All = Small | Large
         }
-        
+
         private class TextureInfo
         {
             public int Dimension { get; }
             public string FileName { get; }
-            
+
             public TextureScale TextureScale { get; }
 
             public TextureInfo(int dimension, string fileName, TextureScale textureScale)
@@ -45,6 +45,7 @@ namespace UnityLocalNotification.Scripts.Editor
         };
 
         public int callbackOrder => 0;
+
         public void OnPostGenerateGradleAndroidProject(string path)
         {
             DownscaleTextures(path, SMALL_TEXTURE_PATH, TextureScale.Small);
@@ -53,24 +54,21 @@ namespace UnityLocalNotification.Scripts.Editor
 
         private void DownscaleTextures(string projectPath, string texturePath, TextureScale textureScale)
         {
-            if (!File.Exists(texturePath))
-            {
-                return;
-            }
-            
-            var texture = (Texture2D)AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D));
+            if (!File.Exists(texturePath)) return;
+
+            var texture = (Texture2D) AssetDatabase.LoadAssetAtPath(texturePath, typeof(Texture2D));
             var textureName = Path.GetFileNameWithoutExtension(texturePath);
 
             foreach (var textureInfo in _textures)
-            {
                 if (textureInfo.TextureScale.HasFlag(textureScale))
                 {
-                    var textureCopy = CopyTexture(texture, (int) (textureInfo.Dimension * (textureScale == TextureScale.Large ? 1f : 0.375f)));
+                    var textureCopy = CopyTexture(texture,
+                        (int) (textureInfo.Dimension * (textureScale == TextureScale.Large ? 1f : 0.375f)));
                     var processedTexture = ProcessTextureForType(textureCopy, textureScale);
-                    
-                    SaveTexture(projectPath, string.Format(textureInfo.FileName, textureName), processedTexture.EncodeToPNG());
+
+                    SaveTexture(projectPath, string.Format(textureInfo.FileName, textureName),
+                        processedTexture.EncodeToPNG());
                 }
-            }
         }
 
         private Texture2D CopyTexture(Texture2D sourceTexture, int dimension)
@@ -93,13 +91,10 @@ namespace UnityLocalNotification.Scripts.Editor
             var newTexture = new Texture2D(dimension, dimension, TextureFormat.ARGB32, false);
 
             var destPixels = new Color[dimension * dimension];
-            for (int y = 0; y < dimension; ++y)
-            {
-                for (int x = 0; x < dimension; ++x)
-                {
-                    destPixels[y * dimension + x] = sourceTexture.GetPixelBilinear((float)x / (float)dimension, (float)y / (float)dimension);
-                }
-            }
+            for (var y = 0; y < dimension; ++y)
+            for (var x = 0; x < dimension; ++x)
+                destPixels[y * dimension + x] =
+                    sourceTexture.GetPixelBilinear((float) x / (float) dimension, (float) y / (float) dimension);
             newTexture.SetPixels(destPixels);
             newTexture.Apply();
 
@@ -107,7 +102,7 @@ namespace UnityLocalNotification.Scripts.Editor
             {
                 importer.isReadable = false;
                 importer.SaveAndReimport();
-                
+
                 AssetDatabase.ImportAsset(assetPath);
             }
 
@@ -120,7 +115,7 @@ namespace UnityLocalNotification.Scripts.Editor
             if (textureScale.HasFlag(TextureScale.Small))
             {
                 texture = new Texture2D(sourceTexture.width, sourceTexture.height, TextureFormat.RGBA32, true, false);
-                for (var i  = 0; i < sourceTexture.mipmapCount; i++)
+                for (var i = 0; i < sourceTexture.mipmapCount; i++)
                 {
                     var c_0 = sourceTexture.GetPixels(i);
                     var c_1 = texture.GetPixels(i);
@@ -130,8 +125,10 @@ namespace UnityLocalNotification.Scripts.Editor
                         c_1[i1].r = c_1[i1].g = c_1[i1].b = a > 127 ? 0 : 1;
                         c_1[i1].a = c_0[i1].a;
                     }
+
                     texture.SetPixels(c_1, i);
                 }
+
                 texture.Apply();
             }
             else
@@ -140,15 +137,14 @@ namespace UnityLocalNotification.Scripts.Editor
                 texture.SetPixels(sourceTexture.GetPixels());
                 texture.Apply();
             }
+
             return texture;
         }
 
         private void SaveTexture(string projectPath, string textureName, byte[] textureData)
         {
             if (!Directory.Exists(Path.Combine(projectPath, "src")))
-            {
                 projectPath = Path.Combine(projectPath, PlayerSettings.productName);
-            }
 
             var fileInfo = new FileInfo($"{projectPath}/src/main/res/{textureName}");
             if (fileInfo.Directory != null)

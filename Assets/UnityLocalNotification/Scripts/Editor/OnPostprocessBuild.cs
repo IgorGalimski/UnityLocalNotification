@@ -1,5 +1,4 @@
 #if UNITY_IOS
-
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -24,7 +23,8 @@ namespace UnityLocalNotification
             proj.AddCapability(target, PBXCapabilityType.PushNotifications);
             File.WriteAllText (projPath, proj.WriteToString());
             
-            var capabilities = new ProjectCapabilityManager(PBXProject.GetPBXProjectPath(path), "app.entitlements", "Unity-iPhone");
+            var capabilities =
+ new ProjectCapabilityManager(PBXProject.GetPBXProjectPath(path), "app.entitlements", "Unity-iPhone");
             capabilities.AddPushNotifications(true);
             capabilities.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
             capabilities.WriteToFile();

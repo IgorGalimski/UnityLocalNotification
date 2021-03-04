@@ -6,22 +6,22 @@ namespace UnityLocalNotifications.Android
 {
     public class AndroidNotification : AndroidJavaProxy
     {
-        public String Title;
-        
+        public string Title;
+
         public bool AutoCancel;
 
-        public String Body;
+        public string Body;
 
-        public String Data;
+        public string Data;
 
-        public String SmallIconId;
+        public string SmallIconId;
 
-        public String LargeIconId;
+        public string LargeIconId;
 
         public double FireInSeconds;
 
         public long FiredSeconds;
-        
+
         public AndroidNotification() : base("com.igorgalimski.unitylocalnotification.ILocalNotificationBridge")
         {
         }
@@ -31,51 +31,69 @@ namespace UnityLocalNotifications.Android
         {
             var hash = 0;
 
-            if (!string.IsNullOrEmpty(Title))
-            {
-                hash += Title.GetHashCode();
-            }
-            
-            if (!string.IsNullOrEmpty(Body))
-            {
-                hash += Body.GetHashCode();
-            }
-            
-            if (!string.IsNullOrEmpty(Data))
-            {
-                hash += Data.GetHashCode();
-            }
-            
+            if (!string.IsNullOrEmpty(Title)) hash += Title.GetHashCode();
+
+            if (!string.IsNullOrEmpty(Body)) hash += Body.GetHashCode();
+
+            if (!string.IsNullOrEmpty(Data)) hash += Data.GetHashCode();
+
             hash += FireInSeconds.GetHashCode();
 
             return hash;
         }
 
         [Preserve]
-        public Boolean GetAutoCancel() => AutoCancel;
+        public bool GetAutoCancel()
+        {
+            return AutoCancel;
+        }
 
         [Preserve]
-        public String GetTitle() => Title;
+        public string GetTitle()
+        {
+            return Title;
+        }
 
         [Preserve]
-        public String GetBody() => Body;
+        public string GetBody()
+        {
+            return Body;
+        }
 
         [Preserve]
-        public String GetData() => Data;
+        public string GetData()
+        {
+            return Data;
+        }
 
         [Preserve]
-        public String GetSmallIconId() => SmallIconId;
+        public string GetSmallIconId()
+        {
+            return SmallIconId;
+        }
 
         [Preserve]
-        public String GetLargeIconId() => LargeIconId;
+        public string GetLargeIconId()
+        {
+            return LargeIconId;
+        }
 
         [Preserve]
-        public double GetFireInSeconds() => FireInSeconds;
+        public double GetFireInSeconds()
+        {
+            return FireInSeconds;
+        }
 
         [Preserve]
-        public long GetFiredSeconds() => FiredSeconds;
+        public long GetFiredSeconds()
+        {
+            return FiredSeconds;
+        }
 
         [Preserve]
-        public void SetFiredSeconds(long firedSeconds) => FiredSeconds = firedSeconds;
+        public void SetFiredSeconds(long firedSeconds)
+        {
+            FiredSeconds = firedSeconds;
+        }
     }
 }

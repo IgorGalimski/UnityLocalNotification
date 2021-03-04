@@ -6,37 +6,58 @@ namespace UnityLocalNotifications.Android
 {
     public class NotificationChannel : AndroidJavaProxy
     {
-        public String Id;
-        public String Name;
-        public String Description;
-        public Boolean ShowBadge;
+        public string Id;
+        public string Name;
+        public string Description;
+        public bool ShowBadge;
         public Importance Importance;
         public bool Vibration;
         public bool Lights;
-        
+
         public NotificationChannel() : base("com.igorgalimski.unitylocalnotification.INotificationChannel")
         {
         }
 
         [Preserve]
-        public string GetId() => Id;
-        
-        [Preserve]
-        public string GetName() => Name;
-        
-        [Preserve]
-        public string GetDescription() => Description;
-        
-        [Preserve]
-        public bool GetShowBadge() => ShowBadge;
-        
-        [Preserve]
-        public int GetImportance() => (int)Importance;
+        public string GetId()
+        {
+            return Id;
+        }
 
         [Preserve]
-        public bool GetVibration() => Vibration;
+        public string GetName()
+        {
+            return Name;
+        }
 
         [Preserve]
-        public bool GetLight() => Lights;
+        public string GetDescription()
+        {
+            return Description;
+        }
+
+        [Preserve]
+        public bool GetShowBadge()
+        {
+            return ShowBadge;
+        }
+
+        [Preserve]
+        public int GetImportance()
+        {
+            return (int) Importance;
+        }
+
+        [Preserve]
+        public bool GetVibration()
+        {
+            return Vibration;
+        }
+
+        [Preserve]
+        public bool GetLight()
+        {
+            return Lights;
+        }
     }
 }

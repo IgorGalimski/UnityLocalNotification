@@ -10,7 +10,7 @@ namespace UnityLocalNotifications.Authorization
         public bool Granted;
 
         public string Error;
-        
+
         public bool IsFinished => Granted || string.IsNullOrEmpty(Error);
     }
 }

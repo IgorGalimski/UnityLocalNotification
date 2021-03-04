@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityLocalNotifications.iOS;
 #if UNITY_ANDROID
 using UnityEngine.UI;
-using UnityLocalNotifications.Android;    
+using UnityLocalNotifications.Android;
+
 #endif
 
 #if UNITY_IOS
@@ -84,27 +85,25 @@ namespace UnityLocalNotifications
 
 #endif
         public static List<Notification> ReceivedNotifications { get; private set; }
-        
+
 #if UNITY_ANDROID
-        
+
         private const string OPEN_APP_ACTIVITY = "com.igorgalimski.unitylocalnotification.UnityPlayerActivity";
-        
+
         private static AndroidJavaClass _notificationManager;
         private static AndroidJavaClass GetNotificationManager()
         {
-            if (_notificationManager == null)
-            {
-                Initialize();
-            }
+            if (_notificationManager == null) Initialize();
 
             return _notificationManager;
         }
 #endif
-        
-        public static List<Notification> ForegroundReceivedNotifications { get; private set; } = new List<Notification>();
-        
-        public static event Action<Notification> NotificationReceivedEvent = notification => { }; 
-        
+
+        public static List<Notification> ForegroundReceivedNotifications { get; private set; } =
+            new List<Notification>();
+
+        public static event Action<Notification> NotificationReceivedEvent = notification => { };
+
 #if UNITY_IOS
         public static void Initialize(NotificationPresentationOptions notificationOptions)
         {
@@ -231,11 +230,12 @@ namespace UnityLocalNotifications
                 var notificationReceivedCallback = new NotificationReceivedCallback();
                 NotificationReceivedCallback.NotificationReceived += OnNotificationReceived;
 
-                _notificationManager = new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
+                _notificationManager =
+                    new AndroidJavaClass("com.igorgalimski.unitylocalnotification.NotificationManager");
                 _notificationManager.CallStatic("InitializeInternal", notificationReceivedCallback, OPEN_APP_ACTIVITY);
 
                 ReceivedNotifications = GetReceivedNotifications();
-                
+
                 ForegroundReceivedNotifications = new List<Notification>();
                 ClearReceivedNotifications();
             }
@@ -309,7 +309,7 @@ namespace UnityLocalNotifications
 #endif
 
 #if UNITY_ANDROID
-        public static void ScheduleNotification(Notification notification, 
+        public static void ScheduleNotification(Notification notification,
             bool autoCancel = true, string smallIconId = null, string largeIconId = null)
         {
             try
@@ -327,7 +327,7 @@ namespace UnityLocalNotifications
 
                 GetNotificationManager().CallStatic("ScheduleLocalNotificationInternal", androidNotification);
             }
-        
+
             catch (Exception exception)
             {
                 Debug.LogError("ScheduleLocalNotification error: " + exception.Message);
@@ -349,10 +349,11 @@ namespace UnityLocalNotifications
                     return localNotification.Value;
                 }
 #endif
-                
+
 #if UNITY_ANDROID
-                
-                var notificationIntent = GetNotificationManager().CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
+
+                var notificationIntent = GetNotificationManager()
+                    .CallStatic<AndroidJavaObject>("GetOpenedNotificationInternal");
                 return ParseNotificationFromAndroidJavaObject(notificationIntent);
 #endif
             }
@@ -360,28 +361,28 @@ namespace UnityLocalNotifications
             {
                 Debug.LogError("GetLastNotification error: " + exception.Message);
             }
-            
+
             return null;
         }
-        
-#if UNITY_ANDROID     
+
+#if UNITY_ANDROID
         public static List<Notification> GetReceivedNotifications()
         {
             try
             {
-                var notificationIntent = GetNotificationManager().CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
+                var notificationIntent = GetNotificationManager()
+                    .CallStatic<AndroidJavaObject>("GetReceivedNotificationsListInternal");
                 return ParseNotificationsFromAndroidJavaObject(notificationIntent);
-
             }
             catch (Exception exception)
             {
                 Debug.LogError("GetReceivedNotifications error: " + exception.Message);
             }
-            
+
             return null;
         }
 #endif
-        
+
 #if UNITY_IOS
         private static List<Notification> GetPendingNotifications()
         {
@@ -411,7 +412,7 @@ namespace UnityLocalNotifications
 #if UNITY_IOS
                 RemoveReceivedNotificationsInternal();
 #endif
-                
+
 #if UNITY_ANDROID
                 GetNotificationManager().CallStatic("ClearReceivedNotificationsListInternal");
 #endif
@@ -443,7 +444,7 @@ namespace UnityLocalNotifications
 #if UNITY_IOS
                 RemoveScheduledNotificationsInternal();
 #endif
-                
+
 #if UNITY_ANDROID
                 GetNotificationManager().CallStatic("RemoveScheduledNotificationsInternal");
 #endif
@@ -489,13 +490,14 @@ namespace UnityLocalNotifications
 
             return false;
         }
-        
+
 #if UNITY_ANDROID
         private static void OnNotificationReceived()
         {
-            var notificationJavaObject = GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
-            var localNotification = (Notification)ParseNotificationFromAndroidJavaObject(notificationJavaObject);
-            
+            var notificationJavaObject =
+                GetNotificationManager().GetStatic<AndroidJavaObject>("LastReceivedNotification");
+            var localNotification = (Notification) ParseNotificationFromAndroidJavaObject(notificationJavaObject);
+
             ForegroundReceivedNotifications.Add(localNotification);
 
             NotificationReceivedEvent?.Invoke(localNotification);
@@ -503,17 +505,14 @@ namespace UnityLocalNotifications
 
         private static Notification? ParseNotificationFromAndroidJavaObject(AndroidJavaObject notification)
         {
-            if (notification == null)
-            {
-                return null;
-            }
-            
+            if (notification == null) return null;
+
             var title = notification.Call<string>("GetTitle");
             var body = notification.Call<string>("GetBody");
             var data = notification.Call<string>("GetData");
             var fireInSeconds = notification.Call<double>("GetFireInSeconds");
             var firedSeconds = notification.Call<long>("GetFiredSeconds");
-            
+
             var localNotification = new Notification();
             localNotification.Title = title;
             localNotification.Body = body;
@@ -524,28 +523,26 @@ namespace UnityLocalNotifications
             return localNotification;
         }
 
-        private static List<Notification> ParseNotificationsFromAndroidJavaObject(AndroidJavaObject notificationsJavaObject)
+        private static List<Notification> ParseNotificationsFromAndroidJavaObject(
+            AndroidJavaObject notificationsJavaObject)
         {
             var notifications = new List<Notification>();
 
             var count = notificationsJavaObject.Call<int>("size");
-            
-            for (int i = 0; i < count; i++)
+
+            for (var i = 0; i < count; i++)
             {
                 var notification = notificationsJavaObject.Call<AndroidJavaObject>("get", i);
 
                 var localNotification = ParseNotificationFromAndroidJavaObject(notification);
 
-                if (localNotification.HasValue)
-                {
-                    notifications.Add(localNotification.Value);
-                }
+                if (localNotification.HasValue) notifications.Add(localNotification.Value);
             }
 
             return notifications;
         }
 #endif
-        
+
 #if UNITY_IOS
         [MonoPInvokeCallback(typeof(AuthorizationStatusCallbackDelegate))]
         private static void AuthorizationRequestResultCallback(AuthorizationRequestResult authorizationRequestResult)
