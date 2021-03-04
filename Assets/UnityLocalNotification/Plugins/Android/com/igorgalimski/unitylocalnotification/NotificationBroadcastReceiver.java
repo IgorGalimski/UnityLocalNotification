@@ -50,7 +50,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver
                 if(localNotification != null)
                 {
                     Notification notification = intent.getParcelableExtra(NOTIFICATION);
-                    notificationManager.notify(Integer.valueOf(localNotification.GetID()), notification);
+                    notificationManager.notify(localNotification.GetID(), notification);
     
                     com.igorgalimski.unitylocalnotification.NotificationManager.NotifyNotificationReceived(localNotification);
                 }
