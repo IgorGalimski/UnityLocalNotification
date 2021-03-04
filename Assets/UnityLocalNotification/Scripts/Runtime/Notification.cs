@@ -54,17 +54,17 @@ namespace UnityLocalNotifications
         {
             var hash = 0;
 
-            if (string.IsNullOrEmpty(Title))
+            if (!string.IsNullOrEmpty(Title))
             {
                 hash += Title.GetHashCode();
             }
             
-            if (string.IsNullOrEmpty(Body))
+            if (!string.IsNullOrEmpty(Body))
             {
                 hash += Body.GetHashCode();
             }
             
-            if (string.IsNullOrEmpty(Data))
+            if (!string.IsNullOrEmpty(Data))
             {
                 hash += Data.GetHashCode();
             }
