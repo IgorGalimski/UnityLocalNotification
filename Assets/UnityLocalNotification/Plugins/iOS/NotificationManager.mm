@@ -12,10 +12,6 @@
 
 extern "C"
 {
-    typedef void (*RequestNotificationsEnabledStatusDelegate)(bool enabled);
-
-    bool notificationsEnabled = false;
-
     void InitializeInternal(NSInteger notificationOptions,
                             NotificationReceived notificationReceived,
                             DeviceTokenReceived deviceTokenReceived)
@@ -26,21 +22,23 @@ extern "C"
         [DeviceTokenHandler sharedInstance].deviceTokenReceived = deviceTokenReceived;
     }
 
-    void RequestNotificationEnabledStatusInternal(RequestNotificationsEnabledStatusDelegate notificationsEnabledStatusDelegate)
-    {
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings)
-         {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                bool notificationsEnabled = settings.alertSetting == UNNotificationSettingEnabled;
-                
-                notificationsEnabledStatusDelegate(notificationsEnabled);
-            });
-         }];
-    }
-
     bool AreNotificationEnabledInternal()
     {
+        bool __block notificationsEnabled = false;
+
+        dispatch_semaphore_t sem;
+        sem = dispatch_semaphore_create(0);
+
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings)
+            {
+                notificationsEnabled = settings.alertSetting == UNNotificationSettingEnabled;
+
+                dispatch_semaphore_signal(sem);
+        }];
+
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+
         return notificationsEnabled;
     }
 

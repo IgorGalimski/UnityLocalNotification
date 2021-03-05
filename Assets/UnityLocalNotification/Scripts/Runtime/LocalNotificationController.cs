@@ -53,9 +53,6 @@ namespace UnityLocalNotifications
         private static extern bool AreNotificationEnabledInternal();
 
         [DllImport("__Internal")]
-        private static extern void RequestNotificationEnabledStatusInternal(RequestNotificationsEnabledStatusDelegate notificationsEnabledStatusDelegate);
-
-        [DllImport("__Internal")]
         private static extern int GetPendingNotificationsCountInternal();
 
         [DllImport("__Internal")]
@@ -70,13 +67,9 @@ namespace UnityLocalNotifications
 
         private delegate void DeviceTokenDelegate(string localNotification);
 
-        private delegate void RequestNotificationsEnabledStatusDelegate(bool enabled);
-
         public static event Action<AuthorizationRequestResult> AuthorizationRequestResultEvent = status => { };
 
         public static event Action<string> DeviceTokenReceived = deviceToken => { };
-
-        public static event Action<bool> NotificationEnabledStatusReceived = enabled => { };
 
 #endif
         public static List<Notification> ReceivedNotifications { get; private set; }
@@ -110,8 +103,6 @@ namespace UnityLocalNotifications
 
                 GetReceivedNotifications(OnGetReceivedNotifications);
 
-                RequestNotificationEnabledStatus();
-
                 SavePendingNotifications();
             }
             catch (Exception exception)
@@ -123,18 +114,6 @@ namespace UnityLocalNotifications
         private static void OnGetReceivedNotifications(List<Notification> localNotifications)
         {
             ReceivedNotifications = localNotifications;
-        }
-
-        public static void RequestNotificationEnabledStatus()
-        {
-            try
-            {
-                RequestNotificationEnabledStatusInternal(DeviceTokenReceivedCallback);
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError("RequestNotificationEnabledStatus error: " + exception.Message);
-            }
         }
 
         private static void RequestUpdatePendingNotifications()
@@ -543,12 +522,6 @@ namespace UnityLocalNotifications
         private static void DeviceTokenReceivedCallback(string deviceToken)
         {
             DeviceTokenReceived(deviceToken);
-        }
-        
-        [MonoPInvokeCallback(typeof(RequestNotificationsEnabledStatusDelegate))]
-        private static void DeviceTokenReceivedCallback(bool enabled)
-        {
-            NotificationEnabledStatusReceived(enabled);
         }
 #endif
     }

@@ -50,7 +50,7 @@ namespace UnityLocalNotifications.Sample
         public IEnumerator Start()
         {
 #if UNITY_IOS
-            LocalNotificationController.NotificationEnabledStatusReceived += OnNotificationStatusEnabledHandler;
+            _areNotificatonsEnabled.text = string.Format(NOTIFICATION_ENABLED_TEXT, LocalNotificationController.AreNotificationsEnabled().ToString());
             
             LocalNotificationController.Initialize(NotificationPresentationOptions.Alert | NotificationPresentationOptions.Badge | NotificationPresentationOptions.Sound);
 #endif
@@ -91,7 +91,6 @@ namespace UnityLocalNotifications.Sample
         {
             LocalNotificationController.NotificationReceivedEvent -= NotificationReceivedHandler;
 #if UNITY_IOS
-            LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
             LocalNotificationController.DeviceTokenReceived -= DeviceTokenReceived;
             
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
@@ -118,13 +117,7 @@ namespace UnityLocalNotifications.Sample
         }
 
 #if UNITY_IOS
-        private void OnNotificationStatusEnabledHandler(bool notificationEnabled)
-        {
-            LocalNotificationController.NotificationEnabledStatusReceived -= OnNotificationStatusEnabledHandler;
-            
-            _areNotificatonsEnabled.text = string.Format(NOTIFICATION_ENABLED_TEXT, notificationEnabled.ToString());
-        }
-        
+
         private void OnAuthorizationRequestHandler()
         {
             _requestAuthorization.onClick.RemoveListener(OnAuthorizationRequestHandler);
