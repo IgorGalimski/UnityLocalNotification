@@ -158,19 +158,18 @@ void UpdateBugdeCounter()
 
 -(void)UpdateScheduledNotificationList
 {
+    dispatch_semaphore_t sem;
+    sem = dispatch_semaphore_create(0);
+
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
     [center getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests)
     {
         pendingRequests = requests;
         
-        if(_pendingNotificationUpdated != nil)
-        {
-            dispatch_async(dispatch_get_main_queue(), ^
-            {
-                _pendingNotificationUpdated();
-            });
-        }
+        dispatch_semaphore_signal(sem);
     }];
+    
+    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
 }
 
 LocalNotification* ToLocalNotification(UNNotificationRequest* request)

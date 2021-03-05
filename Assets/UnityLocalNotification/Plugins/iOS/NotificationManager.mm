@@ -18,12 +18,10 @@ extern "C"
 
     void InitializeInternal(NSInteger notificationOptions,
                             NotificationReceived notificationReceived,
-                            DeviceTokenReceived deviceTokenReceived,
-                            PendingNotificationsUpdated pendingNotificationUpdated)
+                            DeviceTokenReceived deviceTokenReceived)
     {
         [NotificationCenterDelegate sharedInstance].notificationReceived = notificationReceived;
         [NotificationCenterDelegate sharedInstance].notificationOptions = notificationOptions;
-        [NotificationCenterDelegate sharedInstance].pendingNotificationUpdated = pendingNotificationUpdated;
         
         [DeviceTokenHandler sharedInstance].deviceTokenReceived = deviceTokenReceived;
     }
