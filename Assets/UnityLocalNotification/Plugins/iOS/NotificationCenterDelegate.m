@@ -297,10 +297,9 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
         if ([NSJSONSerialization isValidJSONObject: extraDictionary])
         {
             NSError* error;
-            NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options:0 error: &error];
-            NSString* dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSData* data = [NSJSONSerialization dataWithJSONObject: extraDictionary options: 0 error: &error];
             
-            localNotification->Data = strdup([dataString UTF8String]);
+            localNotification->Data = strdup([data bytes]);
         }
         else
         {
