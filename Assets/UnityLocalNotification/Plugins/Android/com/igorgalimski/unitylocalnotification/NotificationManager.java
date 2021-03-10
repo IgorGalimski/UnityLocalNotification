@@ -484,6 +484,8 @@ public class NotificationManager
             {
                 return GetNotificationManager().areNotificationsEnabled();
             }
+            
+            return true;
         }
         catch (Exception exception)
         {
