@@ -443,7 +443,7 @@ namespace UnityLocalNotifications
             }
             catch (Exception exception)
             {
-                Debug.LogError("RemoveDeliveredNotifications error: " + exception.Message);
+                Debug.LogError("AreNotificationsEnabled error: " + exception.Message);
             }
 
             return false;

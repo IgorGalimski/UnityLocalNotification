@@ -480,7 +480,10 @@ public class NotificationManager
     {
         try
         {
-            return GetNotificationManager().areNotificationsEnabled();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            {
+                return GetNotificationManager().areNotificationsEnabled();
+            }
         }
         catch (Exception exception)
         {
