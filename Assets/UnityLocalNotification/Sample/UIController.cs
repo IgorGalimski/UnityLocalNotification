@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 #if UNITY_ANDROID
 using UnityLocalNotifications.Android;
 
@@ -143,7 +144,8 @@ namespace UnityLocalNotifications.Sample
                 Title = "Test title",
                 Body = "Test body",
                 Data = "Test data",
-                FireInSeconds = 5
+                FireInSeconds = Random.Range(1, 5),
+                Icon = "Icon"
             });
         }
 

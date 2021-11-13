@@ -19,6 +19,8 @@ namespace UnityLocalNotifications
 
         public string Data;
 
+        public string Icon;
+
         public string CategoryIdentifier;
 
         public string ThreadIdentifier;

@@ -26,6 +26,7 @@ typedef struct LocalNotification
     char* Subtitle;
     char* Body;
     char* Data;
+    char* Icon;
     char* CategoryIdentifier;
     char* ThreadIdentifier;
     double FireInSeconds;

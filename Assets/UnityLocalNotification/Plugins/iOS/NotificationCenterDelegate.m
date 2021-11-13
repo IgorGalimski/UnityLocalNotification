@@ -90,6 +90,19 @@ NSArray<UNNotificationRequest*>* pendingRequests;
     
     objNotificationContent.userInfo = userInfo;
     
+    if(localNotification->Icon != nil)
+    {
+       NSURL *imageURL = [[NSBundle mainBundle] URLForResource:[NSString stringWithFormat:@"%s.png", localNotification->Icon] withExtension:nil];
+
+        if(imageURL != nil)
+        {
+            NSError *error;
+            UNNotificationAttachment *icon = [UNNotificationAttachment attachmentWithIdentifier:@"image" URL:imageURL options:nil error:&error];
+                
+            objNotificationContent.attachments = @[icon];
+        }
+    }
+    
     if(localNotification->CategoryIdentifier != nil)
     {
         objNotificationContent.categoryIdentifier = [NSString stringWithUTF8String: localNotification->CategoryIdentifier];
@@ -212,6 +225,15 @@ LocalNotification* ToLocalNotification(UNNotificationRequest* request)
     else
     {
         localNotification->Body = " ";
+    }
+    
+    if(content.attachments != nil && content.attachments.count > 0)
+    {
+        localNotification->Icon = strdup([content.attachments[0].identifier UTF8String]);
+    }
+    else
+    {
+        localNotification->Icon = " ";
     }
     
     if (content.categoryIdentifier != nil && content.categoryIdentifier.length > 0)
