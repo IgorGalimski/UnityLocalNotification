@@ -9,8 +9,8 @@ namespace UnityLocalNotification.Scripts.Editor
 {
     public class TexturePostProcessor : IPostGenerateGradleAndroidProject
     {
-        private const string SMALL_TEXTURE_PATH = "Assets/icon_0.png";
-        private const string LARGE_TEXTURE_PATH = "Assets/icon_1.png";
+        private const string SMALL_TEXTURE_PATH = "Assets/UnityLocalNotification/Icons/Android/SmallIcons";
+        private const string LARGE_TEXTURE_PATH = "Assets/UnityLocalNotification/Icons/Android/LargeIcons";
 
         [Flags]
         private enum TextureScale : byte
@@ -48,8 +48,17 @@ namespace UnityLocalNotification.Scripts.Editor
 
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-            DownscaleTextures(path, SMALL_TEXTURE_PATH, TextureScale.Small);
-            DownscaleTextures(path, LARGE_TEXTURE_PATH, TextureScale.Large);
+            foreach (var file in Directory.GetFiles(SMALL_TEXTURE_PATH, "*.png", 
+                SearchOption.AllDirectories))
+            {
+                DownscaleTextures(path, file, TextureScale.Small);
+            }
+
+            foreach (var file in Directory.GetFiles(LARGE_TEXTURE_PATH, "*.png", 
+                SearchOption.AllDirectories))
+            {
+                DownscaleTextures(path, file, TextureScale.Large);
+            }
         }
 
         private void DownscaleTextures(string projectPath, string texturePath, TextureScale textureScale)

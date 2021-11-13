@@ -13,22 +13,32 @@ namespace UnityLocalNotification
         [PostProcessBuild]
         public static void OnPostprocessBuildHandler(BuildTarget buildTarget, string path)
         {
-            AddFrameworks(path);
-            CopyIcons(path);
-        }
 
-        private static void AddFrameworks(string path)
-        {
             var projPath = path + "/Unity-iPhone.xcodeproj/project.pbxproj";
    
             var proj = new PBXProject ();
             proj.ReadFromString (File.ReadAllText (projPath));
-   
-            var target = proj.GetUnityFrameworkTargetGuid();
+
+            var target = proj.GetUnityMainTargetGuid();
 
             proj.AddFrameworkToProject(target, "UserNotifications.framework", true);
             
             proj.AddCapability(target, PBXCapabilityType.PushNotifications);
+            
+            if (Directory.Exists(ICONS_PROJECT_PATH))
+            {
+                foreach (var file in Directory.GetFiles(ICONS_PROJECT_PATH, "*.png", 
+                    SearchOption.AllDirectories))
+                {
+                    var dstLocalPath = Path.GetFileName(file);
+                    var resourcesBuildPhase = proj.GetResourcesBuildPhaseByTarget(target);
+                    var fileRef = proj.AddFile(dstLocalPath, dstLocalPath);
+                    
+                    File.Copy(file, Path.Combine(path, dstLocalPath), true);
+                    proj.AddFileToBuild(target, fileRef);
+                }
+            }
+
             File.WriteAllText (projPath, proj.WriteToString());
             
             var capabilities =
@@ -36,20 +46,6 @@ namespace UnityLocalNotification
             capabilities.AddPushNotifications(true);
             capabilities.AddBackgroundModes(BackgroundModesOptions.RemoteNotifications);
             capabilities.WriteToFile();
-        }
-
-        private static void CopyIcons(string path)
-        {
-            if (!Directory.Exists(ICONS_PROJECT_PATH))
-            {
-                return;
-            }
-            
-            foreach (var file in Directory.GetFiles(ICONS_PROJECT_PATH, "*.png", 
-                SearchOption.AllDirectories))
-            {
-                File.Copy(file, Path.Combine(path , Path.GetFileName(file)));
-            }
         }
     }
 }
