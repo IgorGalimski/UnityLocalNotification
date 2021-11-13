@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Xml.Linq;
 using UnityEditor.Android;
 using UnityEngine;
 
@@ -19,10 +19,9 @@ namespace UnityLocalNotification.Scripts.Editor
 
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-            Debug.Log("Bulid path : " + path);
-
             UpdateBuildGradle(path);
             UpdateAndroidManifest(path);
+            UpdateProperties(path);
         }
 
         private void UpdateBuildGradle(string path)
@@ -72,6 +71,28 @@ namespace UnityLocalNotification.Scripts.Editor
             manifestXmlNode.AppendChild(bootCompletedAction);
 
             manifestDoc.Save(manifestPath);
+        }
+
+        private void UpdateProperties(string path)
+        {
+            string gradlePropertiesFile = Directory.GetParent(path).FullName + "/gradle.properties";
+
+            if (File.Exists(gradlePropertiesFile))
+            {
+                File.Delete(gradlePropertiesFile);
+            }
+
+            var gradle = new List<string>
+            {
+                "org.gradle.jvmargs=-Xmx4096M",
+                "org.gradle.parallel=true",
+                "android.enableR8=false",
+                "unityStreamingAssets=.unity3d",
+                "android.useAndroidX=true",
+                "android.enableJetifier=true"
+            };
+
+            File.WriteAllLines(gradlePropertiesFile, gradle);
         }
     }
 }
