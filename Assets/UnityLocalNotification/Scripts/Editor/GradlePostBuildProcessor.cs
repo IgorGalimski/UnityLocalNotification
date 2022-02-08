@@ -33,7 +33,7 @@ namespace UnityLocalNotification.Scripts.Editor
             var dependenciesIndex = Array.FindIndex(gradle.ToArray(), x => x == "dependencies {");
             if (dependenciesIndex != -1)
             {
-                gradle.Insert(dependenciesIndex + 1, "    implementation 'androidx.appcompat:appcompat:1.2.0'");
+                gradle.Insert(dependenciesIndex + 1, "    implementation 'androidx.appcompat:appcompat:1.4.1'");
 
                 File.Delete(buildGradleFile);
 
