@@ -125,7 +125,7 @@ namespace UnityLocalNotifications.Sample
             
             LocalNotificationController.AuthorizationRequestResultEvent += AuthorizationRequestResultHandler;
             
-            LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound);
+            LocalNotificationController.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound | AuthorizationOption.Provisional);
         }
 #endif
 

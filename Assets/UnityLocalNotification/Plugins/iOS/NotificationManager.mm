@@ -32,7 +32,8 @@ extern "C"
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings)
             {
-                notificationsEnabled = settings.alertSetting == UNNotificationSettingEnabled;
+                notificationsEnabled = settings.authorizationStatus == UNAuthorizationStatusAuthorized
+                || settings.authorizationStatus == UNAuthorizationStatusProvisional;
 
                 dispatch_semaphore_signal(sem);
         }];
