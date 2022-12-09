@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEditor.Android;
-using UnityEngine;
 
 namespace UnityLocalNotification.Scripts.Editor
 {
@@ -63,12 +62,17 @@ namespace UnityLocalNotification.Scripts.Editor
 
             applicationXmlNode.AppendChild(notificationManagerReceiver);
 
-            var bootCompletedAction = manifestDoc.CreateElement("uses-permission");
-            bootCompletedAction.SetAttribute("name", ANDROID_NAMESPACE_URI,
+            var bootCompletedPermissionElement = manifestDoc.CreateElement("uses-permission");
+            bootCompletedPermissionElement.SetAttribute("name", ANDROID_NAMESPACE_URI,
                 "android.permission.RECEIVE_BOOT_COMPLETED");
+            
+            var postNotificationPermissionElement = manifestDoc.CreateElement("uses-permission");
+            postNotificationPermissionElement.SetAttribute("name", ANDROID_NAMESPACE_URI,
+                "android.permission.POST_NOTIFICATIONS");
 
             var manifestXmlNode = manifestDoc.SelectSingleNode("manifest");
-            manifestXmlNode.AppendChild(bootCompletedAction);
+            manifestXmlNode.AppendChild(bootCompletedPermissionElement);
+            manifestXmlNode.AppendChild(postNotificationPermissionElement);
 
             manifestDoc.Save(manifestPath);
         }

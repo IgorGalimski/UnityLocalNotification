@@ -13,7 +13,6 @@ namespace UnityLocalNotification
         [PostProcessBuild]
         public static void OnPostprocessBuildHandler(BuildTarget buildTarget, string path)
         {
-
             var projPath = path + "/Unity-iPhone.xcodeproj/project.pbxproj";
    
             var proj = new PBXProject ();
