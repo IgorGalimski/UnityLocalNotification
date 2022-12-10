@@ -1,5 +1,6 @@
 package com.igorgalimski.unitylocalnotification;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -17,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.unity3d.player.UnityPlayer;
@@ -28,6 +30,7 @@ import java.util.List;
 public class NotificationManager
 {
     public static final String LOG = "NotificationManager";
+    private static final Integer NOTIFICATION_PERMISSION_CODE = 100;
 
     private static Context _context;
     private static Class _mainActivity;
@@ -107,6 +110,17 @@ public class NotificationManager
         catch (Exception exception)
         {
             Log.e(LOG, "InitializeInternal", exception);
+        }
+    }
+    
+    public static void RequestPermissionInternal()
+    {
+        if(Build.VERSION.SDK_INT >= 33)
+        {
+            ActivityCompat.requestPermissions(UnityPlayer.currentActivity, new String[]
+                    {
+                            Manifest.permission.POST_NOTIFICATIONS
+                    }, NOTIFICATION_PERMISSION_CODE);
         }
     }
 

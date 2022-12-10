@@ -201,6 +201,18 @@ namespace UnityLocalNotifications
             }
         }
 
+        public static void RequestPermission()
+        {
+            try
+            {
+                GetNotificationManager().CallStatic("RequestPermissionInternal");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError("RequestPermission error: " + exception.Message);
+            }
+        }
+
         public static void CreateNotificationChannel(NotificationChannel notificationChannel)
         {
             try
